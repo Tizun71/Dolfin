@@ -1,15 +1,36 @@
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
+import { serve } from "@hono/node-server";
+import { Hono } from "hono";
+import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
+import { honoLogger } from "@logtape/hono";
 
-const app = new Hono()
+// Configure Logtape logger
+await configure({
+  sinks: { console: getConsoleSink() },
+  loggers: [
+    { category: ["hono"], sinks: ["console"], lowestLevel: "info" },
+    {
+      category: ["logtape", "meta"],
+      sinks: ["console"],
+      lowestLevel: "warning",
+    },
+  ],
+});
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+const logger = getLogger("hono");
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
-})
+const app = new Hono();
+app.use(honoLogger());
+
+app.get("/", (c) => {
+  return c.text("Hello Hono!");
+});
+
+serve(
+  {
+    fetch: app.fetch,
+    port: 8080,
+  },
+  (info) => {
+    logger.info(`Server is running on http://localhost:${info.port}`);
+  },
+);
