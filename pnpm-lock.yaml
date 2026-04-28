@@ -68,7 +68,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/smart_contracts:
+  packages/smart_contract:
     devDependencies:
       '@nomicfoundation/hardhat-ignition':
         specifier: ^3.1.3

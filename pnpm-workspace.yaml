@@ -1,4 +1,4 @@
 packages:
   - frontend
   - packages/backend
-  - packages/smart_contracts
+  - packages/smart_contract
