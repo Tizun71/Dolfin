@@ -1,19 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useConnection } from "wagmi";
 
 export default function Home() {
-  const [count, setCount] = useState(0);
+  const { isConnected } = useConnection();
 
   return (
-    <div className="mx-auto">
-      <h1>Spam</h1>
-      <button
-        className="w-fit border px-3 py-1 mt-10 rounded active:scale-95"
-        onClick={() => setCount(count + 1)}
-      >
-        {count}
-      </button>
+    <div>
+      <ConnectButton />
+      {isConnected && <p className="text-2xl text-green-500">You are connected!</p>}
     </div>
   );
 }
