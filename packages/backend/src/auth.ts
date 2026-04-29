@@ -5,6 +5,7 @@ import { generateRandomString } from "better-auth/crypto";
 import { verifyMessage } from "viem";
 import { db } from "./db/index.js";
 import * as schema from "./db/schema.js";
+import { appLogger } from "./constants.js";
 
 export const auth = betterAuth({
   experimental: {
@@ -36,7 +37,7 @@ export const auth = betterAuth({
           });
           return isValid;
         } catch (error) {
-          console.error("SIWE verification failed:", error);
+          appLogger.error("Error verifying SIWE message: {error}", { error });
           return false;
         }
       },

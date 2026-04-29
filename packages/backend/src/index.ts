@@ -30,6 +30,7 @@ serve(
   {
     fetch: app.fetch,
     port: process.env.PORT ? parseInt(process.env.PORT) : 8080,
+    hostname: process.env.HOST || "localhost",
   },
   (info) => {
     appLogger.info(`Server is running at ${info.address}:${info.port}`);
