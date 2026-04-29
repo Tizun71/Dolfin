@@ -1,7 +1,9 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
+import { configure, getConsoleSink } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
+import { appLogger } from "./constants.js";
+import { auth } from "./auth.js";
 
 // Configure Logtape logger
 await configure({
@@ -16,21 +18,20 @@ await configure({
   ],
 });
 
-const logger = getLogger("hono");
-
 const app = new Hono();
 app.use(honoLogger());
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
+// Integrate better-auth
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
+  return auth.handler(c.req.raw);
 });
 
 serve(
   {
     fetch: app.fetch,
-    port: 8080,
+    port: process.env.PORT ? parseInt(process.env.PORT) : 8080,
   },
   (info) => {
-    logger.info(`Server is running on http://localhost:${info.port}`);
+    appLogger.info(`Server is running at ${info.address}:${info.port}`);
   },
 );
