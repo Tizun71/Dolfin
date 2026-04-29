@@ -1,15 +1,7 @@
 "use client";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useConnection } from "wagmi";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const { isConnected } = useConnection();
-
-  return (
-    <div>
-      <ConnectButton />
-      {isConnected && <p className="text-2xl text-green-500">You are connected!</p>}
-    </div>
-  );
+  return <Button>Connect Wallet</Button>;
 }

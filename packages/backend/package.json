@@ -11,11 +11,11 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.14",
+    "@hono/node-server": "^2.0.0",
     "@hono/zod-validator": "^0.7.6",
     "@logtape/hono": "^2.0.5",
     "@logtape/logtape": "^2.0.5",
-    "ai": "^6.0.168",
+    "ai": "^6.0.169",
     "better-auth": "^1.6.9",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.15",
@@ -24,10 +24,10 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^24.12.2",
     "drizzle-kit": "^0.31.10",
     "oxlint": "^1.62.0",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
   }
 }
