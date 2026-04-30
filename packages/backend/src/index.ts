@@ -1,7 +1,9 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
+import { configure, getConsoleSink } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
+import { appLogger } from "./constants.js";
+import { PrivyClient, type User } from "@privy-io/node";
 
 // Configure Logtape logger
 await configure({
@@ -16,21 +18,29 @@ await configure({
   ],
 });
 
-const logger = getLogger("hono");
-
 const app = new Hono();
 app.use(honoLogger());
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
+const privy = new PrivyClient({
+  appId: process.env.PRIVY_APP_ID!,
+  appSecret: process.env.PRIVY_APP_SECRET!,
+});
+
+app.get("/api/users", async (c) => {
+  const users: User[] = [];
+  for await (const user of privy.users().list()) {
+    users.push(user);
+  }
+  return c.json(users);
 });
 
 serve(
   {
     fetch: app.fetch,
-    port: 8080,
+    port: process.env.PORT ? parseInt(process.env.PORT) : 8080,
+    hostname: process.env.HOST || "localhost",
   },
   (info) => {
-    logger.info(`Server is running on http://localhost:${info.port}`);
+    appLogger.info(`Server is running at ${info.address}:${info.port}`);
   },
 );
