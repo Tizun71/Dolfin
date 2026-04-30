@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import LoginWithEmail from "@/components/LoginButton";
 
 export default function Home() {
   return (
     <div>
-      <Button variant="outline">Hello World</Button>
+      <LoginWithEmail />
     </div>
   );
 }
