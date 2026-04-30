@@ -3,5 +3,9 @@
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  return <Button>Connect Wallet</Button>;
+  return (
+    <div>
+      <Button variant="outline">Hello World</Button>
+    </div>
+  );
 }

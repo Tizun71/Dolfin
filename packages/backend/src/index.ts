@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { configure, getConsoleSink } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
 import { appLogger } from "./constants.js";
-import { auth } from "./auth.js";
 
 // Configure Logtape logger
 await configure({
@@ -20,11 +19,6 @@ await configure({
 
 const app = new Hono();
 app.use(honoLogger());
-
-// Integrate better-auth
-app.on(["POST", "GET"], "/api/auth/*", (c) => {
-  return auth.handler(c.req.raw);
-});
 
 serve(
   {
