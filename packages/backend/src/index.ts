@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
+import userModule from "./modules/user/index.js";
 
 // Configure Logtape logger
 await configure({
@@ -21,16 +22,16 @@ const logger = getLogger("hono");
 const app = new Hono();
 app.use(honoLogger());
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
+// Register user module
+app.route("/user", userModule);
 
 serve(
   {
     fetch: app.fetch,
     port: 8080,
+    hostname: process.env.HOSTNAME || "localhost",
   },
   (info) => {
-    logger.info(`Server is running on http://localhost:${info.port}`);
+    logger.info(`Server is running on ${info.address}:${info.port}`);
   },
 );
