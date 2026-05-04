@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
 import userModule from "./modules/user/index.js";
+import aaveModule from "./modules/aave/index.js";
 
 // Configure Logtape logger
 await configure({
@@ -24,6 +25,9 @@ app.use(honoLogger());
 
 // Register user module
 app.route("/user", userModule);
+
+// Register aave module
+app.route("/aave", aaveModule);
 
 serve(
   {
