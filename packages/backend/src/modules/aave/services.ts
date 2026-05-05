@@ -1,21 +1,86 @@
 import { AaveClient, evmAddress, chainId } from "@aave/client";
 import { market } from "@aave/client/actions";
+import type { Reserve } from "@aave/graphql";
 import { getLogger } from "@logtape/logtape";
 
 const aaveClient = AaveClient.create();
 const aaveLogger = getLogger();
-const ARBITRUM_ONE_MARKET_ADDRESS =
-  "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
+const ARBITRUM_ONE_CHAIN_ID = chainId(42161);
+const ARBITRUM_ONE_MARKET_ADDRESS = evmAddress(
+  "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+);
 
-/**
- * Retrieves market data for the Arbitrum One network from Aave.
- */
+function transformReserve(r: Reserve) {
+  const si = r.supplyInfo;
+  const bi = r.borrowInfo;
+
+  return {
+    underlyingToken: {
+      symbol: r.underlyingToken.symbol,
+      name: r.underlyingToken.name,
+      address: r.underlyingToken.address,
+      imageUrl: r.underlyingToken.imageUrl,
+    },
+    aToken: {
+      symbol: r.aToken.symbol,
+      address: r.aToken.address,
+      imageUrl: r.aToken.imageUrl,
+    },
+    vToken: {
+      symbol: r.vToken.symbol,
+      address: r.vToken.address,
+      imageUrl: r.vToken.imageUrl,
+    },
+    usdExchangeRate: r.usdExchangeRate,
+    usdOracleAddress: r.usdOracleAddress,
+    isFrozen: r.isFrozen,
+    isPaused: r.isPaused,
+    flashLoanEnabled: r.flashLoanEnabled,
+    permitSupported: r.permitSupported,
+    size: r.size.usd,
+    supplyInfo: {
+      apy: si.apy.formatted,
+      total: si.total.value,
+      supplyCap: si.supplyCap.amount.value,
+      supplyCapReached: si.supplyCapReached,
+      canBeCollateral: si.canBeCollateral,
+      maxLTV: si.maxLTV.formatted,
+      liquidationThreshold: si.liquidationThreshold.formatted,
+      liquidationBonus: si.liquidationBonus.formatted,
+    },
+    borrowInfo: bi
+      ? {
+          borrowingState: bi.borrowingState,
+          borrowCapReached: bi.borrowCapReached,
+          apy: bi.apy.formatted,
+          total: bi.total.amount.value,
+          totalUsd: bi.total.usd,
+          availableLiquidity: bi.availableLiquidity.usd,
+          utilizationRate: bi.utilizationRate.formatted,
+          reserveFactor: bi.reserveFactor.formatted,
+          borrowCap: bi.borrowCap.amount.value,
+          optimalUsageRate: bi.optimalUsageRate.formatted,
+          baseVariableBorrowRate: bi.baseVariableBorrowRate.formatted,
+          variableRateSlope1: bi.variableRateSlope1.formatted,
+          variableRateSlope2: bi.variableRateSlope2.formatted,
+        }
+      : null,
+    eModeInfo: r.eModeInfo.map((e) => ({
+      categoryId: e.categoryId,
+      label: e.label,
+      maxLTV: e.maxLTV.formatted,
+      liquidationThreshold: e.liquidationThreshold.formatted,
+      liquidationPenalty: e.liquidationPenalty.formatted,
+      canBeCollateral: e.canBeCollateral,
+      canBeBorrowed: e.canBeBorrowed,
+    })),
+  };
+}
+
 export async function getArbitrumMarketData() {
-  const arbitrumOne = chainId(42161); // Arbitrum One
-
   const result = await market(aaveClient, {
-    chainId: arbitrumOne,
-    address: evmAddress(ARBITRUM_ONE_MARKET_ADDRESS),
+    chainId: ARBITRUM_ONE_CHAIN_ID,
+    address: ARBITRUM_ONE_MARKET_ADDRESS,
   });
 
   if (result.isErr()) {
@@ -23,87 +88,38 @@ export async function getArbitrumMarketData() {
     throw new Error(`Failed to fetch market data: ${result.error.message}`);
   }
 
-  const marketData = result.value;
-  if (!marketData) {
+  const m = result.value;
+  if (!m) {
     aaveLogger.error("Market data is undefined");
     throw new Error("Market data is undefined");
   }
 
+  const reserveMap = new Map<string, Reserve>();
+
+  for (const r of m.supplyReserves) {
+    reserveMap.set(r.underlyingToken.address, r);
+  }
+
+  for (const r of m.borrowReserves) {
+    const existing = reserveMap.get(r.underlyingToken.address);
+    if (existing) {
+      if (!existing.borrowInfo && r.borrowInfo) {
+        reserveMap.set(r.underlyingToken.address, {
+          ...existing,
+          borrowInfo: r.borrowInfo,
+        });
+      }
+    } else {
+      reserveMap.set(r.underlyingToken.address, r);
+    }
+  }
+
   return {
-    name: marketData.name,
-    poolAddress: marketData.address,
-    chain: {
-      name: marketData.chain.name,
-      icon: marketData.chain.icon,
-      chainId: marketData.chain.chainId,
-    },
-    totalMarketSize: marketData.totalMarketSize,
-    totalAvailableLiquidity: marketData.totalAvailableLiquidity,
-    reserves: marketData.supplyReserves.map((reserve) => ({
-      symbol: reserve.underlyingToken.symbol,
-      name: reserve.underlyingToken.name,
-      address: reserve.underlyingToken.address,
-      imageUrl: reserve.underlyingToken.imageUrl,
-      size: parseFloat(reserve.size.usd),
-      aToken: {
-        symbol: reserve.aToken.symbol,
-        name: reserve.aToken.name,
-        address: reserve.aToken.address,
-        imageUrl: reserve.aToken.imageUrl,
-      },
-      vToken: {
-        symbol: reserve.vToken.symbol,
-        name: reserve.vToken.name,
-        address: reserve.vToken.address,
-        imageUrl: reserve.vToken.imageUrl,
-      },
-      usdExchangeRate: reserve.usdExchangeRate,
-      usdOracleAddress: reserve.usdOracleAddress,
-      isFrozen: reserve.isFrozen,
-      isPaused: reserve.isPaused,
-      flashLoanEnabled: reserve.flashLoanEnabled,
-      permitSupported: reserve.permitSupported,
-      supplyInfo: {
-        apy: parseFloat(reserve.supplyInfo.apy.formatted) * 100,
-        total: parseFloat(reserve.supplyInfo.total.value),
-        canBeCollateral: reserve.supplyInfo.canBeCollateral,
-        maxLTV: parseFloat(reserve.supplyInfo.maxLTV.formatted),
-        supplyCap: parseFloat(reserve.supplyInfo.supplyCap.amount.value),
-        supplyCapReached: reserve.supplyInfo.supplyCapReached,
-        liquidationThreshold: parseFloat(
-          reserve.supplyInfo.liquidationThreshold.formatted,
-        ),
-        liquidationBonus: parseFloat(
-          reserve.supplyInfo.liquidationBonus.formatted,
-        ),
-      },
-      borrowInfo: reserve.borrowInfo
-        ? {
-            apy: parseFloat(reserve.borrowInfo.apy.formatted) * 100,
-            total: parseFloat(reserve.borrowInfo.total.usd),
-            borrowCap: parseFloat(reserve.borrowInfo.borrowCap.usd),
-            reserveFactor: parseFloat(
-              reserve.borrowInfo.reserveFactor.formatted,
-            ),
-            utilizationRate: parseFloat(
-              reserve.borrowInfo.utilizationRate.formatted,
-            ),
-            baseVariableBorrowRate: parseFloat(
-              reserve.borrowInfo.baseVariableBorrowRate.formatted,
-            ),
-            variableRateSlope1: parseFloat(
-              reserve.borrowInfo.variableRateSlope1.formatted,
-            ),
-            variableRateSlope2: parseFloat(
-              reserve.borrowInfo.variableRateSlope2.formatted,
-            ),
-            optimalUsageRate: parseFloat(
-              reserve.borrowInfo.optimalUsageRate.formatted,
-            ),
-            borrowingState: reserve.borrowInfo.borrowingState,
-            borrowCapReached: reserve.borrowInfo.borrowCapReached,
-          }
-        : null,
-    })),
+    name: m.name,
+    address: m.address,
+    chain: { chainId: m.chain.chainId, name: m.chain.name },
+    totalMarketSize: m.totalMarketSize,
+    totalAvailableLiquidity: m.totalAvailableLiquidity,
+    reserves: Array.from(reserveMap.values()).map(transformReserve),
   };
 }
