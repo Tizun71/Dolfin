@@ -130,5 +130,7 @@ contract DolfinAccount is EIP712 {
     }
 
     // Allows the delegated EOA to receive native tokens.
+    fallback() external payable {}
+
     receive() external payable {}
 }
