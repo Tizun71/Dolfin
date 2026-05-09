@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import hre from "hardhat";
-import { getAddress } from "viem";
+import { getAddress, parseEther } from "viem";
 import assert from "node:assert";
 
 const { viem, networkHelpers } = await hre.network.create();
@@ -15,10 +15,7 @@ describe("DolfinAccount", () => {
     const publicClient = await viem.getPublicClient();
 
     // Install EIP-7702 delegation designator into owner EOA
-    await networkHelpers.setCode(
-      ownerClient.account.address,
-      `0xef0100${dolfin.address.slice(2)}`,
-    );
+    await networkHelpers.setCode(ownerClient.account.address, `0xef0100${dolfin.address.slice(2)}`);
 
     return {
       dolfin,
@@ -30,8 +27,9 @@ describe("DolfinAccount", () => {
 
   describe("executeDirect", () => {
     it("should reject calls from relayer", async () => {
-      const { dolfin, relayerClient, ownerClient } =
-        await networkHelpers.loadFixture(deployDolfinAccountFixture);
+      const { dolfin, relayerClient, ownerClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
 
       await viem.assertions.revertWithCustomError(
         relayerClient.writeContract({
@@ -54,9 +52,7 @@ describe("DolfinAccount", () => {
     });
 
     it("should execute calls from owner", async () => {
-      const { dolfin, ownerClient } = await networkHelpers.loadFixture(
-        deployDolfinAccountFixture,
-      );
+      const { dolfin, ownerClient } = await networkHelpers.loadFixture(deployDolfinAccountFixture);
 
       await viem.assertions.emitWithArgs(
         ownerClient.writeContract({
@@ -83,8 +79,9 @@ describe("DolfinAccount", () => {
     });
 
     it("should execute multiple calls", async () => {
-      const { dolfin, ownerClient, publicClient } =
-        await networkHelpers.loadFixture(deployDolfinAccountFixture);
+      const { dolfin, ownerClient, publicClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
 
       const calls = [
         {
@@ -117,11 +114,7 @@ describe("DolfinAccount", () => {
       });
 
       // Ensure all events emitted
-      assert.equal(
-        logs.length,
-        calls.length,
-        "Unexpected number of CallExecuted events",
-      );
+      assert.equal(logs.length, calls.length, "Unexpected number of CallExecuted events");
 
       // Assert every emitted event
       for (const [index, log] of logs.entries()) {
@@ -148,8 +141,9 @@ describe("DolfinAccount", () => {
     } as const;
 
     it("should reject wrong signer", async () => {
-      const { dolfin, ownerClient, relayerClient } =
-        await networkHelpers.loadFixture(deployDolfinAccountFixture);
+      const { dolfin, ownerClient, relayerClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
 
       // Sign with WRONG signer
       const invalidSignature = await relayerClient.signTypedData({
@@ -198,8 +192,9 @@ describe("DolfinAccount", () => {
     });
 
     it("should reject wrong nonce", async () => {
-      const { dolfin, ownerClient, relayerClient } =
-        await networkHelpers.loadFixture(deployDolfinAccountFixture);
+      const { dolfin, ownerClient, relayerClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
 
       // Sign with WRONG nonce
       const invalidSignature = await ownerClient.signTypedData({
@@ -248,9 +243,7 @@ describe("DolfinAccount", () => {
     });
 
     it("should execute calls with valid signature", async () => {
-      const { dolfin, ownerClient } = await networkHelpers.loadFixture(
-        deployDolfinAccountFixture,
-      );
+      const { dolfin, ownerClient } = await networkHelpers.loadFixture(deployDolfinAccountFixture);
 
       // Sign with correct signer and nonce
       const validSignature = await ownerClient.signTypedData({
@@ -299,9 +292,129 @@ describe("DolfinAccount", () => {
       );
     });
 
+    it("should transfer non-zero value", async () => {
+      const { dolfin, ownerClient, relayerClient, publicClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
+
+      const wallets = await viem.getWalletClients();
+      const recipient = wallets[2].account.address;
+      const value = parseEther("0.1");
+      const balanceBefore = await publicClient.getBalance({
+        address: recipient,
+      });
+
+      const signature = await ownerClient.signTypedData({
+        domain: {
+          name: "DolfinAccount",
+          version: "1",
+          chainId: await ownerClient.getChainId(),
+          verifyingContract: ownerClient.account.address,
+        },
+        types,
+        primaryType: "Execute",
+        message: {
+          calls: [
+            {
+              to: recipient,
+              value,
+              data: "0x",
+            },
+          ],
+          nonce: 0n,
+        },
+      });
+
+      await viem.assertions.emitWithArgs(
+        relayerClient.writeContract({
+          address: ownerClient.account.address,
+          abi: dolfin.abi,
+          functionName: "execute",
+          args: [
+            [
+              {
+                to: recipient,
+                value,
+                data: "0x",
+              },
+            ],
+            signature,
+          ],
+        }),
+        {
+          address: ownerClient.account.address,
+          abi: dolfin.abi,
+        },
+        "CallExecuted",
+        [0n, getAddress(recipient), value, "0x"],
+      );
+
+      const balanceAfter = await publicClient.getBalance({
+        address: recipient,
+      });
+      assert.equal(balanceAfter - balanceBefore, value);
+    });
+
+    it("should revert when balance is insufficient for value", async () => {
+      const { dolfin, ownerClient, relayerClient, publicClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
+
+      const recipient = relayerClient.account.address;
+      const balance = await publicClient.getBalance({
+        address: ownerClient.account.address,
+      });
+      const value = balance + 1n;
+
+      const signature = await ownerClient.signTypedData({
+        domain: {
+          name: "DolfinAccount",
+          version: "1",
+          chainId: await ownerClient.getChainId(),
+          verifyingContract: ownerClient.account.address,
+        },
+        types,
+        primaryType: "Execute",
+        message: {
+          calls: [
+            {
+              to: recipient,
+              value,
+              data: "0x",
+            },
+          ],
+          nonce: 0n,
+        },
+      });
+
+      await viem.assertions.revertWithCustomError(
+        relayerClient.writeContract({
+          address: ownerClient.account.address,
+          abi: dolfin.abi,
+          functionName: "execute",
+          args: [
+            [
+              {
+                to: recipient,
+                value,
+                data: "0x",
+              },
+            ],
+            signature,
+          ],
+        }),
+        {
+          address: ownerClient.account.address,
+          abi: dolfin.abi,
+        },
+        "CallFailed",
+      );
+    });
+
     it("should reject replayed signature", async () => {
-      const { dolfin, ownerClient, relayerClient } =
-        await networkHelpers.loadFixture(deployDolfinAccountFixture);
+      const { dolfin, ownerClient, relayerClient } = await networkHelpers.loadFixture(
+        deployDolfinAccountFixture,
+      );
 
       // Sign with correct signer and nonce
       const validSignature = await ownerClient.signTypedData({
