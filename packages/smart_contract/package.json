@@ -1,6 +1,12 @@
 {
   "name": "@dolfin/smart_contract",
   "type": "module",
+  "scripts": {
+    "build": "hardhat build"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1"
+  },
   "devDependencies": {
     "@types/node": "^22.19.18",
     "hardhat": "^3.4.5",
