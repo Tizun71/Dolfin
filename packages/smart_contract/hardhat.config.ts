@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { defineConfig } from "hardhat/config";
 import hardhatViem from "@nomicfoundation/hardhat-viem";
 import hardhatViemAssertions from "@nomicfoundation/hardhat-viem-assertions";
@@ -15,5 +16,12 @@ export default defineConfig({
   ],
   solidity: {
     version: "0.8.28",
+  },
+  networks: {
+    arbitrumSepolia: {
+      url: "https://arbitrum-sepolia-rpc.publicnode.com",
+      type: "http",
+      accounts: [process.env.PRIVATE_KEY!],
+    },
   },
 });
