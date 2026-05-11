@@ -100,6 +100,9 @@ importers:
 
   packages/smart_contract:
     dependencies:
+      '@aave-dao/aave-address-book':
+        specifier: ^4.49.10
+        version: 4.49.10(viem@2.48.11(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)(zod@3.25.76))
       '@openzeppelin/contracts':
         specifier: ^5.6.1
         version: 5.6.1
@@ -131,6 +134,9 @@ importers:
       hardhat:
         specifier: ^3.4.5
         version: 3.4.5(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
@@ -153,6 +159,11 @@ packages:
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
       typescript: ^5.0.0 || ^6.0.0
+
+  '@aave-dao/aave-address-book@4.49.10':
+    resolution: {integrity: sha512-yNyKic4h/F1MTBBnbSP7ybahBFMtZF+/3DJs9OedddGUfASxyuiVDK45fVsvM+cH9E/lY0dP4jtlqKM/btUE9w==}
+    peerDependencies:
+      viem: ^2.23.5
 
   '@aave/client@0.9.3':
     resolution: {integrity: sha512-kD+emaiO63Sg3SpzWxWlqUwnB1CJNcVcwEPm2q9R14hHHhii4EJ21T3PxFt4k7HFFrybC7Fsactc9nTd1PfsRQ==}
@@ -3837,6 +3848,10 @@ snapshots:
       '@gql.tada/internal': 1.0.9(graphql@16.13.2)(typescript@5.8.3)
       graphql: 16.13.2
       typescript: 5.8.3
+
+  '@aave-dao/aave-address-book@4.49.10(viem@2.48.11(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)(zod@3.25.76))':
+    dependencies:
+      viem: 2.48.11(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)(zod@3.25.76)
 
   '@aave/client@0.9.3(bufferutil@4.1.0)(ethers@6.16.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typescript@5.8.3)(utf-8-validate@6.0.6)(viem@2.48.11(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)(zod@4.3.6))':
     dependencies:
