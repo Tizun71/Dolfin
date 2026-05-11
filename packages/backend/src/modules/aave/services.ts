@@ -6,9 +6,7 @@ import { getLogger } from "@logtape/logtape";
 const aaveClient = AaveClient.create();
 const aaveLogger = getLogger();
 const ARBITRUM_ONE_CHAIN_ID = chainId(42161);
-const ARBITRUM_ONE_MARKET_ADDRESS = evmAddress(
-  "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-);
+const ARBITRUM_ONE_MARKET_ADDRESS = evmAddress("0x794a61358D6845594F94dc1DB02A252b5b4814aD");
 
 function transformReserve(r: Reserve) {
   const si = r.supplyInfo;
