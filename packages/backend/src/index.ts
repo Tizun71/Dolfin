@@ -36,7 +36,7 @@ app.route("/aave", aaveModule);
 serve(
   {
     fetch: app.fetch,
-    port: 8080,
+    port: parseInt(process.env.PORT || "8080"),
     hostname: process.env.HOSTNAME || "localhost",
   },
   (info) => {
