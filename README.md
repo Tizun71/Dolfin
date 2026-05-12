@@ -36,3 +36,17 @@ Run the backend:
 ```bash
 pnpm --filter backend dev
 ```
+
+### Docker
+
+Build frontend:
+
+```bash
+docker build -f docker/frontend.Dockerfile -t dolfin-frontend .
+```
+
+Build backend:
+
+```bash
+docker build -f docker/backend.Dockerfile -t dolfin-backend .
+```
