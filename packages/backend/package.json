@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "tsx --env-file .env --watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@aave/client": "^0.9.3",
@@ -14,6 +16,8 @@
     "@logtape/logtape": "^2.0.5",
     "@privy-io/node": "^0.16.0",
     "ai": "^6.0.168",
+    "cron": "^4.4.0",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.15",
     "pg": "^8.20.0"
