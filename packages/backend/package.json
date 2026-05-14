@@ -9,8 +9,10 @@
     "drizzle:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@aave-dao/aave-address-book": "^4.49.10",
     "@aave/client": "^0.9.3",
     "@aave/graphql": "^0.11.1",
+    "@ai-sdk/google": "^3.0.72",
     "@hono/node-server": "^1.19.14",
     "@logtape/hono": "^2.0.5",
     "@logtape/logtape": "^2.0.5",
@@ -20,7 +22,9 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.15",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "viem": "^2.48.11",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
