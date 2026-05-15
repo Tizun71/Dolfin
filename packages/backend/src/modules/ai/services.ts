@@ -2,6 +2,7 @@ import { tool } from "ai";
 import { z } from "zod";
 import { AaveV3ArbitrumSepolia } from "@aave-dao/aave-address-book";
 import {
+  createPublicClient,
   createWalletClient,
   encodeFunctionData,
   http,
@@ -423,25 +424,39 @@ const agentWallet = createWalletClient({
   transport: http(),
 });
 
+const publicClient = createPublicClient({
+  chain: arbitrumSepolia,
+  transport: http(),
+});
+
+export const userUSDCBalance = tool({
+  description: "Checks the USDC balance of a user on Aave V3 Arbitrum",
+  inputSchema: z.object({
+    user: z.string().describe("The address of the user to check the balance of"),
+  }),
+  execute: async ({ user }) => {
+    const userAddr = user as Address;
+    const USDC = AaveV3ArbitrumSepolia.ASSETS.USDC.UNDERLYING as Address;
+
+    const balance = await publicClient.readContract({
+      address: USDC,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [userAddr],
+    });
+
+    return { balance };
+  },
+});
+
 export const flashLoanUSDC = tool({
   description: "Initiates a flash loan in USDC on Aave V3 Arbitrum",
   inputSchema: z.object({
-    user: z
-      .string()
-      .describe("The address of the user initiating the flash loan"),
+    user: z.string().describe("The address of the user initiating the flash loan"),
     amount: z.bigint().positive().describe("The amount of USDC to borrow"),
-    swapAmount: z
-      .bigint()
-      .positive()
-      .describe("The amount of USDC to swap on Uniswap to get ETH"),
-    supplyAmount: z
-      .bigint()
-      .positive()
-      .describe("The amount of WETH to supply to the pool"),
-    borrowAmount: z
-      .bigint()
-      .positive()
-      .describe("The amount of USDC to borrow from the pool"),
+    swapAmount: z.bigint().positive().describe("The amount of USDC to swap on Uniswap to get ETH"),
+    supplyAmount: z.bigint().positive().describe("The amount of WETH to supply to the pool"),
+    borrowAmount: z.bigint().positive().describe("The amount of USDC to borrow from the pool"),
   }),
   execute: async ({ user, amount, swapAmount, supplyAmount, borrowAmount }) => {
     const userAddr = user as Address;
