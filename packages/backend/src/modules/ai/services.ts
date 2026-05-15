@@ -545,6 +545,15 @@ export const flashLoanUSDC = tool({
               args: [POOL, amount + flashLoanFee],
             }),
           },
+          {
+            to: POOL,
+            value: 0n,
+            data: encodeFunctionData({
+              abi: repayAbi,
+              functionName: "repay",
+              args: [USDC, amount + flashLoanFee, 2n, userAddr],
+            }),
+          },
         ],
       ],
     });
