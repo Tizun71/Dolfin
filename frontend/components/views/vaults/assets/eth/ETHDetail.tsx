@@ -13,6 +13,7 @@ import {
   capabilities,
   automatedActions,
 } from "./ETHData";
+import SetupModal from "./SetupModal";
 
 function toY(val: number) {
   return H - ((val - MIN_VAL) / (MAX_VAL - MIN_VAL)) * H;
@@ -23,12 +24,13 @@ export default function ETHDetail() {
   const { login, authenticated, user } = usePrivy();
   const [isRunning, setIsRunning] = useState(false);
   const [activeTab, setActiveTab] = useState("1w");
+  const [showSetup, setShowSetup] = useState(false);
 
   const handleRun = async () => {
     if (!authenticated) {
       await login();
     } else {
-      setIsRunning(true);
+      setShowSetup(true);
     }
   };
 
@@ -332,6 +334,15 @@ export default function ETHDetail() {
           )}
         </div>
       </div>
+      {showSetup && (
+        <SetupModal
+          onComplete={() => {
+            setShowSetup(false);
+            setIsRunning(true);
+          }}
+          onClose={() => setShowSetup(false)}
+        />
+      )}
     </div>
   );
 }
