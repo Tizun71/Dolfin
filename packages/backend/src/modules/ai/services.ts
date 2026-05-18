@@ -416,6 +416,40 @@ const repayAbi = [
   },
 ] as const;
 
+const wethAbi = [
+  {
+    type: "function",
+    name: "withdraw",
+    stateMutability: "nonpayable",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    outputs: [],
+  },
+] as const;
+
+const wethGatewayAbi = [
+  {
+    type: "function",
+    name: "depositETH",
+    stateMutability: "payable",
+    inputs: [
+      {
+        name: "onBehalfOf",
+        type: "address",
+      },
+      {
+        name: "referralCode",
+        type: "uint16",
+      },
+    ],
+    outputs: [],
+  },
+] as const;
+
 const UNISWAP_SWAP_ROUTER_02 = "0x101F443B4d1b059569D643917553c771E1b9663E";
 
 const agentWallet = createWalletClient({
@@ -428,6 +462,19 @@ const publicClient = createPublicClient({
   chain: arbitrumSepolia,
   transport: http(),
 });
+
+export async function isUserWhitelisted(user: Address): Promise<boolean> {
+  const dolFinAccountAddress = process.env.DOLFIN_ACCOUNT_ADDRESS as Address;
+
+  const isWhitelisted = (await publicClient.readContract({
+    address: dolFinAccountAddress,
+    abi: dolFinABI,
+    functionName: "isWhitelisted",
+    args: [user],
+  })) as boolean;
+
+  return isWhitelisted;
+}
 
 export const userUSDCBalance = tool({
   description: "Checks the USDC balance of a user on Aave V3 Arbitrum",
@@ -450,17 +497,21 @@ export const userUSDCBalance = tool({
 });
 
 export const flashLoanUSDC = tool({
-  description: "Initiates a flash loan in USDC on Aave V3 Arbitrum",
+  description: "Initiates a flash loan in USDC on Aave V3 Arbitrum using the WETH gateway",
   inputSchema: z.object({
     user: z.string().describe("The address of the user initiating the flash loan"),
     amount: z.bigint().positive().describe("The amount of USDC to borrow"),
-    swapAmount: z.bigint().positive().describe("The amount of USDC to swap on Uniswap to get ETH"),
-    supplyAmount: z.bigint().positive().describe("The amount of WETH to supply to the pool"),
+    swapAmount: z.bigint().positive().describe("The amount of USDC to swap on Uniswap to get WETH"),
+    supplyAmount: z
+      .bigint()
+      .positive()
+      .describe("The amount of WETH/ETH to supply to Aave via the WETH gateway"),
     borrowAmount: z.bigint().positive().describe("The amount of USDC to borrow from the pool"),
   }),
   execute: async ({ user, amount, swapAmount, supplyAmount, borrowAmount }) => {
     const userAddr = user as Address;
     const POOL = AaveV3ArbitrumSepolia.POOL as Address;
+    const WETH_GATEWAY = AaveV3ArbitrumSepolia.WETH_GATEWAY as Address;
     const USDC = AaveV3ArbitrumSepolia.ASSETS.USDC.UNDERLYING as Address;
     const WETH = AaveV3ArbitrumSepolia.ASSETS.WETH.UNDERLYING as Address;
 
@@ -472,6 +523,7 @@ export const flashLoanUSDC = tool({
       address: userAddr,
       args: [
         [
+          // 1) take a flash loan from the Pool
           {
             to: POOL,
             value: 0n,
@@ -481,6 +533,7 @@ export const flashLoanUSDC = tool({
               args: [userAddr, USDC, amount, "0x", 0],
             }),
           },
+          // 2) approve USDC for swap
           {
             to: USDC,
             value: 0n,
@@ -490,6 +543,7 @@ export const flashLoanUSDC = tool({
               args: [UNISWAP_SWAP_ROUTER_02 as Address, swapAmount],
             }),
           },
+          // 3) swap USDC -> WETH on Uniswap
           {
             to: UNISWAP_SWAP_ROUTER_02 as Address,
             value: 0n,
@@ -509,24 +563,27 @@ export const flashLoanUSDC = tool({
               ],
             }),
           },
+          // 4) unwrap WETH -> ETH
           {
             to: WETH,
             value: 0n,
             data: encodeFunctionData({
-              abi: erc20Abi,
-              functionName: "approve",
-              args: [POOL, supplyAmount],
+              abi: wethAbi,
+              functionName: "withdraw",
+              args: [supplyAmount],
             }),
           },
+          // 5) deposit ETH to Aave via WETH gateway (payable)
           {
-            to: POOL,
-            value: 0n,
+            to: WETH_GATEWAY,
+            value: supplyAmount,
             data: encodeFunctionData({
-              abi: supplyAbi,
-              functionName: "supply",
-              args: [WETH, supplyAmount, userAddr, 0],
+              abi: wethGatewayAbi,
+              functionName: "depositETH",
+              args: [userAddr, 0],
             }),
           },
+          // 6) borrow USDC from the Pool
           {
             to: POOL,
             value: 0n,
@@ -536,6 +593,7 @@ export const flashLoanUSDC = tool({
               args: [USDC, borrowAmount, 2n, 0, userAddr],
             }),
           },
+          // 7) approve USDC to repay the flash loan
           {
             to: USDC,
             value: 0n,
@@ -545,6 +603,7 @@ export const flashLoanUSDC = tool({
               args: [POOL, amount + flashLoanFee],
             }),
           },
+          // 8) repay the flash loan
           {
             to: POOL,
             value: 0n,
