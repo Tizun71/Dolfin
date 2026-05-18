@@ -35,7 +35,14 @@ export const poolHistoryTable = pgTable("pool_history", {
   created_at: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
-export const strategyInstanceTable = pgTable("strategy", {
+export const strategyTable = pgTable("strategy", {
+  id: bigserial({ mode: "bigint" }).primaryKey(),
+  name: varchar().notNull(),
+  description: text().notNull(),
+  data: jsonb().notNull(),
+});
+
+export const strategyInstanceTable = pgTable("strategy_instance", {
   id: uuid().primaryKey().defaultRandom(),
   user_id: text()
     .notNull()

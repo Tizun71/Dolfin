@@ -1,1 +1,0 @@
-ALTER TABLE "pool_history" ADD CONSTRAINT "pool_history_pool_id_pool_id_fk" FOREIGN KEY ("pool_id") REFERENCES "public"."pool"("id") ON DELETE cascade ON UPDATE no action;
