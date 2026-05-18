@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import { useWallets } from "@privy-io/react-auth";
+import SetupModal from "../SetupModal";
 import {
   chartData,
   W,
@@ -19,12 +21,14 @@ export default function WBTCDetail() {
   const { login, authenticated, user } = usePrivy();
   const [isRunning, setIsRunning] = useState(false);
   const [activeTab, setActiveTab] = useState("1w");
+  const { wallets } = useWallets();
+  const [showSetup, setShowSetup] = useState(false);
 
   const handleRun = async () => {
     if (!authenticated) {
       await login();
     } else {
-      setIsRunning(true);
+      setShowSetup(true); // thay vì setIsRunning(true)
     }
   };
 
@@ -327,6 +331,15 @@ export default function WBTCDetail() {
           )}
         </div>
       </div>
+      {showSetup && (
+        <SetupModal
+          onComplete={() => {
+            setShowSetup(false);
+            setIsRunning(true);
+          }}
+          onClose={() => setShowSetup(false)}
+        />
+      )}
     </div>
   );
 }

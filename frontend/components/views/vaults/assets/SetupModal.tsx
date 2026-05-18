@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { usePrivy } from "@privy-io/react-auth";
 import { useWallets } from "@privy-io/react-auth";
 
 type Step = "sign" | "approve" | "done";

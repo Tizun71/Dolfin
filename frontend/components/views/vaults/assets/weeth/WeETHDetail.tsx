@@ -13,18 +13,20 @@ import {
   automatedActions,
   collateralStats,
 } from "./WeETHData";
+import SetupModal from "../SetupModal";
 
 export default function WeETHDetail() {
   const router = useRouter();
   const { login, authenticated, user } = usePrivy();
   const [isRunning, setIsRunning] = useState(false);
   const [activeTab, setActiveTab] = useState("1w");
+  const [showSetup, setShowSetup] = useState(false);
 
   const handleRun = async () => {
     if (!authenticated) {
       await login();
     } else {
-      setIsRunning(true);
+      setShowSetup(true);
     }
   };
 
@@ -321,6 +323,15 @@ export default function WeETHDetail() {
           )}
         </div>
       </div>
+      {showSetup && (
+        <SetupModal
+          onComplete={() => {
+            setShowSetup(false);
+            setIsRunning(true);
+          }}
+          onClose={() => setShowSetup(false)}
+        />
+      )}
     </div>
   );
 }

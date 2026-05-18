@@ -13,7 +13,7 @@ import {
   capabilities,
   automatedActions,
 } from "./ETHData";
-import SetupModal from "./SetupModal";
+import SetupModal from "../SetupModal";
 
 function toY(val: number) {
   return H - ((val - MIN_VAL) / (MAX_VAL - MIN_VAL)) * H;
