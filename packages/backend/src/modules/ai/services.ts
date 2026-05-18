@@ -496,6 +496,24 @@ export async function hasDelegatedToDolfinAccount(user: Address): Promise<boolea
   return delegatedAddress.toLowerCase() === dolFinAccountAddress.toLowerCase();
 }
 
+export const checkUserEligibility = tool({
+  description:
+    "Checks if a user is eligible to use the Dolfin Account (either by being whitelisted or having delegated their account)",
+  inputSchema: z.object({
+    user: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/)
+      .describe("The address of the user to check eligibility for"),
+  }),
+  execute: async ({ user }) => {
+    const userAddr = user as Address;
+    const whitelisted = await isUserWhitelisted(userAddr);
+    const delegated = await hasDelegatedToDolfinAccount(userAddr);
+
+    return { whitelisted, delegated };
+  },
+});
+
 export const userUSDCBalance = tool({
   description: "Checks the USDC balance of a user on Aave V3 Arbitrum",
   inputSchema: z.object({
