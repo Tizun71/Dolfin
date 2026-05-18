@@ -41,12 +41,8 @@
           "name": "pool_history_pool_id_pool_id_fk",
           "tableFrom": "pool_history",
           "tableTo": "pool",
-          "columnsFrom": [
-            "pool_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["pool_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -99,9 +95,7 @@
         "pool_address_unique": {
           "name": "pool_address_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "address"
-          ]
+          "columns": ["address"]
         }
       },
       "policies": {},
@@ -146,12 +140,8 @@
           "name": "strategy_instance_user_id_user_id_fk",
           "tableFrom": "strategy_instance",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -237,9 +227,7 @@
         "user_wallet_address_unique": {
           "name": "user_wallet_address_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "wallet_address"
-          ]
+          "columns": ["wallet_address"]
         }
       },
       "policies": {},
