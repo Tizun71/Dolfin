@@ -15,6 +15,20 @@
       "when": 1778495000155,
       "tag": "0001_tiresome_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779089407508,
+      "tag": "0002_exotic_vin_gonzales",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779092700851,
+      "tag": "0003_mean_karma",
+      "breakpoints": true
     }
   ]
 }
