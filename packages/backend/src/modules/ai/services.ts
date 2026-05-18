@@ -5,6 +5,7 @@ import {
   createPublicClient,
   createWalletClient,
   encodeFunctionData,
+  getAddress,
   http,
   type Address,
 } from "viem";
@@ -474,6 +475,25 @@ export async function isUserWhitelisted(user: Address): Promise<boolean> {
   })) as boolean;
 
   return isWhitelisted;
+}
+
+export async function hasDelegatedToDolfinAccount(user: Address): Promise<boolean> {
+  const dolFinAccountAddress = process.env.DOLFIN_ACCOUNT_ADDRESS as Address;
+  const code = await publicClient.getCode({ address: user });
+
+  if (!code || code === "0x") {
+    // Externally owned account, cannot delegate
+    return false;
+  }
+
+  // Not EIP-7702 delegation code
+  if (!code.startsWith("0xef0100")) {
+    return false;
+  }
+
+  const delegatedAddress = getAddress(`0x${code.slice(8)}`);
+
+  return delegatedAddress.toLowerCase() === dolFinAccountAddress.toLowerCase();
 }
 
 export const userUSDCBalance = tool({
