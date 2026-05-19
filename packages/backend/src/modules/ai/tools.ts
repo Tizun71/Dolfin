@@ -56,6 +56,26 @@ export const userUSDCBalance = tool({
   },
 });
 
+export const userWETHBalance = tool({
+  description: "Checks the WETH balance of a user on Aave V3 Arbitrum",
+  inputSchema: z.object({
+    user: z.string().describe("The address of the user to check the balance of"),
+  }),
+  execute: async ({ user }) => {
+    const userAddr = user as Address;
+    const WETH = AaveV3ArbitrumSepolia.ASSETS.WETH.UNDERLYING as Address;
+
+    const balance = await publicClient.readContract({
+      address: WETH,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [userAddr],
+    });
+
+    return { balance };
+  },
+});
+
 export const flashLoanUSDC = tool({
   description: "Initiates a flash loan in USDC on Aave V3 Arbitrum using the WETH gateway",
   inputSchema: z.object({
