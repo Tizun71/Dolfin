@@ -1,10 +1,4 @@
-import {
-  createPublicClient,
-  createWalletClient,
-  getAddress,
-  http,
-  type Address,
-} from "viem";
+import { createPublicClient, createWalletClient, getAddress, http, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrumSepolia } from "viem/chains";
 

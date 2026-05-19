@@ -2,6 +2,7 @@ import { tool } from "ai";
 import { z } from "zod";
 import { AaveV3ArbitrumSepolia } from "@aave-dao/aave-address-book";
 import { encodeFunctionData, type Address } from "viem";
+import { getArbitrumMarketData } from "../aave/services.js";
 import {
   agentWallet,
   borrowAbi,
@@ -17,6 +18,16 @@ import {
   wethAbi,
   wethGatewayAbi,
 } from "./services.js";
+
+const AAVE_FLASH_LOAN_PREMIUM_ABI = [
+  {
+    type: "function",
+    name: "FLASHLOAN_PREMIUM_TOTAL",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint128" }],
+  },
+] as const;
 
 export const checkUserEligibility = tool({
   description:
@@ -198,5 +209,100 @@ export const flashLoanUSDC = tool({
     });
 
     return { txHash };
+  },
+});
+
+export const lendingProtocolTVL = tool({
+  description: "Get TVL (USD) for Aave lending market.",
+  inputSchema: z.object({}),
+  execute: async () => {
+    const marketData = await getArbitrumMarketData();
+    return {
+      protocol: "aave",
+      source: "aave_market_data",
+      market: {
+        name: marketData.name,
+        address: marketData.address,
+        chain: marketData.chain,
+      },
+      totalMarketSize: marketData.totalMarketSize,
+      totalAvailableLiquidity: marketData.totalAvailableLiquidity,
+    };
+  },
+});
+
+export const currentAaveFlashLoanRate = tool({
+  description: "Get current flash loan premium rate from Aave Pool on Arbitrum Sepolia.",
+  inputSchema: z.object({}),
+  execute: async () => {
+    const premiumTotal = await publicClient.readContract({
+      address: AaveV3ArbitrumSepolia.POOL as Address,
+      abi: AAVE_FLASH_LOAN_PREMIUM_ABI,
+      functionName: "FLASHLOAN_PREMIUM_TOTAL",
+    });
+
+    return {
+      flashLoanPremiumBps: Number(premiumTotal),
+      flashLoanPremiumPercent: Number(premiumTotal) / 100,
+      formula: "fee = amount * bps / 10000",
+    };
+  },
+});
+
+export const averageGasPrice = tool({
+  description:
+    "Get average gas price from recent blocks and current gas price on Arbitrum Sepolia.",
+  inputSchema: z.object({
+    blockCount: z
+      .number()
+      .int()
+      .min(2)
+      .max(100)
+      .default(20)
+      .describe("Number of recent blocks to average"),
+  }),
+  execute: async ({ blockCount }) => {
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount,
+      rewardPercentiles: [50],
+    });
+
+    const totalWei = feeHistory.baseFeePerGas.reduce((sum, baseFee, i) => {
+      const reward = feeHistory.reward?.[i]?.[0] ?? 0n;
+      return sum + baseFee + reward;
+    }, 0n);
+
+    const avgWei = totalWei / BigInt(feeHistory.baseFeePerGas.length || 1);
+    const currentWei = await publicClient.getGasPrice();
+
+    return {
+      chain: publicClient.chain?.name,
+      sampleSize: feeHistory.baseFeePerGas.length,
+      averageGasPriceWei: avgWei,
+      averageGasPriceGwei: Number(avgWei) / 1e9,
+      currentGasPriceWei: currentWei,
+      currentGasPriceGwei: Number(currentWei) / 1e9,
+    };
+  },
+});
+
+export const userWalletBalance = tool({
+  description: "Get user native ETH wallet balance on Arbitrum Sepolia.",
+  inputSchema: z.object({
+    user: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/)
+      .describe("Wallet address to inspect"),
+  }),
+  execute: async ({ user }) => {
+    const userAddr = user as Address;
+    const balance = await publicClient.getBalance({ address: userAddr });
+
+    return {
+      asset: "ETH",
+      chain: publicClient.chain?.name,
+      user: userAddr,
+      balance,
+    };
   },
 });
