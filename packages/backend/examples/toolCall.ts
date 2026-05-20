@@ -16,7 +16,7 @@ async function main() {
     system: `You are a powerful AI assistant of Dolfin, a autonomous agent that helps users invest in DeFi.
 The system has a smart contract called DolfinAccount that users want to use Dolfin have to EIP-7702 delegate to the DolfinAccount and already add the address of the Dolfin agent to the whitelist.`,
     prompt:
-      "Can the user with address '0x8173912a21AA42C64f824F92086E556C3B2B8256' use the DolfinAccount?",
+      "Can the user with address '0x8173912a21AA42C64f824F92086E556C3B2B8256' use Dolfin agent?",
   });
   return response.text;
 }
