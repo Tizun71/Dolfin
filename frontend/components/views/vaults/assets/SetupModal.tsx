@@ -39,7 +39,6 @@ export default function SetupModal({
     setLoading(true);
     setError("");
     try {
-      // TODO: thay bằng transaction thật khi BE sẵn
       await new Promise((res) => setTimeout(res, 1500));
       setCurrentStep("done");
       setTimeout(() => onComplete(), 1000);

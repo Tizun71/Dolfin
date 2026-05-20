@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import {
@@ -14,13 +14,20 @@ import {
   collateralStats,
 } from "./WeETHData";
 import SetupModal from "../SetupModal";
+import { useAssetSetup } from "@/hooks/useAssetSetup";
 
 export default function WeETHDetail() {
   const router = useRouter();
-  const { login, authenticated, user } = usePrivy();
-  const [isRunning, setIsRunning] = useState(false);
+  const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
-  const [showSetup, setShowSetup] = useState(false);
+  const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
+    useAssetSetup("WeETH");
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      onReset();
+    }
+  }, [ready, authenticated]);
 
   const handleRun = async () => {
     if (!authenticated) {
@@ -323,15 +330,7 @@ export default function WeETHDetail() {
           )}
         </div>
       </div>
-      {showSetup && (
-        <SetupModal
-          onComplete={() => {
-            setShowSetup(false);
-            setIsRunning(true);
-          }}
-          onClose={() => setShowSetup(false)}
-        />
-      )}
+      {showSetup && <SetupModal onComplete={onComplete} onClose={onClose} />}
     </div>
   );
 }

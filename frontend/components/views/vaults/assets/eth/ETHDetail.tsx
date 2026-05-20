@@ -22,16 +22,16 @@ function toY(val: number) {
 
 export default function ETHDetail() {
   const router = useRouter();
-  const { login, authenticated, user } = usePrivy();
+  const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
     useAssetSetup("ETH");
 
   useEffect(() => {
-    if (!authenticated) {
+    if (ready && !authenticated) {
       onReset();
     }
-  }, [authenticated]);
+  }, [ready, authenticated]);
 
   const handleRun = async () => {
     if (!authenticated) {

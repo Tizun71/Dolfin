@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useWallets } from "@privy-io/react-auth";
 import SetupModal from "../SetupModal";
 import {
   chartData,
@@ -15,20 +14,26 @@ import {
   automatedActions,
   collateralStats,
 } from "./WBTCData";
+import { useAssetSetup } from "@/hooks/useAssetSetup";
 
 export default function WBTCDetail() {
   const router = useRouter();
-  const { login, authenticated, user } = usePrivy();
-  const [isRunning, setIsRunning] = useState(false);
+  const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
-  const { wallets } = useWallets();
-  const [showSetup, setShowSetup] = useState(false);
+  const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
+    useAssetSetup("WBTC");
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      onReset();
+    }
+  }, [ready, authenticated]);
 
   const handleRun = async () => {
     if (!authenticated) {
       await login();
     } else {
-      setShowSetup(true); // thay vì setIsRunning(true)
+      setShowSetup(true);
     }
   };
 
@@ -331,15 +336,7 @@ export default function WBTCDetail() {
           )}
         </div>
       </div>
-      {showSetup && (
-        <SetupModal
-          onComplete={() => {
-            setShowSetup(false);
-            setIsRunning(true);
-          }}
-          onClose={() => setShowSetup(false)}
-        />
-      )}
+      {showSetup && <SetupModal onComplete={onComplete} onClose={onClose} />}
     </div>
   );
 }
