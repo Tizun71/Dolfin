@@ -1,5 +1,5 @@
 import { createPublicClient, createWalletClient, getAddress, http, type Address } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount, privateKeyToAddress } from "viem/accounts";
 import { arbitrumSepolia } from "viem/chains";
 
 export const dolFinABI = [
@@ -470,14 +470,14 @@ export const publicClient = createPublicClient({
   transport: http(),
 });
 
-export async function isUserWhitelisted(user: Address): Promise<boolean> {
-  const dolFinAccountAddress = process.env.DOLFIN_ACCOUNT_ADDRESS as Address;
+export async function isAgentWhitelisted(user: Address): Promise<boolean> {
+  const agentWalletAddress = privateKeyToAddress(process.env.AGENT_PRIVATE_KEY as Address);
 
   const isWhitelisted = (await publicClient.readContract({
-    address: dolFinAccountAddress,
+    address: user,
     abi: dolFinABI,
     functionName: "isWhitelisted",
-    args: [user],
+    args: [agentWalletAddress],
   })) as boolean;
 
   return isWhitelisted;

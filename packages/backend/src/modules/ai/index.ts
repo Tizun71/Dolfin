@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { hasDelegatedToDolfinAccount, isUserWhitelisted } from "./services.js";
+import { hasDelegatedToDolfinAccount, isAgentWhitelisted } from "./services.js";
 import type { Address } from "viem";
 
 const aiModule = new Hono();
@@ -19,7 +19,7 @@ aiModule.get(
 
     return c.json({
       delegated: await hasDelegatedToDolfinAccount(address as Address),
-      whitelisted: await isUserWhitelisted(address as Address),
+      whitelisted: await isAgentWhitelisted(address as Address),
     });
   },
 );

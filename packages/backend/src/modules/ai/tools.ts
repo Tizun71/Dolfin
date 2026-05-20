@@ -10,7 +10,7 @@ import {
   flashLoanSimpleAbi,
   dolFinABI,
   hasDelegatedToDolfinAccount,
-  isUserWhitelisted,
+  isAgentWhitelisted,
   publicClient,
   repayAbi,
   swapRouterAbi,
@@ -40,7 +40,7 @@ export const checkUserEligibility = tool({
   }),
   execute: async ({ user }) => {
     const userAddr = user as Address;
-    const whitelisted = await isUserWhitelisted(userAddr);
+    const whitelisted = await isAgentWhitelisted(userAddr);
     const delegated = await hasDelegatedToDolfinAccount(userAddr);
 
     return { whitelisted, delegated };
