@@ -21,7 +21,7 @@ export default function SetupModal({
     setLoading(true);
     setError("");
     try {
-      const wallet = wallets[0]; // lấy ví đầu tiên đang connect
+      const wallet = wallets[0];
       const provider = await wallet.getEthereumProvider();
       await provider.request({
         method: "personal_sign",
@@ -39,12 +39,8 @@ export default function SetupModal({
     setLoading(true);
     setError("");
     try {
-      //Chờ địa chỉ GMX Router contract
-      await sendTransaction({
-        to: "0xGMX_ROUTER_ADDRESS",
-        data: "0x",
-        value: "0x0",
-      });
+      // TODO: thay bằng transaction thật khi BE sẵn
+      await new Promise((res) => setTimeout(res, 1500));
       setCurrentStep("done");
       setTimeout(() => onComplete(), 1000);
     } catch (e) {

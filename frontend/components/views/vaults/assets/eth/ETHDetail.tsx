@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import {
   automatedActions,
 } from "./ETHData";
 import SetupModal from "../SetupModal";
+import { useAssetSetup } from "@/hooks/useAssetSetup";
 
 function toY(val: number) {
   return H - ((val - MIN_VAL) / (MAX_VAL - MIN_VAL)) * H;
@@ -22,9 +23,15 @@ function toY(val: number) {
 export default function ETHDetail() {
   const router = useRouter();
   const { login, authenticated, user } = usePrivy();
-  const [isRunning, setIsRunning] = useState(false);
   const [activeTab, setActiveTab] = useState("1w");
-  const [showSetup, setShowSetup] = useState(false);
+  const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
+    useAssetSetup("ETH");
+
+  useEffect(() => {
+    if (!authenticated) {
+      onReset();
+    }
+  }, [authenticated]);
 
   const handleRun = async () => {
     if (!authenticated) {
@@ -334,15 +341,7 @@ export default function ETHDetail() {
           )}
         </div>
       </div>
-      {showSetup && (
-        <SetupModal
-          onComplete={() => {
-            setShowSetup(false);
-            setIsRunning(true);
-          }}
-          onClose={() => setShowSetup(false)}
-        />
-      )}
+      {showSetup && <SetupModal onComplete={onComplete} onClose={onClose} />}
     </div>
   );
 }
