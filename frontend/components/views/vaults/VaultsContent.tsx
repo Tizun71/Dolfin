@@ -90,7 +90,7 @@ export default function VaultsContent() {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans px-6 md:px-12 py-10">
-      <div className="max-w-[1280px] mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-10 border-b border-[#1a1a1a] pb-10">
           <p className="text-[#444] text-xs uppercase tracking-[3px] mb-3 font-mono">

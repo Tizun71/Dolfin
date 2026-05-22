@@ -21,7 +21,13 @@ export default function WeETHDetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("WeETH");
+    useAssetSetup("WEETH", {
+      name: "Wrapped eETH",
+      apy: 0.009,
+      totalSupplied: "$2.71B",
+      utilizationRate: "0.005%",
+      lastAction: "Monitoring weETH price movements...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {

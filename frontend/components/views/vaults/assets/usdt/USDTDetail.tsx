@@ -20,7 +20,13 @@ export default function USDTDetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("USDT");
+    useAssetSetup("USDT", {
+      name: "Tether USD",
+      apy: 4.91,
+      totalSupplied: "$643.33M",
+      utilizationRate: "92.33%",
+      lastAction: "Stablecoin yield monitoring in progress...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {

@@ -21,7 +21,13 @@ export default function WBTCDetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("WBTC");
+    useAssetSetup("WBTC", {
+      name: "Wrapped Bitcoin",
+      apy: 0.37,
+      totalSupplied: "$2.42B",
+      utilizationRate: "3.37%",
+      lastAction: "Monitoring BTC price movements...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {

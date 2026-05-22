@@ -20,7 +20,13 @@ export default function SGHODetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("SGHO");
+    useAssetSetup("SGHO", {
+      name: "Savings GHO",
+      apy: 5.66,
+      totalSupplied: "$266.97M",
+      utilizationRate: "N/A",
+      lastAction: "GHO yield optimization in progress...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -229,7 +235,7 @@ export default function SGHODetail() {
                   key={cap.label}
                   className="flex items-start gap-3 border border-[#111] p-4"
                 >
-                  <div className="w-1 min-h-[32px] flex-shrink-0 mt-1 bg-green-500 opacity-60" />
+                  <div className="w-1 min-h-[32px] shrink-0 mt-1 bg-green-500 opacity-60" />
                   <div>
                     <p className="text-white text-sm font-light tracking-wider">
                       {cap.label}

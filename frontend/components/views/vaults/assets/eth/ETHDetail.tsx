@@ -25,7 +25,13 @@ export default function ETHDetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("ETH");
+    useAssetSetup("ETH", {
+      name: "Ethereum",
+      apy: 1.44,
+      totalSupplied: "$4.44B",
+      utilizationRate: "89.98%",
+      lastAction: "Monitoring health factor...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -105,7 +111,7 @@ export default function ETHDetail() {
             </p>
             <div className="flex items-center gap-8">
               {/* Circle */}
-              <div className="relative w-24 h-24 flex-shrink-0">
+              <div className="relative w-24 h-24 shrink-0">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                   <circle
                     cx="50"
@@ -298,7 +304,7 @@ export default function ETHDetail() {
                   key={cap.label}
                   className="flex items-start gap-3 border border-[#111] p-4"
                 >
-                  <div className="w-1 min-h-[32px] flex-shrink-0 mt-1 bg-[#627EEA] opacity-60" />
+                  <div className="w-1 min-h-8 shrink-0 mt-1 bg-[#627EEA] opacity-60" />
                   <div>
                     <p className="text-white text-sm font-light tracking-wider">
                       {cap.label}

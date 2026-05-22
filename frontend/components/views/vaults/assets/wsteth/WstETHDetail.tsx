@@ -21,7 +21,13 @@ export default function WstETHDetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("WstETH");
+    useAssetSetup("WSTETH", {
+      name: "Wrapped stETH",
+      apy: 0.25,
+      totalSupplied: "$1.27B",
+      utilizationRate: "0.22%",
+      lastAction: "Monitoring wstETH price movements...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {

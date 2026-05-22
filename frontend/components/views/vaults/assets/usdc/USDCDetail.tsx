@@ -20,7 +20,13 @@ export default function USDCDetail() {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
   const { isRunning, showSetup, setShowSetup, onComplete, onClose, onReset } =
-    useAssetSetup("USDC");
+    useAssetSetup("USDC", {
+      name: "USD Coin",
+      apy: 4.52,
+      totalSupplied: "$1.84B",
+      utilizationRate: "82.07%",
+      lastAction: "Stablecoin yield monitoring in progress...",
+    });
 
   useEffect(() => {
     if (ready && !authenticated) {
