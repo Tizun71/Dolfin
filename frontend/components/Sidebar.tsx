@@ -2,20 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  BotMessageSquare,
-  ChartArea,
-  Vault,
-} from "lucide-react";
+import { LayoutDashboard, Vault } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Intelligence Console", href: "/chat", icon: BotMessageSquare },
-    { name: "AI Insights", href: "/aiinsights", icon: ChartArea },
     { name: "Vaults", href: "/vaults", icon: Vault },
   ];
 
@@ -28,10 +21,9 @@ export default function Sidebar() {
         </h2>
       </div>
 
-      {/* Điều hướng (Navigation) */}
+      {/*Navigation*/}
       <nav className="flex flex-col space-y-8">
         {navigation.map((item) => {
-          // Kiểm tra xem mục này có đang được chọn hay không
           const isActive = pathname === item.href;
 
           return (

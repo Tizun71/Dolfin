@@ -25,7 +25,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="h-6 w-[1px] bg-[#262626]"></div>
+        <div className="h-6 w-px bg-[#262626]"></div>
 
         {authenticated ? (
           <div className="flex items-center gap-3">
