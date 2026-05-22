@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Vault } from "lucide-react";
+import { LayoutDashboard, Vault, History, Settings, Bell } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -10,6 +10,9 @@ export default function Sidebar() {
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Vaults", href: "/vaults", icon: Vault },
+    { name: "History", href: "/history", icon: History },
+    { name: "Notifications", href: "/notifications", icon: Bell },
+    { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (
@@ -21,10 +24,11 @@ export default function Sidebar() {
         </h2>
       </div>
 
-      {/*Navigation*/}
+      {/* Navigation */}
       <nav className="flex flex-col space-y-8">
         {navigation.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
 
           return (
             <Link
@@ -38,15 +42,13 @@ export default function Sidebar() {
                 className={`w-1 h-1 rounded-full transition-all duration-500 ${
                   isActive
                     ? "bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                    : "bg-transparent group-hover:bg-[#3a3a3a]"
+                    : "bg-transparent"
                 }`}
-              ></span>
-
+              />
               <item.icon
                 size={isActive ? 22 : 20}
                 strokeWidth={isActive ? 1.5 : 1}
               />
-
               <span
                 className={isActive ? "translate-x-1 transition-transform" : ""}
               >
@@ -60,7 +62,7 @@ export default function Sidebar() {
       {/* Version */}
       <div className="mt-auto pt-8 border-t border-[#1a1a1a]">
         <div className="flex items-center gap-6">
-          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
           <span className="text-[#3a3a3a] text-[13px] font-mono uppercase tracking-[2px]">
             System Core v1.0
           </span>
