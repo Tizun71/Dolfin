@@ -157,7 +157,7 @@ export default function HistoryView() {
                 {/* Left: Icon + Info */}
                 <div className="flex items-center gap-4">
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm border flex-shrink-0"
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm border shrink-0"
                     style={{
                       borderColor: `${item.color}44`,
                       color: item.color,
