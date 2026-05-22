@@ -101,7 +101,7 @@ export default function SetupModal({
               >
                 {/* Step number */}
                 <div
-                  className={`w-6 h-6 flex items-center justify-center text-xs font-mono flex-shrink-0 mt-0.5 ${
+                  className={`w-6 h-6 flex items-center justify-center text-xs font-mono mt-0.5 ${
                     isDone
                       ? "bg-green-600 text-white"
                       : isActive
