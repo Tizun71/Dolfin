@@ -235,7 +235,7 @@ export default function SGHODetail() {
                   key={cap.label}
                   className="flex items-start gap-3 border border-[#111] p-4"
                 >
-                  <div className="w-1 min-h-[32px] shrink-0 mt-1 bg-green-500 opacity-60" />
+                  <div className="w-1 min-h-8 shrink-0 mt-1 bg-green-500 opacity-60" />
                   <div>
                     <p className="text-white text-sm font-light tracking-wider">
                       {cap.label}

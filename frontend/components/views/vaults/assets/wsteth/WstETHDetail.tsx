@@ -106,7 +106,7 @@ export default function WstETHDetail() {
               Supply Info
             </p>
             <div className="flex items-center gap-8">
-              <div className="relative w-24 h-24 flex-shrink-0">
+              <div className="relative w-24 h-24 shrink-0">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                   <circle
                     cx="50"
@@ -293,7 +293,7 @@ export default function WstETHDetail() {
                   key={cap.label}
                   className="flex items-start gap-3 border border-[#111] p-4"
                 >
-                  <div className="w-1 min-h-[32px] flex-shrink-0 mt-1 bg-[#00A3FF] opacity-60" />
+                  <div className="w-1 min-h-8 shrink-0 mt-1 bg-[#00A3FF] opacity-60" />
                   <div>
                     <p className="text-white text-sm font-light tracking-wider">
                       {cap.label}
