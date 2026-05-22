@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
-import type { Notification } from "@/hooks/useNotifications";
 
 function timeAgo(timestamp: number): string {
   const diff = Date.now() - timestamp;
@@ -15,9 +14,9 @@ function timeAgo(timestamp: number): string {
 }
 
 const severityConfig = {
-  high: { dot: "bg-red-500", label: "text-red-500" },
-  medium: { dot: "bg-yellow-500", label: "text-yellow-500" },
-  low: { dot: "bg-[#555]", label: "text-[#555]" },
+  high: { dot: "bg-red-500", label: "text-red-400" },
+  medium: { dot: "bg-yellow-500", label: "text-yellow-400" },
+  low: { dot: "bg-[#777]", label: "text-[#999]" },
 };
 
 const typeConfig = {
@@ -56,14 +55,14 @@ export default function NotificationsView() {
       : notifications.filter((n) => n.type === filter);
 
   return (
-    <div className="text-white font-sans">
+    <div className="text-white font-sans antialiased">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
-          <h1 className="text-3xl font-normal uppercase tracking-[4px] text-white mb-2">
+          <h1 className="text-3xl font-medium uppercase tracking-[4px] text-white mb-2">
             Notifications
           </h1>
-          <p className="text-[#444] text-xs font-mono uppercase tracking-[2px]">
+          <p className="text-gray-400 text-sm font-mono uppercase tracking-[2px]">
             {unreadCount > 0
               ? `${unreadCount} unread notifications`
               : "All caught up"}
@@ -73,7 +72,7 @@ export default function NotificationsView() {
         {unreadCount > 0 && (
           <button
             onClick={markAllAsRead}
-            className="px-4 py-2 text-xs font-mono uppercase tracking-[2px] border border-[#333] text-[#666] hover:border-white hover:text-white transition-all duration-300"
+            className="px-4 py-2 text-xs font-mono uppercase tracking-[2px] border border-gray-700 text-gray-300 hover:border-white hover:text-white transition-all duration-300"
           >
             Mark All Read
           </button>
@@ -89,7 +88,7 @@ export default function NotificationsView() {
             className={`px-4 py-2 text-xs font-mono uppercase tracking-[2px] transition-all duration-300 border ${
               filter === f.value
                 ? "border-white text-white bg-white/5"
-                : "border-[#1a1a1a] text-[#444] hover:text-[#999] hover:border-[#333]"
+                : "border-[#1a1a1a] text-gray-400 hover:text-white hover:border-gray-600"
             }`}
           >
             {f.label}
@@ -101,7 +100,7 @@ export default function NotificationsView() {
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="border border-[#1a1a1a] bg-[#050505] p-16 text-center">
-            <p className="text-[#444] text-xs font-mono uppercase tracking-[3px]">
+            <p className="text-gray-500 text-sm font-mono uppercase tracking-[3px]">
               No notifications
             </p>
           </div>
@@ -114,8 +113,8 @@ export default function NotificationsView() {
               <div
                 key={notif.id}
                 onClick={() => markAsRead(notif.id)}
-                className={`border bg-[#050505] px-6 py-5 flex items-start gap-5 cursor-pointer transition-all duration-300 hover:border-[#2a2a2a] ${
-                  notif.read ? "border-[#111] opacity-50" : "border-[#1a1a1a]"
+                className={`border bg-[#050505] px-6 py-5 flex items-start gap-5 cursor-pointer transition-all duration-300 hover:border-gray-700 ${
+                  notif.read ? "border-[#111] opacity-40" : "border-[#1a1a1a]"
                 }`}
               >
                 {/* Severity dot */}
@@ -125,35 +124,36 @@ export default function NotificationsView() {
 
                 {/* Content */}
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
+                  <div className="flex items-center gap-3 mb-1.5">
                     {/* Asset icon */}
                     {asset && (
                       <div
                         className="w-5 h-5 rounded-full flex items-center justify-center text-xs border shrink-0"
                         style={{
-                          borderColor: `${asset.color}44`,
+                          borderColor: `${asset.color}66`,
                           color: asset.color,
                         }}
                       >
                         {asset.icon}
                       </div>
                     )}
-                    <p className="text-white text-sm font-light tracking-wider">
+                    <p className="text-white text-sm font-normal tracking-wider">
                       {notif.title}
                     </p>
                     {!notif.read && (
                       <span className="w-1.5 h-1.5 rounded-full bg-white" />
                     )}
                   </div>
-                  <p className="text-[#555] text-xs font-mono leading-relaxed mb-2">
+                  <p className="text-gray-300 text-sm font-sans leading-relaxed mb-3">
                     {notif.message}
                   </p>
+
                   <div className="flex items-center gap-4">
-                    <span className="text-[#333] text-xs font-mono uppercase tracking-[2px]">
+                    <span className="text-gray-400 text-xs font-mono uppercase tracking-[2px]">
                       {typeConfig[notif.type].label}
                     </span>
-                    <span className="text-[#222] text-xs font-mono">·</span>
-                    <span className="text-[#333] text-xs font-mono">
+                    <span className="text-gray-600 text-xs font-mono">·</span>
+                    <span className="text-gray-500 text-xs font-mono">
                       {timeAgo(notif.timestamp)}
                     </span>
                   </div>

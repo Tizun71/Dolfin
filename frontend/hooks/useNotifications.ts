@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export interface Notification {
+export interface DolfinNotification {
   id: string;
   type: "alert" | "strategy" | "system";
   title: string;
@@ -11,7 +11,7 @@ export interface Notification {
   severity: "high" | "medium" | "low";
 }
 
-const mockNotifications: Notification[] = [
+const mockNotifications: DolfinNotification[] = [
   {
     id: "notif-001",
     type: "alert",
@@ -66,7 +66,7 @@ const mockNotifications: Notification[] = [
 const STORAGE_KEY = "dolfin_notifications";
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<DolfinNotification[]>([]);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
