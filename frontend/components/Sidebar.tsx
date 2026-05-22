@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Vault, History, Settings, Bell } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { unreadCount } = useNotifications();
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -45,10 +47,20 @@ export default function Sidebar() {
                     : "bg-transparent"
                 }`}
               />
-              <item.icon
-                size={isActive ? 22 : 20}
-                strokeWidth={isActive ? 1.5 : 1}
-              />
+
+              {/* Icon + Badge */}
+              <div className="relative">
+                <item.icon
+                  size={isActive ? 22 : 20}
+                  strokeWidth={isActive ? 1.5 : 1}
+                />
+                {item.href === "/notifications" && unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-red-500 rounded-full flex items-center justify-center text-[8px] font-mono text-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </div>
+
               <span
                 className={isActive ? "translate-x-1 transition-transform" : ""}
               >
