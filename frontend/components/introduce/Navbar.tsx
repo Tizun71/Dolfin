@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LogoDolfin from "@/components/shared/LogoDolfin";
+import Link from "next/link";
 
 export default function Navbar() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function Navbar() {
 
         {/* Nav links */}
         <nav className="flex items-center gap-10">
-          <a
+          <Link
             href="#devs"
             onClick={(e) => {
               e.preventDefault();
@@ -54,13 +55,14 @@ export default function Navbar() {
             className="text-[#666] text-sm font-mono uppercase tracking-[4px] hover:text-white transition-colors duration-300"
           >
             Devs
-          </a>
-          <a
+          </Link>
+
+          <Link
             href="#"
             className="text-[#666] text-sm font-mono uppercase tracking-[4px] hover:text-white transition-colors duration-300"
           >
             Docs
-          </a>
+          </Link>
         </nav>
 
         {/* Right side */}
