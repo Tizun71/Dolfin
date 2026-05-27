@@ -52,18 +52,18 @@ export default function PreferencesSection() {
   ];
 
   return (
-    <div className="border border-[#1a1a1a] bg-[#050505] p-8">
+    <div className="border border-[#222] bg-[#0a0a0a] p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 border-b border-[#1a1a1a] pb-4">
-        <h2 className="text-xs font-mono uppercase tracking-[3px] text-[#444]">
+      <div className="flex items-center justify-between mb-8 border-b border-[#222] pb-4">
+        <h2 className="text-sm font-mono uppercase tracking-[2px] text-[#999] font-semibold">
           Preferences
         </h2>
         <button
           onClick={handleSave}
-          className={`px-4 py-2 text-xs font-mono uppercase tracking-[2px] transition-all duration-300 border ${
+          className={`px-5 py-2 text-sm font-mono uppercase tracking-[1.5px] font-medium transition-all duration-300 border ${
             saved
-              ? "border-green-600 text-green-400 bg-green-600/10"
-              : "border-[#333] text-[#666] hover:border-white hover:text-white"
+              ? "border-green-600 text-green-300 bg-green-600/15"
+              : "border-[#444] text-[#aaa] hover:border-white hover:text-white"
           }`}
         >
           {saved ? "✓ Saved" : "Save Changes"}
@@ -71,31 +71,33 @@ export default function PreferencesSection() {
       </div>
 
       {/* Toggle Items */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {items.map((item) => (
           <div
             key={item.key}
-            className="flex items-center justify-between border border-[#111] p-4"
+            className="flex items-center justify-between border border-[#222] p-5 hover:border-[#333] transition-colors duration-200"
           >
             <div>
-              <p className="text-white text-sm font-light tracking-wider mb-1">
+              <p className="text-[#f0f0f0] text-sm font-mono font-medium tracking-wide mb-1.5">
                 {item.label}
               </p>
-              <p className="text-[#444] text-xs font-mono">{item.desc}</p>
+              <p className="text-[#666] text-xs font-mono font-medium">
+                {item.desc}
+              </p>
             </div>
 
             {/* Toggle */}
             <button
               onClick={() => handleToggle(item.key)}
-              className={`relative w-10 h-5 transition-all duration-300 border ${
+              className={`relative w-11 h-6 transition-all duration-300 border ${
                 prefs[item.key]
                   ? "border-white bg-white/10"
-                  : "border-[#333] bg-transparent"
+                  : "border-[#444] bg-transparent"
               }`}
             >
               <span
-                className={`absolute top-0.5 w-3.5 h-3.5 transition-all duration-300 ${
-                  prefs[item.key] ? "left-5 bg-white" : "left-0.5 bg-[#444]"
+                className={`absolute top-0.5 w-4 h-4 transition-all duration-300 ${
+                  prefs[item.key] ? "left-5.5 bg-white" : "left-0.5 bg-[#666]"
                 }`}
               />
             </button>

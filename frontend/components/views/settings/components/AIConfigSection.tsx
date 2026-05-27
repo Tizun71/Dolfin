@@ -36,18 +36,18 @@ export default function AIConfigSection() {
   ];
 
   return (
-    <div className="border border-[#1a1a1a] bg-[#050505] p-8">
+    <div className="border border-[#222] bg-[#0a0a0a] p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 border-b border-[#1a1a1a] pb-4">
-        <h2 className="text-xs font-mono uppercase tracking-[3px] text-[#444]">
+      <div className="flex items-center justify-between mb-8 border-b border-[#222] pb-4">
+        <h2 className="text-sm font-mono uppercase tracking-[2px] text-[#999] font-semibold">
           AI Configuration
         </h2>
         <button
           onClick={handleSave}
-          className={`px-4 py-2 text-xs font-mono uppercase tracking-[2px] transition-all duration-300 border ${
+          className={`px-5 py-2 text-sm font-mono uppercase tracking-[1.5px] font-medium transition-all duration-300 border ${
             saved
-              ? "border-green-600 text-green-400 bg-green-600/10"
-              : "border-[#333] text-[#666] hover:border-white hover:text-white"
+              ? "border-green-600 text-green-300 bg-green-600/15"
+              : "border-[#444] text-[#aaa] hover:border-white hover:text-white"
           }`}
         >
           {saved ? "✓ Saved" : "Save Changes"}
@@ -57,7 +57,7 @@ export default function AIConfigSection() {
       <div className="space-y-8">
         {/* Rebalance Frequency */}
         <div>
-          <p className="text-[#444] text-xs font-mono uppercase tracking-[2px] mb-4">
+          <p className="text-[#888] text-xs font-mono uppercase tracking-[1.5px] mb-4 font-medium">
             Rebalance Frequency
           </p>
           <div className="flex gap-3">
@@ -65,10 +65,10 @@ export default function AIConfigSection() {
               <button
                 key={f.value}
                 onClick={() => setFrequency(f.value)}
-                className={`px-4 py-2 text-xs font-mono uppercase tracking-[2px] transition-all duration-300 border ${
+                className={`px-5 py-2.5 text-sm font-mono uppercase tracking-[1.5px] font-medium transition-all duration-300 border ${
                   frequency === f.value
-                    ? "border-white text-white bg-white/5"
-                    : "border-[#1a1a1a] text-[#444] hover:text-[#999] hover:border-[#333]"
+                    ? "border-white text-white bg-white/8"
+                    : "border-[#333] text-[#777] hover:text-[#bbb] hover:border-[#555]"
                 }`}
               >
                 {f.label}
@@ -79,7 +79,7 @@ export default function AIConfigSection() {
 
         {/* Risk Level */}
         <div>
-          <p className="text-[#444] text-xs font-mono uppercase tracking-[2px] mb-4">
+          <p className="text-[#888] text-xs font-mono uppercase tracking-[1.5px] mb-4 font-medium">
             Risk Level
           </p>
           <div className="grid grid-cols-3 gap-3">
@@ -87,20 +87,26 @@ export default function AIConfigSection() {
               <button
                 key={r.value}
                 onClick={() => setRisk(r.value)}
-                className={`p-4 text-left border transition-all duration-300 ${
+                className={`p-5 text-left border transition-all duration-300 ${
                   risk === r.value
                     ? "border-white bg-white/5"
-                    : "border-[#1a1a1a] hover:border-[#333]"
+                    : "border-[#222] hover:border-[#444]"
                 }`}
               >
                 <p
-                  className={`text-xs font-mono uppercase tracking-[2px] mb-1 ${
-                    risk === r.value ? "text-white" : "text-[#444]"
+                  className={`text-sm font-mono uppercase tracking-[1.5px] mb-2 font-semibold ${
+                    risk === r.value ? "text-white" : "text-[#777]"
                   }`}
                 >
                   {r.label}
                 </p>
-                <p className="text-[#333] text-xs font-mono">{r.desc}</p>
+                <p
+                  className={`text-xs font-mono font-medium ${
+                    risk === r.value ? "text-[#aaa]" : "text-[#555]"
+                  }`}
+                >
+                  {r.desc}
+                </p>
               </button>
             ))}
           </div>

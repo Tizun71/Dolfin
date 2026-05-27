@@ -13,12 +13,22 @@ export default function AssetPage({
   params: Promise<{ asset: string }>;
 }) {
   const { asset } = use(params);
-
-  if (asset === "eth") return <ETHDetail />;
-  if (asset === "sgho") return <SGHODetail />;
-  if (asset === "weeth") return <WeETHDetail />;
-  if (asset === "wbtc") return <WBTCDetail />;
-  if (asset === "usdc") return <USDCDetail />;
-  if (asset === "usdt") return <USDTDetail />;
-  if (asset === "wsteth") return <WstETHDetail />;
+  switch (asset) {
+    case "eth":
+      return <ETHDetail />;
+    case "sgho":
+      return <SGHODetail />;
+    case " weeth":
+      return <WeETHDetail />;
+    case "wbtc":
+      return <WBTCDetail />;
+    case "usdc":
+      return <USDCDetail />;
+    case "usdt":
+      return <USDTDetail />;
+    case "wsteth":
+      return <WstETHDetail />;
+    default:
+      return null;
+  }
 }
