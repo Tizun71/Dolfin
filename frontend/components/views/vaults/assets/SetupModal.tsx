@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useWallets } from "@privy-io/react-auth";
 import { SETUP_STEPS, STEP_INDEX } from "@/constants/vaults";
-
-type Step = "sign" | "approve" | "done";
+import { useDolfinAccount } from "@/hooks/useDolfinAccount";
 
 export default function SetupModal({
   onComplete,
@@ -13,42 +10,8 @@ export default function SetupModal({
   onComplete: () => void;
   onClose: () => void;
 }) {
-  const { wallets } = useWallets();
-  const [currentStep, setCurrentStep] = useState<Step>("sign");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSign = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const wallet = wallets[0];
-      const provider = await wallet.getEthereumProvider();
-      await provider.request({
-        method: "personal_sign",
-        params: ["Authorize Dolfin flash loan strategy", wallet.address],
-      });
-      setCurrentStep("approve");
-    } catch (e) {
-      setError("Ký thất bại, thử lại.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleApprove = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      await new Promise((res) => setTimeout(res, 1500));
-      setCurrentStep("done");
-      setTimeout(() => onComplete(), 1000);
-    } catch (e) {
-      setError("Approve thất bại, thử lại.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { currentStep, loading, error, handleSign, handleApprove } =
+    useDolfinAccount(onComplete);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
