@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useWallets } from "@privy-io/react-auth";
+import { SETUP_STEPS, STEP_INDEX } from "@/constants/vaults";
 
 type Step = "sign" | "approve" | "done";
 
@@ -49,22 +50,6 @@ export default function SetupModal({
     }
   };
 
-  const steps = [
-    {
-      id: "sign",
-      label: "Sign Authorization",
-      desc: "Ký uỷ quyền offchain — miễn phí, không tốn gas",
-    },
-    {
-      id: "approve",
-      label: "Approve Token",
-      desc: "Cho phép GMX Router dùng token — tốn gas nhỏ",
-    },
-    { id: "done", label: "Done", desc: "Hoàn tất, strategy sẵn sàng chạy" },
-  ];
-
-  const stepIndex = { sign: 0, approve: 1, done: 2 };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
       <div className="bg-[#050505] border border-[#1a1a1a] w-full max-w-md p-8">
@@ -83,8 +68,8 @@ export default function SetupModal({
 
         {/* Steps */}
         <div className="space-y-4 mb-8">
-          {steps.map((step, i) => {
-            const current = stepIndex[currentStep];
+          {SETUP_STEPS.map((step, i) => {
+            const current = STEP_INDEX[currentStep];
             const isDone = i < current;
             const isActive = i === current;
 

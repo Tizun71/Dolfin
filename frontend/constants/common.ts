@@ -1,0 +1,36 @@
+export const ITEMS_DEVS = [
+  {
+    icon: "🔒",
+    title: "Security",
+    desc: "Find and report vulnerabilities, receive generous rewards.",
+    href: "#",
+  },
+  {
+    icon: "💻",
+    title: "SDK",
+    desc: "Utilize our SDK to streamline frontend development and enhance user experiences.",
+    href: "#",
+  },
+  {
+    icon: "🐙",
+    title: "Github",
+    desc: "Explore our open-source repository for collaborative development.",
+    href: "https://github.com/Tizun71/Dolfin",
+  },
+  {
+    icon: "📄",
+    title: "Developer Docs",
+    desc: "Access comprehensive documentation for seamless API integration.",
+    href: "#",
+  },
+];
+
+export const ASSET_CONFIG: Record<string, { icon: string; color: string }> = {
+  eth: { icon: "Ξ", color: "#627EEA" },
+  sgho: { icon: "◎", color: "#22c55e" },
+  usdc: { icon: "$", color: "#2775CA" },
+  usdt: { icon: "₮", color: "#26A17B" },
+  wbtc: { icon: "B", color: "#F7931A" },
+  wsteth: { icon: "◆", color: "#00A3FF" },
+  weeth: { icon: "◆", color: "#9B59B6" },
+};

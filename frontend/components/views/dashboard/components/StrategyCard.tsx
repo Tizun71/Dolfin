@@ -3,16 +3,7 @@
 import { useRouter } from "next/navigation";
 import { AssetSetupData } from "@/hooks/useAssetSetup";
 import { timeAgo } from "@/lib/format";
-
-const assetConfig: Record<string, { icon: string; color: string }> = {
-  eth: { icon: "Ξ", color: "#627EEA" },
-  sgho: { icon: "◎", color: "#22c55e" },
-  usdc: { icon: "$", color: "#2775CA" },
-  usdt: { icon: "₮", color: "#26A17B" },
-  wbtc: { icon: "B", color: "#F7931A" },
-  wsteth: { icon: "◆", color: "#00A3FF" },
-  weeth: { icon: "◆", color: "#9B59B6" },
-};
+import { ASSET_CONFIG } from "@/constants/common";
 
 export default function StrategyCard({
   strategy,
@@ -20,7 +11,11 @@ export default function StrategyCard({
   strategy: AssetSetupData;
 }) {
   const router = useRouter();
-  const config = assetConfig[strategy.asset] ?? { icon: "◈", color: "#627EEA" };
+
+  const config = ASSET_CONFIG[strategy.asset] ?? {
+    icon: "◈",
+    color: "#627EEA",
+  };
 
   return (
     <div

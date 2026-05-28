@@ -1,33 +1,9 @@
 "use client";
 
-export default function DevsSection() {
-  const items = [
-    {
-      icon: "🔒",
-      title: "Security",
-      desc: "Find and report vulnerabilities, receive generous rewards.",
-      href: "#",
-    },
-    {
-      icon: "💻",
-      title: "SDK",
-      desc: "Utilize our SDK to streamline frontend development and enhance user experiences.",
-      href: "#",
-    },
-    {
-      icon: "🐙",
-      title: "Github",
-      desc: "Explore our open-source repository for collaborative development.",
-      href: "https://github.com/Tizun71/Dolfin",
-    },
-    {
-      icon: "📄",
-      title: "Developer Docs",
-      desc: "Access comprehensive documentation for seamless API integration.",
-      href: "#",
-    },
-  ];
+import { ITEMS_DEVS } from "@/constants/common";
+import Link from "next/link";
 
+export default function DevsSection() {
   return (
     <section
       id="devs"
@@ -45,13 +21,13 @@ export default function DevsSection() {
       </p>
 
       <div className="max-w-4xl mx-auto flex flex-col gap-4">
-        {items.map((item) => (
-          <a
+        {ITEMS_DEVS.map((item) => (
+          <Link
             key={item.title}
             href={item.href}
             className="flex items-center gap-6 border border-[#222] p-8 hover:border-[#333] transition-all duration-300 group"
           >
-            <span className="text-2xl w-10 text-center ">{item.icon}</span>
+            <span className="text-2xl w-10 text-center">{item.icon}</span>
             <div className="flex-1">
               <p className="text-white text-base font-mono uppercase tracking-[2px] mb-2">
                 {item.title}
@@ -60,7 +36,7 @@ export default function DevsSection() {
                 {item.desc}
               </p>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </section>

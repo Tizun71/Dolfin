@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const assets = [
   {
@@ -85,7 +85,6 @@ const marketStats = [
 ];
 
 export default function VaultsContent() {
-  const router = useRouter();
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   return (
@@ -115,7 +114,6 @@ export default function VaultsContent() {
           </div>
         </div>
 
-        {/* sGHO Banner */}
         <div className="card-3d p-8 mb-10 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="w-12 h-12 rounded-full flex items-center justify-center text-green-400 text-xl border border-green-900/50 bg-green-900/10">
@@ -143,12 +141,12 @@ export default function VaultsContent() {
               </p>
               <p className="text-white font-light text-xl">5.66%</p>
             </div>
-            <button
-              className="border border-[#333] px-8 py-3 text-xs uppercase tracking-[2px] text-[#888] hover:text-white hover:border-[#666] transition-all duration-300 font-mono bg-transparent"
-              onClick={() => router.push("/vaults/sgho")}
+            <Link
+              href="/vaults/sgho"
+              className="border border-[#333] px-8 py-3 text-xs uppercase tracking-[2px] text-[#888] hover:text-white hover:border-[#666] transition-all duration-300 font-mono bg-transparent inline-block"
             >
               View Details
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -173,16 +171,13 @@ export default function VaultsContent() {
             <div />
           </div>
 
-          {/* Rows */}
           {assets.map((asset) => (
-            <div
+            <Link
               key={asset.symbol}
-              className="row-3d grid grid-cols-[2.5fr_1.5fr_1fr_1.5fr_1fr_80px] px-8 py-6 cursor-pointer last:border-b-0"
+              href={`/vaults/${asset.symbol.toLowerCase()}`}
+              className="row-3d grid grid-cols-[2.5fr_1.5fr_1fr_1.5fr_1fr_80px] px-8 py-6 cursor-pointer border-b border-[#111] last:border-b-0 group"
               onMouseEnter={() => setHoveredRow(asset.symbol)}
               onMouseLeave={() => setHoveredRow(null)}
-              onClick={() =>
-                router.push(`/vaults/${asset.symbol.toLowerCase()}`)
-              }
             >
               {/* Asset Name */}
               <div className="flex items-center gap-4">
@@ -256,7 +251,7 @@ export default function VaultsContent() {
                   →
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

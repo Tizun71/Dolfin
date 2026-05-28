@@ -1,11 +1,7 @@
-import ETHDetail from "@/components/views/vaults/assets/eth/ETHDetail";
-import WeETHDetail from "@/components/views/vaults/assets/weeth/WeETHDetail";
-import SGHODetail from "@/components/views/vaults/assets/sgho/SGHODetail";
-import WBTCDetail from "@/components/views/vaults/assets/wbtc/WBTCDetail";
-import USDCDetail from "@/components/views/vaults/assets/usdc/USDCDetail";
-import USDTDetail from "@/components/views/vaults/assets/usdt/USDTDetail";
-import WstETHDetail from "@/components/views/vaults/assets/wsteth/WstETHDetail";
+"use client";
+
 import { use } from "react";
+import AssetDetail from "@/components/views/vaults/assets/AssetDetail";
 
 export default function AssetPage({
   params,
@@ -13,22 +9,6 @@ export default function AssetPage({
   params: Promise<{ asset: string }>;
 }) {
   const { asset } = use(params);
-  switch (asset) {
-    case "eth":
-      return <ETHDetail />;
-    case "sgho":
-      return <SGHODetail />;
-    case " weeth":
-      return <WeETHDetail />;
-    case "wbtc":
-      return <WBTCDetail />;
-    case "usdc":
-      return <USDCDetail />;
-    case "usdt":
-      return <USDTDetail />;
-    case "wsteth":
-      return <WstETHDetail />;
-    default:
-      return null;
-  }
+
+  return <AssetDetail assetKey={asset} />;
 }

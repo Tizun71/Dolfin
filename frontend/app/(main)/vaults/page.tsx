@@ -1,4 +1,5 @@
-import VaultsContent from "@/components/views/vaults/VaultsContent";
+import VaultsContent from "@/components/views/vaults/assets/VaultsContent";
+
 export default function VaultsPage() {
   return <VaultsContent />;
 }

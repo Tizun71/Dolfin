@@ -1,71 +1,36 @@
 "use client";
 
-const FOOTER_LINKS = ["GITHUB", "DISCORD", "SECURITY", "STATUS"];
+import Link from "next/link";
+
+const FOOTER_LINKS = [
+  { name: "GITHUB", href: "#" },
+  { name: "DISCORD", href: "#" },
+  { name: "SECURITY", href: "#" },
+  { name: "STATUS", href: "#" },
+];
 
 export default function Footer() {
   return (
-    <footer
-      style={{
-        width: "100%",
-        borderTop: "1px solid #1a1a1a",
-        background: "#0e0e0e",
-        position: "relative",
-        zIndex: 20,
-      }}
-    >
-      <div
-        style={{
-          padding: "32px 24px",
-          display: "flex",
-          flexWrap: "wrap" as const,
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 16,
-        }}
-      >
-        <div
-          style={{ display: "flex", flexDirection: "column" as const, gap: 4 }}
-        >
-          <span
-            style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: "#fff",
-              textTransform: "uppercase" as const,
-              letterSpacing: "0.2em",
-            }}
-          >
+    <footer className="w-full border-t border-[#1a1a1a] bg-[#0e0e0e] relative z-20">
+      <div className="px-6 py-8 flex flex-wrap justify-between items-center gap-4">
+        <div className="flex flex-col gap-1">
+          <span className="text-lg font-bold text-white uppercase tracking-[0.2em]">
             DOLFIN
           </span>
-          <span
-            style={{ fontSize: 13, color: "#999", letterSpacing: "0.15em" }}
-          >
-            © 2024 DOLFIN PROTOCOL. TERMINAL v1.0.4 — LATENCY: 24MS
+          <span className="text-xs text-[#999] tracking-[0.15em] font-mono">
+            © 2026 DOLFIN PROTOCOL. TERMINAL v1.0.4 — LATENCY: 24MS
           </span>
         </div>
 
-        <div style={{ display: "flex", gap: 32 }}>
+        <div className="flex gap-8">
           {FOOTER_LINKS.map((link) => (
-            <a
-              key={link}
-              href="#"
-              style={{
-                color: "#999",
-                fontSize: 13,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase" as const,
-                textDecoration: "none",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) =>
-                (e.currentTarget.style.color = "#fff")
-              }
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) =>
-                (e.currentTarget.style.color = "#999")
-              }
+            <Link
+              key={link.name}
+              href={link.href}
+              className="text-[#999] hover:text-white text-xs uppercase tracking-[0.2em] no-underline transition-colors duration-200"
             >
-              {link}
-            </a>
+              {link.name}
+            </Link>
           ))}
         </div>
       </div>
