@@ -8,7 +8,7 @@ import { useAssetSetup } from "@/hooks/useAssetSetup";
 import { ASSET_DETAILS_MAP } from "@/constants/vaults";
 
 interface AssetDetailProps {
-  assetKey?: string; // Nhận linh hoạt: "eth", "sgho", "usdc", "wbtc"...
+  assetKey?: string;
 }
 
 export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
@@ -16,7 +16,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
   const { login, authenticated, user, ready } = usePrivy();
   const [activeTab, setActiveTab] = useState("1w");
 
-  // Tự động lấy chính xác cục dữ liệu dựa theo assetKey truyền vào
   const data =
     ASSET_DETAILS_MAP[assetKey.toLowerCase()] || ASSET_DETAILS_MAP["eth"];
 
@@ -43,7 +42,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
     }
   };
 
-  // Hàm tính toán tọa độ đồ thị dựa theo cấu hình MIN/MAX riêng của từng Asset
   function toY(val: number) {
     return (
       data.h - ((val - data.minVal) / (data.maxVal - data.minVal)) * data.h
@@ -68,7 +66,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
         </button>
         <div className="w-px h-6 bg-[#1a1a1a]" />
         <div className="flex items-center gap-3">
-          {/* Màu viền và màu chữ của Icon thay đổi động theo data.color */}
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-lg border"
             style={{ borderColor: `${data.color}44`, color: data.color }}
@@ -86,7 +83,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
         </div>
       </div>
 
-      {/* Description: CHỈ HIỂN THỊ NẾU LÀ sGHO (Dùng render có điều kiện) */}
       {data.symbol.toLowerCase() === "sgho" && (
         <p className="text-[#444] text-sm tracking-widest leading-relaxed mb-8 max-w-2xl font-mono">
           Deposit GHO into savings GHO (sGHO) and earn{" "}
@@ -134,7 +130,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
 
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              {/* Chấm tròn đổi màu động */}
               <div
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: data.color }}
@@ -160,7 +155,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
             </div>
           </div>
 
-          {/* SVG Chart Động hoàn toàn theo màu sắc cấu hình */}
           <div className="bg-[#080808] border border-[#111] p-4">
             <svg
               viewBox={`0 0 ${data.w} ${data.h + 10}`}
@@ -169,7 +163,6 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
               style={{ height: "130px" }}
             >
               <defs>
-                {/* Đổi ID Gradient thành duy nhất theo từng asset để tránh bị đè màu giữa các tab */}
                 <linearGradient
                   id={`fill-${data.symbol}`}
                   x1="0"

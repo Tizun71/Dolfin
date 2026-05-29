@@ -6,13 +6,31 @@ export default function PrivyProviderWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const privyAppId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
+
+  if (!privyAppId) {
+    console.error(
+      "Thiếu cấu hình NEXT_PUBLIC_PRIVY_APP_ID trong file .env.local",
+    );
+  }
+
   return (
     <PrivyProvider
-      appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID!}
+      appId={privyAppId || ""}
       config={{
-        loginMethods: ["wallet"],
+        loginMethods: ["email", "google", "twitter", "wallet"],
+
         appearance: {
           theme: "dark",
+          accentColor: "#627EEA",
+
+          walletList: ["metamask", "coinbase_wallet", "rainbow", "phantom"],
+        },
+
+        embeddedWallets: {
+          ethereum: {
+            createOnLogin: "users-without-wallets",
+          },
         },
       }}
     >
