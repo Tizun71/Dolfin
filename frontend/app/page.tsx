@@ -1,5 +1,4 @@
 import { Navbar, Hero, Footer, DevsSection } from "@/components/introduce";
-import Link from "next/link";
 
 export default function LandingPage() {
   return (
