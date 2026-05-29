@@ -1,4 +1,13 @@
-import { createPublicClient, createWalletClient, getAddress, http, type Address } from "viem";
+import { AaveV3ArbitrumSepolia } from "@aave-dao/aave-address-book";
+import { getArbitrumMarketData } from "../aave/services.js";
+import {
+  encodeFunctionData,
+  createPublicClient,
+  createWalletClient,
+  getAddress,
+  http,
+  type Address,
+} from "viem";
 import { privateKeyToAccount, privateKeyToAddress } from "viem/accounts";
 import { arbitrumSepolia } from "viem/chains";
 
@@ -470,6 +479,16 @@ export const publicClient = createPublicClient({
   transport: http(),
 });
 
+const AAVE_FLASH_LOAN_PREMIUM_ABI = [
+  {
+    type: "function",
+    name: "FLASHLOAN_PREMIUM_TOTAL",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint128" }],
+  },
+] as const;
+
 export async function isAgentWhitelisted(user: Address): Promise<boolean> {
   const agentWalletAddress = privateKeyToAddress(process.env.AGENT_PRIVATE_KEY as Address);
 
@@ -504,4 +523,237 @@ export async function hasDelegatedToDolfinAccount(user: Address): Promise<boolea
   const delegatedAddress = getAddress(`0x${code.slice(8)}`);
 
   return delegatedAddress.toLowerCase() === dolFinAccountAddress.toLowerCase();
+}
+
+export async function getUserEligibility(user: Address): Promise<{
+  whitelisted: boolean;
+  delegated: boolean;
+}> {
+  const whitelisted = await isAgentWhitelisted(user);
+  const delegated = await hasDelegatedToDolfinAccount(user);
+
+  return { whitelisted, delegated };
+}
+
+export async function getUserUSDCBalance(user: Address): Promise<{ balance: bigint }> {
+  const USDC = AaveV3ArbitrumSepolia.ASSETS.USDC.UNDERLYING as Address;
+
+  const balance = await publicClient.readContract({
+    address: USDC,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [user],
+  });
+
+  return { balance };
+}
+
+export async function getUserWETHBalance(user: Address): Promise<{ balance: bigint }> {
+  const WETH = AaveV3ArbitrumSepolia.ASSETS.WETH.UNDERLYING as Address;
+
+  const balance = await publicClient.readContract({
+    address: WETH,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [user],
+  });
+
+  return { balance };
+}
+
+export async function executeFlashLoanUSDC(params: {
+  user: Address;
+  amount: bigint;
+  swapAmount: bigint;
+  supplyAmount: bigint;
+  borrowAmount: bigint;
+}): Promise<{ txHash: `0x${string}` }> {
+  const { user, amount, swapAmount, supplyAmount, borrowAmount } = params;
+  const POOL = AaveV3ArbitrumSepolia.POOL as Address;
+  const WETH_GATEWAY = AaveV3ArbitrumSepolia.WETH_GATEWAY as Address;
+  const USDC = AaveV3ArbitrumSepolia.ASSETS.USDC.UNDERLYING as Address;
+  const WETH = AaveV3ArbitrumSepolia.ASSETS.WETH.UNDERLYING as Address;
+
+  const flashLoanFee = (amount * 5n) / 10000n;
+
+  const txHash = await agentWallet.writeContract({
+    abi: dolFinABI,
+    functionName: "execute",
+    address: user,
+    args: [
+      [
+        {
+          to: POOL,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: flashLoanSimpleAbi,
+            functionName: "flashLoanSimple",
+            args: [user, USDC, amount, "0x", 0],
+          }),
+        },
+        {
+          to: USDC,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [UNISWAP_SWAP_ROUTER_02 as Address, swapAmount],
+          }),
+        },
+        {
+          to: UNISWAP_SWAP_ROUTER_02 as Address,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: swapRouterAbi,
+            functionName: "exactInputSingle",
+            args: [
+              {
+                tokenIn: USDC,
+                tokenOut: WETH,
+                fee: 500,
+                recipient: user,
+                amountIn: swapAmount,
+                amountOutMinimum: 0n,
+                sqrtPriceLimitX96: 0n,
+              },
+            ],
+          }),
+        },
+        {
+          to: WETH,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: wethAbi,
+            functionName: "withdraw",
+            args: [supplyAmount],
+          }),
+        },
+        {
+          to: WETH_GATEWAY,
+          value: supplyAmount,
+          data: encodeFunctionData({
+            abi: wethGatewayAbi,
+            functionName: "depositETH",
+            args: [user, 0],
+          }),
+        },
+        {
+          to: POOL,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: borrowAbi,
+            functionName: "borrow",
+            args: [USDC, borrowAmount, 2n, 0, user],
+          }),
+        },
+        {
+          to: USDC,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [POOL, amount + flashLoanFee],
+          }),
+        },
+        {
+          to: POOL,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: repayAbi,
+            functionName: "repay",
+            args: [USDC, amount + flashLoanFee, 2n, user],
+          }),
+        },
+      ],
+    ],
+  });
+
+  return { txHash };
+}
+
+export async function getLendingProtocolTvl(): Promise<{
+  protocol: string;
+  source: string;
+  market: { name: string; address: string; chain: { chainId: number; name: string } };
+  totalMarketSize: unknown;
+  totalAvailableLiquidity: unknown;
+}> {
+  const marketData = await getArbitrumMarketData();
+
+  return {
+    protocol: "aave",
+    source: "aave_market_data",
+    market: {
+      name: marketData.name,
+      address: marketData.address,
+      chain: marketData.chain,
+    },
+    totalMarketSize: marketData.totalMarketSize,
+    totalAvailableLiquidity: marketData.totalAvailableLiquidity,
+  };
+}
+
+export async function getCurrentAaveFlashLoanRate(): Promise<{
+  flashLoanPremiumBps: number;
+  flashLoanPremiumPercent: number;
+  formula: string;
+}> {
+  const premiumTotal = await publicClient.readContract({
+    address: AaveV3ArbitrumSepolia.POOL as Address,
+    abi: AAVE_FLASH_LOAN_PREMIUM_ABI,
+    functionName: "FLASHLOAN_PREMIUM_TOTAL",
+  });
+
+  return {
+    flashLoanPremiumBps: Number(premiumTotal),
+    flashLoanPremiumPercent: Number(premiumTotal) / 100,
+    formula: "fee = amount * bps / 10000",
+  };
+}
+
+export async function getAverageGasPrice(blockCount: number): Promise<{
+  chain: string | undefined;
+  sampleSize: number;
+  averageGasPriceWei: bigint;
+  averageGasPriceGwei: number;
+  currentGasPriceWei: bigint;
+  currentGasPriceGwei: number;
+}> {
+  const feeHistory = await publicClient.getFeeHistory({
+    blockCount,
+    rewardPercentiles: [50],
+  });
+
+  const totalWei = feeHistory.baseFeePerGas.reduce((sum, baseFee, i) => {
+    const reward = feeHistory.reward?.[i]?.[0] ?? 0n;
+    return sum + baseFee + reward;
+  }, 0n);
+
+  const avgWei = totalWei / BigInt(feeHistory.baseFeePerGas.length || 1);
+  const currentWei = await publicClient.getGasPrice();
+
+  return {
+    chain: publicClient.chain?.name,
+    sampleSize: feeHistory.baseFeePerGas.length,
+    averageGasPriceWei: avgWei,
+    averageGasPriceGwei: Number(avgWei) / 1e9,
+    currentGasPriceWei: currentWei,
+    currentGasPriceGwei: Number(currentWei) / 1e9,
+  };
+}
+
+export async function getUserWalletBalance(user: Address): Promise<{
+  asset: "ETH";
+  chain: string | undefined;
+  user: Address;
+  balance: bigint;
+}> {
+  const balance = await publicClient.getBalance({ address: user });
+
+  return {
+    asset: "ETH",
+    chain: publicClient.chain?.name,
+    user,
+    balance,
+  };
 }
