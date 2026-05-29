@@ -9,6 +9,7 @@ const DOLFIN_CONFIG = {
   chainId: 421614, // Arbitrum Sepolia
   contractAddress:
     "0xA8E99C6E7c7a40e89Bd20e8b68e1Cacb87BB0743" as `0x${string}`,
+  initializeData: "0x8129ec8b" as `0x${string}`, // Selector hàm initialize()
 };
 
 export function useDolfinAccount(onComplete: () => void) {
@@ -20,99 +21,94 @@ export function useDolfinAccount(onComplete: () => void) {
   const [error, setError] = useState("");
   const [savedAuthorization, setSavedAuthorization] = useState<any>(null);
 
+  const getActiveWallet = () => {
+    if (wallets.length === 0) return null;
+    const embeddedWallet = wallets.find((w) => w.walletClientType === "privy");
+    const externalWallet = wallets.find((w) => w.walletClientType !== "privy");
+
+    return embeddedWallet || externalWallet || wallets[0];
+  };
+
+  const ensureCorrectNetwork = async (wallet: any): Promise<boolean> => {
+    if (wallet.chainId === `eip155:${DOLFIN_CONFIG.chainId}`) return true;
+    try {
+      await wallet.switchChain(DOLFIN_CONFIG.chainId);
+      return true;
+    } catch (error) {
+      setError("Vui lòng chuyển ví sang mạng Arbitrum Sepolia.");
+      return false;
+    }
+  };
+
   const handleSign = async () => {
     setLoading(true);
     setError("");
     try {
-      const wallet = wallets[0];
-      if (!wallet) {
-        setError("Vui lòng kết nối ví trước.");
-        return;
-      }
+      const wallet = getActiveWallet();
+      if (!wallet) return setError("Vui lòng kết nối ví hoặc đăng nhập trước.");
 
-      if (wallet.chainId !== `eip155:${DOLFIN_CONFIG.chainId}`) {
-        try {
-          await wallet.switchChain(DOLFIN_CONFIG.chainId);
-        } catch (switchError) {
-          setError(
-            "Vui lòng chuyển ví sang mạng Arbitrum Sepolia trước khi ký.",
-          );
-          setLoading(false);
-          return;
-        }
-      }
+      const isNetworkValid = await ensureCorrectNetwork(wallet);
+      if (!isNetworkValid) return;
 
-      if (wallet.walletClientType !== "privy") {
+      if (wallet.walletClientType === "privy") {
         console.log(
-          `Phát hiện ví ngoài (${wallet.walletClientType}). Tạo chữ ký giả lập để bypass lỗi extension...`,
+          "Đang gọi Privy SDK thực hiện ký thực tế cho Ví Nhúng Gmail...",
+        );
+        const authorization = await signAuthorization(
+          {
+            contractAddress: DOLFIN_CONFIG.contractAddress,
+            chainId: DOLFIN_CONFIG.chainId,
+          },
+          { address: wallet.address },
         );
 
-        const mockAuthorization = {
-          contractAddress: DOLFIN_CONFIG.contractAddress,
-          chainId: DOLFIN_CONFIG.chainId,
-          nonce: 0,
-          v: 27,
-          r: "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-          s: "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-        };
-
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        setSavedAuthorization(mockAuthorization);
+        setSavedAuthorization(authorization);
         setCurrentStep("approve");
         return;
       }
 
-      console.log("Đang gọi Privy SDK ký EIP-7702 cho Ví nhúng...");
-      const authorization = await signAuthorization(
-        {
-          contractAddress: DOLFIN_CONFIG.contractAddress,
-          chainId: DOLFIN_CONFIG.chainId,
-        },
-        { address: wallet.address },
+      console.log(
+        `Đang yêu cầu ví ngoài (${wallet.walletClientType}) gọi RPC ký EIP-7702...`,
       );
+      const provider = await wallet.getEthereumProvider();
 
-      console.log("Ký thành công bằng ví nhúng Privy:", authorization);
+      const authorization = await provider.request({
+        method: "wallet_signAuthorization",
+        params: [
+          {
+            contractAddress: DOLFIN_CONFIG.contractAddress,
+            chainId: DOLFIN_CONFIG.chainId,
+          },
+        ],
+      });
+
+      console.log("Ví ngoài đã xử lý ký thành công:", authorization);
       setSavedAuthorization(authorization);
       setCurrentStep("approve");
     } catch (e: any) {
-      console.error("Chi tiết lỗi khi ký:", e);
-      setError(e?.message || "Ký thất bại.");
+      console.error("Chi tiết lỗi bước ký:", e);
+
+      const activeWallet = getActiveWallet();
+      if (e?.message?.includes("does not exist") || e?.code === -32601) {
+        setError(
+          `Ví ${activeWallet?.walletClientType || "ngoài"} của bạn hiện tại chưa cập nhật phiên bản hỗ trợ chuẩn ký EIP-7702.`,
+        );
+      } else {
+        setError(e?.message || "Quá trình ký ủy quyền thất bại.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Gửi Transaction kích hoạt và gọi hàm initialize() bằng Viem
   const handleApprove = async () => {
     setLoading(true);
     setError("");
     try {
-      const wallet = wallets[0];
-      if (!wallet || !savedAuthorization) {
-        setError("Không tìm thấy thông tin chữ ký hợp lệ.");
-        return;
-      }
+      const wallet = getActiveWallet();
+      if (!wallet || !savedAuthorization)
+        return setError("Không tìm thấy thông tin chữ ký hợp lệ.");
 
-      if (wallet.walletClientType !== "privy") {
-        console.log(
-          `Ví ngoài (${wallet.walletClientType}) chưa hỗ trợ Transaction EIP-7702.`,
-        );
-        console.log(
-          "Đang tiến hành tạo Tx Hash giả lập để hoàn thành luồng UI Demo...",
-        );
-
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        const mockTxHash =
-          "0x9f56a5c312781a94e8db20e8b68e1cacb87bb0743f56a5c312781a94e8db20e8b";
-        console.log("Mock Kích hoạt ví thành công! Tx Hash:", mockTxHash);
-
-        setCurrentStep("done");
-        setTimeout(() => onComplete(), 1000);
-        return;
-      }
-
-      console.log("Khởi tạo Viem Client chạy thực tế trên Ví nhúng...");
       const provider = await wallet.getEthereumProvider();
       const walletClient = createWalletClient({
         account: wallet.address as `0x${string}`,
@@ -120,22 +116,22 @@ export function useDolfinAccount(onComplete: () => void) {
         transport: custom(provider),
       });
 
-      const initializeData = "0x8129ec8b";
-
-      console.log("Gửi transaction nâng cấp ví thực tế...");
+      console.log("Đang gửi Transaction thực tế lên mạng chuỗi...");
       const txHash = await walletClient.sendTransaction({
         account: wallet.address as `0x${string}`,
         to: wallet.address as `0x${string}`,
-        data: initializeData,
-        authorizationList: [savedAuthorization],
+        data: DOLFIN_CONFIG.initializeData,
+        authorizationList: Array.isArray(savedAuthorization)
+          ? savedAuthorization
+          : [savedAuthorization],
       });
 
-      console.log("Kích hoạt thành công trên chain! Tx Hash:", txHash);
+      console.log("Kích hoạt on-chain thành công! Tx Hash:", txHash);
       setCurrentStep("done");
       setTimeout(() => onComplete(), 1000);
     } catch (e: any) {
-      console.error("Chi tiết lỗi khi gửi transaction:", e);
-      setError(e?.message || "Gửi transaction kích hoạt thất bại. Thử lại.");
+      console.error("Chi tiết lỗi bước gửi Tx:", e);
+      setError(e?.message || "Gửi transaction kích hoạt thất bại.");
     } finally {
       setLoading(false);
     }
