@@ -473,14 +473,18 @@ export const publicClient = createPublicClient({
 export async function isAgentWhitelisted(user: Address): Promise<boolean> {
   const agentWalletAddress = privateKeyToAddress(process.env.AGENT_PRIVATE_KEY as Address);
 
-  const isWhitelisted = (await publicClient.readContract({
-    address: user,
-    abi: dolFinABI,
-    functionName: "isWhitelisted",
-    args: [agentWalletAddress],
-  })) as boolean;
+  try {
+    const isWhitelisted = (await publicClient.readContract({
+      address: user,
+      abi: dolFinABI,
+      functionName: "isWhitelisted",
+      args: [agentWalletAddress],
+    })) as boolean;
 
-  return isWhitelisted;
+    return isWhitelisted;
+  } catch (error) {
+    return false;
+  }
 }
 
 export async function hasDelegatedToDolfinAccount(user: Address): Promise<boolean> {
