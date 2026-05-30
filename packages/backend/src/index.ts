@@ -5,6 +5,7 @@ import { honoLogger } from "@logtape/hono";
 import userModule from "./modules/user/index.js";
 import aaveModule from "./modules/aave/index.js";
 import aiModule from "./modules/ai/index.js";
+import gmxModule from "./modules/gmx/index.js";
 import { saveMarketHistory } from "./jobs/save_market_history.js";
 
 // Start the cron job to save market history
@@ -36,6 +37,9 @@ app.route("/aave", aaveModule);
 
 // Register AI module
 app.route("/ai", aiModule);
+
+// Register GMX module
+app.route("/gmx", gmxModule);
 
 serve(
   {
