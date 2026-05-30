@@ -1,7 +1,7 @@
 import type { Address } from "viem";
-import type { IDiscoveryEngine } from "./DiscoveryEngine.interface.js";
+import type { IPortfolioEngine } from "./PortfolioEngine.interface.js";
 
-class DiscoveryEngine implements IDiscoveryEngine {
+class PortfolioEngine implements IPortfolioEngine {
     getWalletPortfolio(walletAddress: Address) {
         throw new Error("Method not implemented.");
     }
