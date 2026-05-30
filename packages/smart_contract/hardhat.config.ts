@@ -16,12 +16,17 @@ export default defineConfig({
   ],
   solidity: {
     version: "0.8.28",
+    settings: {
+      evmVersion: "cancun",
+      optimizer: { enabled: true, runs: 200 },
+      viaIR: true,
+    },
   },
   networks: {
     arbitrumSepolia: {
       url: "https://arbitrum-sepolia-rpc.publicnode.com",
       type: "http",
-      accounts: [process.env.PRIVATE_KEY!],
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },
 });
