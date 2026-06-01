@@ -123,7 +123,7 @@ export class ExecutionRelayer {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     });
-    const json = await res.json();
+    const json = (await res.json()) as { result?: `0x${string}`; error?: { message: string } };
     if (json.error) throw new Error(`bundler: ${json.error.message}`);
     return json.result as `0x${string}`;
   }

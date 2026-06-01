@@ -1,53 +1,43 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
-import type { Action, AdvisorState } from "../state.js";
+import type { AdvisorState } from "../state.js";
 
 /**
- * Synthesizes portfolio + risk + market into human-readable advice and a list
- * of recommended actions. Transaction encoding is left to a downstream step.
+ * Explain-only sink: narrates portfolio + risk + market + the rule-engine's decisions
+ * into human-readable advice. It NEVER authors actions — those come from the Strategy node.
+ * Transaction encoding/execution is handled by downstream Planner/Executor nodes.
  */
 export class AdvisorNode {
   constructor(private readonly model = google("gemini-2.0-flash")) {}
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {
-    const actions = this.deriveActions(state);
-
     const { text } = await generateText({
       model: this.model,
       system:
-        "You are Dolfin, a DeFi portfolio advisor. Give concise, actionable advice. " +
-        "Reference concrete numbers from the data. Never invent positions that are not present.",
-      prompt: this.buildPrompt(state, actions),
+        "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
+        "actions that were already decided by the rule engine. Reference concrete numbers from " +
+        "the data. Never invent positions or actions that are not present in the provided data.",
+      prompt: this.buildPrompt(state),
     });
 
-    return { advice: text, actions };
+    return { advice: text };
   };
 
-  private deriveActions(state: AdvisorState): Action[] {
-    const recs = state.risk?.recommendations ?? [];
-    const priority =
-      state.risk && state.risk.score >= 60
-        ? "HIGH"
-        : state.risk && state.risk.score >= 30
-          ? "MEDIUM"
-          : "LOW";
-
-    return recs.map((description) => ({
-      type: "RISK_MITIGATION",
-      description,
-      priority,
-    }));
-  }
-
-  private buildPrompt(state: AdvisorState, actions: Action[]): string {
+  private buildPrompt(state: AdvisorState): string {
     return [
       `Wallet: ${state.wallet}`,
       `Portfolio: ${JSON.stringify(state.portfolio ?? {})}`,
       `Risk: ${JSON.stringify(state.risk ?? {})}`,
       `Market: ${JSON.stringify(state.market ?? {})}`,
-      `Candidate actions: ${JSON.stringify(actions)}`,
+      `Decided actions: ${JSON.stringify(state.validDecisions ?? [], bigintReplacer)}`,
+      `Rejected actions: ${JSON.stringify(state.rejected ?? [], bigintReplacer)}`,
       "",
-      "Explain the current risk level and recommend what to do next.",
+      "Explain the current risk level and why these actions are recommended.",
     ].join("\n");
   }
+}
+
+/** TradeDecision.amount is a bigint; make it JSON-serializable for the prompt. */
+function bigintReplacer(_key: string, value: unknown): unknown {
+  return typeof value === "bigint" ? value.toString() : value;
 }
