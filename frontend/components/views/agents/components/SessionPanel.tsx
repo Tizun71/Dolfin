@@ -66,7 +66,7 @@ export default function SessionPanel({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-8">
         <UtilizationBar label="Exposure" used={status?.exposure ?? BigInt(0)} cap={status?.maxExposure ?? BigInt(0)} />
-        <UtilizationBar label="24h Volume" used={status?.dayVolume ?? BigInt(0)} cap={status?.maxDailyVolume ?? BigInt(0)} color="#5ea0e0" />
+        <UtilizationBar label="24h Volume" used={status?.dayVolume ?? BigInt(0)} cap={status?.maxDailyVolume ?? BigInt(0)} color="#f59e0b" />
         <div className="card-3d p-8">
           <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px]">Expiry</p>
           <p className="text-lg font-normal mt-4 text-white">
@@ -81,7 +81,7 @@ export default function SessionPanel({
 
       <div className="flex flex-wrap gap-3 mt-8">
         {dead ? (
-          <button onClick={register} disabled={loading} className={`${BTN} border-blue-600 text-blue-400 hover:bg-blue-600/10`}>
+          <button onClick={register} disabled={loading} className={`${BTN} btn-brand-outline`}>
             Register New Key
           </button>
         ) : (

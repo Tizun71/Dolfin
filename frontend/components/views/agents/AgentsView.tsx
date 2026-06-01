@@ -30,7 +30,7 @@ export default function AgentsView() {
           <button
             onClick={onCreate}
             disabled={loading}
-            className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition disabled:opacity-50"
+            className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-50"
           >
             {loading ? "Deploying…" : "+ New Account"}
           </button>
@@ -44,7 +44,7 @@ export default function AgentsView() {
           <p className="text-[#888] text-sm font-mono uppercase tracking-[2px] mb-6">Connect a wallet to continue</p>
           <button
             onClick={login}
-            className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition"
+            className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition"
           >
             Connect Wallet →
           </button>

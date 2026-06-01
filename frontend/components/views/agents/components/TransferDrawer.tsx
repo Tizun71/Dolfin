@@ -83,7 +83,7 @@ export default function TransferDrawer({
       <button
         onClick={t.submit}
         disabled={t.loading}
-        className="w-full py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition disabled:opacity-50"
+        className="w-full py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-50"
       >
         {t.loading ? "Processing…" : isDeposit ? "Deposit →" : "Withdraw →"}
       </button>

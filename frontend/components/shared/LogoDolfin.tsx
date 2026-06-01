@@ -1,14 +1,20 @@
 import Image from "next/image";
-import DolfinImg from "./Dolfin.png";
 
-export default function LogoDolfin() {
+export default function LogoDolfin({
+  size = 40,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
     <Image
-      src={DolfinImg}
+      src="/dolfin-logo.png"
       alt="Dolfin"
-      width={40}
-      height={40}
-      className="transition-transform duration-300 group-hover:rotate-12"
+      width={size}
+      height={size}
+      priority
+      className={`transition-transform duration-300 group-hover:rotate-12 ${className}`}
     />
   );
 }

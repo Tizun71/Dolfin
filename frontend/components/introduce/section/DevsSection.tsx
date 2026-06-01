@@ -25,8 +25,8 @@ export default function DevsSection() {
             href={item.href}
             className="flex items-center gap-6 border-t border-[#1a1a1a] px-6 py-5 relative overflow-hidden transition-all duration-300 group hover:bg-[#0a0a0a] last:border-b"
           >
-            <div className="absolute left-0 top-0 h-full w-0.5 bg-[#517ab3] scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top" />
-            <span className="text-[#444] text-xs font-mono group-hover:text-[#517ab3] transition-colors duration-300 w-5 shrink-0">
+            <div className="absolute left-0 top-0 h-full w-0.5 bg-[#f97316] scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top" />
+            <span className="text-[#444] text-xs font-mono group-hover:text-[#f97316] transition-colors duration-300 w-5 shrink-0">
               {item.index}
             </span>
             <div className="flex-1">

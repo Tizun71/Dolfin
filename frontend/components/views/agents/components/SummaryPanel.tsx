@@ -60,7 +60,7 @@ export default function SummaryPanel({
       <button
         onClick={onSubmit}
         disabled={loading || !ready}
-        className="w-full py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition disabled:opacity-40"
+        className="w-full py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-40"
       >
         {loading ? "Processing…" : "Create Agent →"}
       </button>

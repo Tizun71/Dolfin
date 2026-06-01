@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Vault, History, Settings, Bell, Bot } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
+import LogoDolfin from "@/components/shared/LogoDolfin";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -21,11 +22,12 @@ export default function Sidebar() {
   return (
     <aside className="w-64 h-screen bg-black border-r border-[#262626] flex flex-col p-8 sticky top-0">
       {/* Logo */}
-      <div className="mb-16 border-b border-[#262626] pb-8">
-        <h2 className="text-white text-2xl font-normal uppercase tracking-[4px]">
+      <Link href="/dashboard" className="group mb-16 border-b border-[#262626] pb-8 flex items-center gap-3">
+        <LogoDolfin size={36} />
+        <h2 className="text-brand-gradient text-2xl font-normal uppercase tracking-[4px]">
           Dolfin
         </h2>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex flex-col space-y-8">
@@ -44,7 +46,7 @@ export default function Sidebar() {
               <span
                 className={`w-1 h-1 rounded-full transition-all duration-500 ${
                   isActive
-                    ? "bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                    ? "bg-[#f97316] shadow-[0_0_8px_rgba(249,115,22,0.9)]"
                     : "bg-transparent"
                 }`}
               />
@@ -72,15 +74,6 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Version */}
-      <div className="mt-auto pt-8 border-t border-[#1a1a1a]">
-        <div className="flex items-center gap-6">
-          <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          <span className="text-[#3a3a3a] text-[13px] font-mono uppercase tracking-[2px]">
-            System Core v1.0
-          </span>
-        </div>
-      </div>
     </aside>
   );
 }
