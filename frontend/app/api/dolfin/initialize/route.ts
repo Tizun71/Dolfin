@@ -4,23 +4,29 @@ import { arbitrumSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { DOLFIN_ABI } from "@/constants/abi";
 
-const agentAccount = privateKeyToAccount(
-  process.env.AGENT_PRIVATE_KEY as `0x${string}`,
-);
-
-const publicClient = createPublicClient({
-  chain: arbitrumSepolia,
-  transport: http(),
-});
-
-const agentWallet = createWalletClient({
-  account: agentAccount,
-  chain: arbitrumSepolia,
-  transport: http(),
-});
-
 export async function POST(req: Request) {
   try {
+    const privateKey = process.env.AGENT_PRIVATE_KEY as `0x${string}`;
+    if (!privateKey) {
+      return Response.json(
+        { error: "AGENT_PRIVATE_KEY not configured" },
+        { status: 500 },
+      );
+    }
+
+    const agentAccount = privateKeyToAccount(privateKey);
+
+    const publicClient = createPublicClient({
+      chain: arbitrumSepolia,
+      transport: http(),
+    });
+
+    const agentWallet = createWalletClient({
+      account: agentAccount,
+      chain: arbitrumSepolia,
+      transport: http(),
+    });
+
     const { userAddress, authorization } = await req.json();
 
     if (!userAddress || !authorization) {
