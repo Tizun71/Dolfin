@@ -41,3 +41,14 @@ body {
 .hero-title {
   text-shadow: 0 0 80px rgba(81, 122, 179, 0.3);
 }
+
+.devs-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at top center,
+    #0d1f3c 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
