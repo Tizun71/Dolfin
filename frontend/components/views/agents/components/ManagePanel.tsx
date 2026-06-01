@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { type Address } from "viem";
 import { useAgentManage } from "@/hooks/useAgentManage";
+import { type TransferMode } from "@/hooks/useAccountTransfer";
 import AccountStatusCard from "./AccountStatusCard";
 import UtilizationBar from "./UtilizationBar";
 import PermissionsBreakdown from "./PermissionsBreakdown";
+import TransferDrawer from "./TransferDrawer";
 
 function StatTile({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
@@ -35,6 +38,8 @@ export default function ManagePanel({
     onSessionKeyChange,
   );
 
+  const [drawer, setDrawer] = useState<TransferMode | null>(null);
+
   const dead = !sessionKey || (status ? status.revoked || status.expired : false);
   const state = !status
     ? "—"
@@ -58,6 +63,22 @@ export default function ManagePanel({
         exists={!!account}
         sessionKey={sessionKey}
       />
+
+      {/* Fund movement */}
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={() => setDrawer("deposit")}
+          className={`${BTN} border-green-600 text-green-400 hover:bg-green-600/10`}
+        >
+          ↓ Deposit
+        </button>
+        <button
+          onClick={() => setDrawer("withdraw")}
+          className={`${BTN} border-[#627EEA] text-[#aab8f5] hover:bg-[#627EEA1a]`}
+        >
+          ↑ Withdraw
+        </button>
+      </div>
 
       {/* Capacity hero — usage filled against policy caps (Hyperbeat-style) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 items-start">
@@ -125,6 +146,15 @@ export default function ManagePanel({
           </div>
         </div>
       </div>
+
+      <TransferDrawer
+        open={drawer !== null}
+        mode={drawer ?? "deposit"}
+        owner={owner}
+        account={account}
+        onClose={() => setDrawer(null)}
+        onDone={refresh}
+      />
     </div>
   );
 }

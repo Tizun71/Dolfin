@@ -59,6 +59,17 @@ export const ACCOUNT_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [
+      { name: "target", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "data", type: "bytes" },
+    ],
+    name: "execute",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
   { inputs: [], name: "pauseAgent", outputs: [], stateMutability: "nonpayable", type: "function" },
   { inputs: [], name: "resumeAgent", outputs: [], stateMutability: "nonpayable", type: "function" },
   {

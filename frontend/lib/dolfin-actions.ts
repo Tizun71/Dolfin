@@ -1,7 +1,7 @@
 // Owner-driven Dolfin transactions, shared by the create + manage hooks. Each fn sends a tx
 // and waits for the receipt. Reads use the shared publicClient.
-import { parseUnits, type Address, type WalletClient } from "viem";
-import { ACCOUNT_SALT, DOLFIN, PROTOCOLS, buildActionMask, type PolicySettings } from "@/constants/dolfin";
+import { encodeFunctionData, erc20Abi, parseUnits, type Address, type WalletClient } from "viem";
+import { ACCOUNT_SALT, DOLFIN, PROTOCOLS, buildActionMask, type PolicySettings, type TransferToken } from "@/constants/dolfin";
 import { ACCOUNT_ABI, FACTORY_ABI } from "@/constants/dolfin-abi";
 import { publicClient } from "./dolfin-wallet";
 
@@ -89,6 +89,62 @@ export async function revokeKey(
     abi: ACCOUNT_ABI,
     functionName: "revokeSessionKey",
     args: [key],
+    account: owner,
+    chain: wallet.chain,
+  });
+  await publicClient.waitForTransactionReceipt({ hash });
+}
+
+// --- Fund movement (owner only) ---------------------------------------------
+
+// Balance of `token` for `holder` (native ETH when token.address is null).
+export async function balanceOf(token: TransferToken, holder: Address): Promise<bigint> {
+  if (!token.address) return publicClient.getBalance({ address: holder });
+  return publicClient.readContract({
+    address: token.address,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [holder],
+  });
+}
+
+// Deposit: owner -> smart account. ERC20 transfer, or native send.
+export async function deposit(
+  wallet: WalletClient,
+  owner: Address,
+  account: Address,
+  token: TransferToken,
+  amount: bigint,
+): Promise<void> {
+  const hash = token.address
+    ? await wallet.writeContract({
+        address: token.address,
+        abi: erc20Abi,
+        functionName: "transfer",
+        args: [account, amount],
+        account: owner,
+        chain: wallet.chain,
+      })
+    : await wallet.sendTransaction({ to: account, value: amount, account: owner, chain: wallet.chain });
+  await publicClient.waitForTransactionReceipt({ hash });
+}
+
+// Withdraw: smart account -> owner, via owner-only account.execute.
+export async function withdraw(
+  wallet: WalletClient,
+  owner: Address,
+  account: Address,
+  token: TransferToken,
+  amount: bigint,
+): Promise<void> {
+  const [target, value, data] = token.address
+    ? [token.address, BigInt(0), encodeFunctionData({ abi: erc20Abi, functionName: "transfer", args: [owner, amount] })]
+    : [owner, amount, "0x" as const];
+  const hash = await wallet.writeContract({
+    address: account,
+    abi: ACCOUNT_ABI,
+    functionName: "execute",
+    args: [target, value, data],
     account: owner,
     chain: wallet.chain,
   });

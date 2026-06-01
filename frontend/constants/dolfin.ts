@@ -18,6 +18,17 @@ export const TOKENS = [
   { symbol: "WETH", address: "0x1dF462e2712496373A347f8ad10802a5E95f053D", decimals: 18 },
 ] as const;
 
+// Tokens supported for deposit/withdraw transfers (native ETH has address null).
+export interface TransferToken {
+  symbol: string;
+  address: Address | null;
+  decimals: number;
+}
+export const TRANSFER_TOKENS: TransferToken[] = [
+  { symbol: "ETH", address: null, decimals: 18 },
+  ...TOKENS.map((t) => ({ symbol: t.symbol, address: t.address as Address, decimals: t.decimals })),
+];
+
 // PolicyManager.ActionType enum -> bit index used in the per-protocol action mask.
 export enum ActionType {
   SWAP = 0,
