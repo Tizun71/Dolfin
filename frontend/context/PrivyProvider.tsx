@@ -18,13 +18,13 @@ export default function PrivyProviderWrapper({
     <PrivyProvider
       appId={privyAppId || ""}
       config={{
-        loginMethods: ["email", "google", "twitter", "wallet"],
+        loginMethods: ["google", "wallet"],
 
         appearance: {
           theme: "dark",
           accentColor: "#627EEA",
 
-          walletList: ["metamask", "coinbase_wallet", "rainbow", "phantom"],
+          walletList: ["metamask", "rabby_wallet"],
         },
 
         embeddedWallets: {
