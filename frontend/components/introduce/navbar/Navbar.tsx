@@ -22,7 +22,7 @@ export default function Navbar() {
           className="flex items-center gap-3 group cursor-pointer"
         >
           <LogoDolfin />
-          <span className="text-white text-xl font-semibold uppercase tracking-[4px] group-hover:tracking-[6px] transition-all duration-300 ease-in-out">
+          <span className="text-brand-gradient text-xl font-semibold uppercase tracking-[4px] group-hover:tracking-[6px] transition-all duration-300 ease-in-out">
             Dolfin
           </span>
         </button>

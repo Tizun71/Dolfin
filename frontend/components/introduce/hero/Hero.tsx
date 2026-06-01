@@ -13,7 +13,7 @@ export default function Hero() {
     <main className="relative z-10 flex-1 flex flex-col items-center justify-center text-center p-8 pt-32 min-h-screen">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-auto z-0 overflow-hidden mix-blend-screen opacity-75">
         <FloatingLines
-          linesGradient={["#517ab3", "#000000", "#6a6a6a"]}
+          linesGradient={["#f97316", "#000000", "#fbbf24"]}
           animationSpeed={1}
           interactive
           bendRadius={8}
@@ -33,7 +33,7 @@ export default function Hero() {
         </p>
 
         <h1
-          className="hero-title text-[10rem] font-light uppercase tracking-[0.15em] leading-none text-white mb-8 hover:scale-110 transition-transform duration-300"
+          className="hero-title text-brand-gradient text-[10rem] font-light uppercase tracking-[0.15em] leading-none mb-8 hover:scale-110 transition-transform duration-300"
           style={getStyle(200)}
         >
           Dolfin

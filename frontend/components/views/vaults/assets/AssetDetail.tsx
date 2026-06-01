@@ -267,7 +267,7 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
             {!isRunning ? (
               <button
                 onClick={handleRun}
-                className="px-6 py-2 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition-all duration-300"
+                className="px-6 py-2 text-xs uppercase tracking-[3px] font-mono btn-brand transition-all duration-300"
               >
                 Run
               </button>

@@ -83,7 +83,7 @@ export default function SetupModal({
           <button
             onClick={handleSign}
             disabled={loading}
-            className="w-full py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition disabled:opacity-50"
+            className="w-full py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-50"
           >
             {loading ? "Đang ký..." : "Sign →"}
           </button>
@@ -93,7 +93,7 @@ export default function SetupModal({
           <button
             onClick={handleApprove}
             disabled={loading}
-            className="w-full py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition disabled:opacity-50"
+            className="w-full py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-50"
           >
             {loading ? "Đang xử lý..." : "Approve Token →"}
           </button>
