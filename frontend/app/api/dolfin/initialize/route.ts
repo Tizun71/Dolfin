@@ -1,15 +1,11 @@
 // TODO: Migrate this endpoint to Hono backend
-import {
-  createWalletClient,
-  createPublicClient,
-  http,
-} from "viem";
+import { createWalletClient, createPublicClient, http } from "viem";
 import { arbitrumSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { DOLFIN_ABI } from "@/constants/abi";
 
 const agentAccount = privateKeyToAccount(
-  process.env.AGENT_PRIVATE_KEY as `0x${string}`
+  process.env.AGENT_PRIVATE_KEY as `0x${string}`,
 );
 
 const publicClient = createPublicClient({
@@ -30,7 +26,7 @@ export async function POST(req: Request) {
     if (!userAddress || !authorization) {
       return Response.json(
         { error: "Missing userAddress or authorization" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

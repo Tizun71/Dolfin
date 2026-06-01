@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { useWallets } from "@privy-io/react-auth";
-import {
-  createWalletClient,
-  createPublicClient,
-  custom,
-  http,
-} from "viem";
+import { createWalletClient, createPublicClient, custom, http } from "viem";
 import { arbitrumSepolia } from "viem/chains";
 import { hashAuthorization } from "viem/experimental";
 

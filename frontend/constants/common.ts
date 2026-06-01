@@ -1,24 +1,24 @@
 export const ITEMS_DEVS = [
   {
-    icon: "🔒",
+    index: "01",
     title: "Security",
     desc: "Find and report vulnerabilities, receive generous rewards.",
     href: "#",
   },
   {
-    icon: "💻",
+    index: "02",
     title: "SDK",
     desc: "Utilize our SDK to streamline frontend development and enhance user experiences.",
     href: "#",
   },
   {
-    icon: "🐙",
+    index: "03",
     title: "Github",
     desc: "Explore our open-source repository for collaborative development.",
     href: "https://github.com/Tizun71/Dolfin",
   },
   {
-    icon: "📄",
+    index: "04",
     title: "Developer Docs",
     desc: "Access comprehensive documentation for seamless API integration.",
     href: "#",
