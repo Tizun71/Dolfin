@@ -8,6 +8,13 @@
       "when": 1779095306252,
       "tag": "0000_yielding_naoko",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780308459888,
+      "tag": "0001_fancy_centennial",
+      "breakpoints": true
     }
   ]
 }

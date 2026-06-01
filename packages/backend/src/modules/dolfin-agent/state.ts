@@ -39,6 +39,8 @@ export interface AdvisorState {
   calls?: AdapterCall[];
   /** userOpHashes returned by the bundler (Executor node). */
   userOpHashes?: string[];
+  /** On-chain transaction hashes mined for each userOp (Receipt node, parallel to userOpHashes). */
+  transactions?: `0x${string}`[];
   /** Human-readable narration (Advisor / Claude node, explain-only). */
   advice?: string;
 }
@@ -57,5 +59,6 @@ export const AdvisorAnnotation = Annotation.Root({
   rejected: Annotation<RejectedDecision[] | undefined>(),
   calls: Annotation<AdapterCall[] | undefined>(),
   userOpHashes: Annotation<string[] | undefined>(),
+  transactions: Annotation<`0x${string}`[] | undefined>(),
   advice: Annotation<string | undefined>(),
 });
