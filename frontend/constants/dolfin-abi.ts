@@ -70,6 +70,23 @@ export const ACCOUNT_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        name: "calls",
+        type: "tuple[]",
+        components: [
+          { name: "target", type: "address" },
+          { name: "value", type: "uint256" },
+          { name: "data", type: "bytes" },
+        ],
+      },
+    ],
+    name: "executeBatch",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
   { inputs: [], name: "pauseAgent", outputs: [], stateMutability: "nonpayable", type: "function" },
   { inputs: [], name: "resumeAgent", outputs: [], stateMutability: "nonpayable", type: "function" },
   {
@@ -149,6 +166,29 @@ export const POLICY_MANAGER_ABI = [
     name: "isBroken",
     outputs: [{ name: "", type: "bool" }],
     stateMutability: "view",
+    type: "function",
+  },
+  // Removal setters — namespaced by msg.sender (the smart account), so call via account.executeBatch.
+  {
+    inputs: [
+      { name: "sessionKey", type: "address" },
+      { name: "tokens", type: "address[]" },
+      { name: "allowed", type: "bool" },
+    ],
+    name: "setAllowedTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { name: "sessionKey", type: "address" },
+      { name: "protocol", type: "address" },
+      { name: "mask", type: "uint256" },
+    ],
+    name: "setAllowedActions",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ] as const;

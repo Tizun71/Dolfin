@@ -6,8 +6,9 @@ import { type Address } from "viem";
 import { DOLFIN } from "@/constants/dolfin";
 import { ACCOUNT_ABI, POLICY_MANAGER_ABI } from "@/constants/dolfin-abi";
 import { buildWalletClient, errMsg, feeOverrides, getActiveWallet, publicClient } from "@/lib/dolfin-wallet";
-import { grantSession, revokeKey } from "@/lib/dolfin-actions";
-import { addSession, getSession, newSession, replaceSession } from "@/lib/account-store";
+import { editSession, grantSession, revokeKey } from "@/lib/dolfin-actions";
+import { addSession, getSession, newSession, replaceSession, updateSessionSettings } from "@/lib/account-store";
+import { type PolicySettings } from "@/constants/dolfin";
 import { toast } from "sonner";
 
 export interface AgentStatus {
@@ -149,6 +150,16 @@ export function useAgentManage(
       onSessionKeyChange(session.key);
     });
 
+  // Edit policy in place: keep the same key, overwrite caps/scope on-chain + in the local store.
+  const edit = (next: PolicySettings) =>
+    sessionKey && run("edit", async ({ walletClient, owner: o }) => {
+      const stored = getSession(o, account!, sessionKey);
+      if (!stored) throw new Error("No stored policy for this session.");
+      await editSession(walletClient, o, account!, sessionKey, stored.settings, next);
+      updateSessionSettings(o, account!, sessionKey, next);
+      onSessionKeyChange(sessionKey);
+    });
+
   return {
     status,
     loading,
@@ -158,5 +169,6 @@ export function useAgentManage(
     revoke,
     register,
     rotate,
+    edit,
   };
 }

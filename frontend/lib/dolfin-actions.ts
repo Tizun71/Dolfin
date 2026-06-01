@@ -2,7 +2,7 @@
 // and waits for the receipt. Reads use the shared publicClient.
 import { encodeFunctionData, erc20Abi, parseUnits, type Address, type WalletClient } from "viem";
 import { DOLFIN, PROTOCOLS, buildActionMask, type PolicySettings, type TransferToken } from "@/constants/dolfin";
-import { ACCOUNT_ABI, FACTORY_ABI } from "@/constants/dolfin-abi";
+import { ACCOUNT_ABI, FACTORY_ABI, POLICY_MANAGER_ABI } from "@/constants/dolfin-abi";
 import { feeOverrides, publicClient } from "./dolfin-wallet";
 
 const usd = (v: string) => parseUnits(v || "0", 18);
@@ -73,6 +73,57 @@ export async function grantSession(
     abi: ACCOUNT_ABI,
     functionName: "configureSession",
     args: [sessionKey, expiry, policy, adapters, s.tokens, grants],
+    account: owner,
+    chain: wallet.chain,
+    ...(await feeOverrides()),
+  });
+  await publicClient.waitForTransactionReceipt({ hash });
+}
+
+// Edit an existing session's policy in place (same key kept, agent keeps running).
+// 1) configureSession overwrites caps/expiry, re-adds selected tokens/adapters, sets masks for kept protocols.
+// 2) Removals (PolicyManager setters only ever ADD) are explicitly cleared via account.executeBatch,
+//    so dropping a token / whole protocol actually revokes it on-chain instead of silently leaking.
+export async function editSession(
+  wallet: WalletClient,
+  owner: Address,
+  account: Address,
+  sessionKey: Address,
+  oldSettings: PolicySettings,
+  newSettings: PolicySettings,
+): Promise<void> {
+  await grantSession(wallet, owner, account, sessionKey, newSettings);
+
+  const lower = (xs: string[]) => xs.map((x) => x.toLowerCase());
+  const newTokens = new Set(lower(newSettings.tokens));
+  const removedTokens = oldSettings.tokens.filter((t) => !newTokens.has(t.toLowerCase())) as Address[];
+  const removedProtocols = PROTOCOLS.filter(
+    (p) => (oldSettings.protocols[p.key] ?? []).length > 0 && (newSettings.protocols[p.key] ?? []).length === 0,
+  );
+
+  if (!removedTokens.length && !removedProtocols.length) return;
+
+  const calls: { target: Address; value: bigint; data: `0x${string}` }[] = [];
+  if (removedTokens.length) {
+    calls.push({
+      target: DOLFIN.policyManager as Address,
+      value: BigInt(0),
+      data: encodeFunctionData({ abi: POLICY_MANAGER_ABI, functionName: "setAllowedTokens", args: [sessionKey, removedTokens, false] }),
+    });
+  }
+  for (const p of removedProtocols) {
+    calls.push({
+      target: DOLFIN.policyManager as Address,
+      value: BigInt(0),
+      data: encodeFunctionData({ abi: POLICY_MANAGER_ABI, functionName: "setAllowedActions", args: [sessionKey, p.protocol as Address, BigInt(0)] }),
+    });
+  }
+
+  const hash = await wallet.writeContract({
+    address: account,
+    abi: ACCOUNT_ABI,
+    functionName: "executeBatch",
+    args: [calls],
     account: owner,
     chain: wallet.chain,
     ...(await feeOverrides()),

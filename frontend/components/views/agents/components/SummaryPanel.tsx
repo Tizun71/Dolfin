@@ -11,10 +11,14 @@ export default function SummaryPanel({
   settings,
   loading,
   onSubmit,
+  submitLabel = "Create Agent →",
+  note = "Generates a fresh session key, grants it this policy, and registers it on-chain. Owner signs once.",
 }: {
   settings: PolicySettings;
   loading: boolean;
   onSubmit: () => void;
+  submitLabel?: string;
+  note?: string;
 }) {
   const grants = PROTOCOLS.filter((p) => (settings.protocols[p.key] ?? []).length > 0).map(
     (p) => `${(settings.protocols[p.key] ?? []).map((a) => ACTION_LABELS[a]).join(", ")} on ${p.name}`,
@@ -49,16 +53,14 @@ export default function SummaryPanel({
         ))}
       </ul>
 
-      <p className="text-[#555] text-xs font-mono leading-relaxed mb-6">
-        Generates a fresh session key, grants it this policy, and registers it on-chain. Owner signs once.
-      </p>
+      <p className="text-[#555] text-xs font-mono leading-relaxed mb-6">{note}</p>
 
       <button
         onClick={onSubmit}
         disabled={loading || !ready}
         className="w-full py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-40"
       >
-        {loading ? "Processing…" : "Create Agent →"}
+        {loading ? "Processing…" : submitLabel}
       </button>
     </div>
   );

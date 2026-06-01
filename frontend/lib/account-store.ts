@@ -81,6 +81,14 @@ export function replaceSession(owner: Address, address: Address, oldKey: Address
   });
 }
 
+// Edit in place: overwrite the policy settings of an existing session key (same key kept).
+export function updateSessionSettings(owner: Address, address: Address, key: Address, settings: PolicySettings): void {
+  mutateAccount(owner, address, (a) => {
+    const s = a.sessions.find((x) => x.key.toLowerCase() === key.toLowerCase());
+    if (s) s.settings = settings;
+  });
+}
+
 export function getSession(owner: Address, address: Address, key: Address): StoredSession | null {
   return getAccount(owner, address)?.sessions.find((s) => s.key.toLowerCase() === key.toLowerCase()) ?? null;
 }
