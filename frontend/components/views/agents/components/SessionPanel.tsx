@@ -25,7 +25,7 @@ export default function SessionPanel({
   settings: PolicySettings | null;
   onSessionKeyChange: (key: Address) => void;
 }) {
-  const { status, loading, pause, resume, revoke, register, rotate, refresh } = useAgentManage(
+  const { status, loading, revoke, register, rotate, refresh } = useAgentManage(
     owner,
     account,
     sessionKey,
@@ -45,7 +45,7 @@ export default function SessionPanel({
             ? "Expired"
             : "Active";
   const dot =
-    state === "Active" ? "bg-green-400" : state === "—" ? "bg-[#555]" : "bg-yellow-400";
+    state === "Active" ? "bg-[#fb923c]" : state === "—" ? "bg-[#555]" : "bg-[#888]";
 
   return (
     <div className="card-3d p-8">
@@ -66,7 +66,7 @@ export default function SessionPanel({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-8">
         <UtilizationBar label="Exposure" used={status?.exposure ?? BigInt(0)} cap={status?.maxExposure ?? BigInt(0)} />
-        <UtilizationBar label="24h Volume" used={status?.dayVolume ?? BigInt(0)} cap={status?.maxDailyVolume ?? BigInt(0)} color="#f59e0b" />
+        <UtilizationBar label="24h Volume" used={status?.dayVolume ?? BigInt(0)} cap={status?.maxDailyVolume ?? BigInt(0)} />
         <div className="card-3d p-8">
           <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px]">Expiry</p>
           <p className="text-lg font-normal mt-4 text-white">
@@ -84,19 +84,10 @@ export default function SessionPanel({
           </button>
         ) : (
           <>
-            {status?.paused ? (
-              <button onClick={resume} disabled={loading} className={`${BTN} border-green-600 text-green-400 hover:bg-green-600 hover:text-black`}>
-                Resume
-              </button>
-            ) : (
-              <button onClick={pause} disabled={loading} className={`${BTN} border-yellow-600 text-yellow-400 hover:bg-yellow-600 hover:text-black`}>
-                Pause
-              </button>
-            )}
             <button onClick={rotate} disabled={loading} className={`${BTN} btn-brand-outline`}>
               Rotate Key
             </button>
-            <button onClick={revoke} disabled={loading} className={`${BTN} border-red-700 text-red-400 hover:bg-red-700 hover:text-white`}>
+            <button onClick={revoke} disabled={loading} className={`${BTN} border-[#333] text-[#888] hover:bg-white hover:text-black hover:border-white`}>
               Revoke Key
             </button>
           </>

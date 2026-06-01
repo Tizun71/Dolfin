@@ -3,11 +3,11 @@
 :root {
   /* Brand palette derived from Dolfin logo (amber-gold → orange) */
   --brand-50: #fff7ed;
-  --brand-300: #fdba74;
+  --brand-300: #fcd9a8;
   --brand-400: #fbbf24; /* gold */
-  --brand-500: #f97316; /* orange */
-  --brand-600: #ea580c; /* deep orange */
-  --brand-glow: rgba(249, 115, 22, 0.35);
+  --brand-500: #fb923c; /* soft orange */
+  --brand-600: #f97316; /* orange */
+  --brand-glow: rgba(251, 146, 60, 0.22);
 }
 
 body {
@@ -23,8 +23,8 @@ body {
     100deg,
     #fde047 0%,
     #fbbf24 35%,
-    #f97316 70%,
-    #ea580c 100%
+    #fb923c 70%,
+    #f97316 100%
   );
   -webkit-background-clip: text;
   background-clip: text;

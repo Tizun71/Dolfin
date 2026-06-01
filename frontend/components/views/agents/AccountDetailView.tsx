@@ -13,8 +13,6 @@ import CreateSessionForm from "./components/CreateSessionForm";
 import TransferDrawer from "./components/TransferDrawer";
 import Modal from "./components/Modal";
 
-const BTN = "px-6 py-3 text-xs uppercase tracking-[2px] font-mono border transition disabled:opacity-50";
-
 export default function AccountDetailView({ address }: { address: Address }) {
   const { wallets } = useWallets();
   const [owner, setOwner] = useState<Address | null>(null);
@@ -60,17 +58,13 @@ export default function AccountDetailView({ address }: { address: Address }) {
       </div>
 
       <div className="space-y-8">
-        <AccountStatusCard owner={owner ?? undefined} account={address} exists sessionKey={null} />
-
-        {/* Fund movement */}
-        <div className="flex flex-wrap gap-3">
-          <button onClick={() => setDrawer("deposit")} className={`${BTN} border-green-600 text-green-400 hover:bg-green-600 hover:text-black`}>
-            ↓ Deposit
-          </button>
-          <button onClick={() => setDrawer("withdraw")} className={`${BTN} btn-brand-outline`}>
-            ↑ Withdraw
-          </button>
-        </div>
+        <AccountStatusCard
+          owner={owner ?? undefined}
+          account={address}
+          exists
+          onDeposit={() => setDrawer("deposit")}
+          onWithdraw={() => setDrawer("withdraw")}
+        />
 
         {/* Sessions / agents */}
         <h2 className="text-xs font-mono uppercase tracking-[3px] text-[#444] border-b border-[#1a1a1a] pb-4">

@@ -9,7 +9,7 @@ export default function UtilizationBar({
   label,
   used,
   cap,
-  color = "#f97316",
+  color = "#fb923c",
 }: {
   label: string;
   used: bigint;
@@ -31,7 +31,7 @@ export default function UtilizationBar({
       <div className="mt-5 h-1.5 w-full bg-[#1a1a1a] overflow-hidden">
         <div
           className="h-full transition-all duration-500"
-          style={{ width: `${pct}%`, background: hot ? "#e0533d" : color }}
+          style={{ width: `${pct}%`, background: hot ? "#f97316" : color }}
         />
       </div>
     </div>

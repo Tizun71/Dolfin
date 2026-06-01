@@ -25,7 +25,7 @@ export default function ProtocolGrants({
   const chip = (active: boolean) =>
     `flex items-center gap-2 px-3 py-2 border text-xs font-mono uppercase tracking-[1px] transition ${
       active
-        ? "border-[#f97316] bg-[#f973161a] text-[#fbbf24]"
+        ? "border-[#fb923c] bg-[#fb923c1a] text-[#fbbf24]"
         : "border-[#222] text-[#666] hover:border-[#333]"
     }`;
 
