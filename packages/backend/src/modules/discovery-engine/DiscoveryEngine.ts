@@ -7,6 +7,7 @@ import type { MarketContext } from "./types.js";
  * connected its channel stays empty rather than fabricated.
  */
 export class DiscoveryEngine implements IDiscoveryEnigne {
+  //TODO: Research Dune to get market data (yields, funding rates, token prices, protocol metrics) and alerts (liquidations, large trades, volatility spikes)
   collect(): MarketContext {
     return {
       timestamp: Date.now(),
