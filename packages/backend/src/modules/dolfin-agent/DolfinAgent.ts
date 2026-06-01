@@ -45,20 +45,21 @@ export class DolfinAgent {
     const receipt = new ReceiptNode(deps.onchain);
     const advisor = new AdvisorNode();
 
+    // Node names must differ from state channel names (portfolio/risk/market are channels).
     this.graph = new StateGraph(AdvisorAnnotation)
-      .addNode("portfolio", portfolio.execute)
-      .addNode("risk", risk.execute)
-      .addNode("market", market.execute)
+      .addNode("fetchPortfolio", portfolio.execute)
+      .addNode("assessRisk", risk.execute)
+      .addNode("fetchMarket", market.execute)
       .addNode("strategy", strategy.execute)
       .addNode("validation", validation.execute)
       .addNode("planner", planner.execute)
       .addNode("executor", executor.execute)
       .addNode("receipt", receipt.execute)
       .addNode("advisor", advisor.execute)
-      .addEdge(START, "portfolio")
-      .addEdge("portfolio", "risk")
-      .addEdge("risk", "market")
-      .addEdge("market", "strategy")
+      .addEdge(START, "fetchPortfolio")
+      .addEdge("fetchPortfolio", "assessRisk")
+      .addEdge("assessRisk", "fetchMarket")
+      .addEdge("fetchMarket", "strategy")
       .addEdge("strategy", "validation")
       .addConditionalEdges("validation", hasValidDecisions, {
         planner: "planner",

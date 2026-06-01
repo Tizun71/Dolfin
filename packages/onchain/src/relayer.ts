@@ -93,17 +93,31 @@ export class ExecutionRelayer {
     })) as bigint;
 
     const fees = await this.pub.estimateFeesPerGas();
+    // Arbitrum's fee estimate often returns a 0 priority fee, which bundlers reject — floor it.
+    const minPriority = 1_000_000_000n; // 1 gwei
+    const maxPriorityFeePerGas = (fees.maxPriorityFeePerGas ?? 0n) > minPriority ? fees.maxPriorityFeePerGas! : minPriority;
+    const maxFeePerGas = (fees.maxFeePerGas ?? 0n) > maxPriorityFeePerGas ? fees.maxFeePerGas! : maxPriorityFeePerGas * 2n;
+
     const userOp: PackedUserOperation = {
       sender: this.cfg.account,
       nonce,
       initCode: "0x",
       callData,
-      accountGasLimits: pack(800_000n, 800_000n),
-      preVerificationGas: 100_000n,
-      gasFees: pack(fees.maxPriorityFeePerGas ?? 1_000_000_000n, fees.maxFeePerGas ?? 20_000_000_000n),
+      // Placeholders; replaced by the bundler's gas estimate below.
+      accountGasLimits: pack(1_000_000n, 1_000_000n),
+      preVerificationGas: 1_000_000n,
+      gasFees: pack(maxPriorityFeePerGas, maxFeePerGas),
       paymasterAndData: "0x",
-      signature: "0x",
+      // Dummy session-mode signature so estimation has the right calldata size.
+      signature: concat([SIG_MODE_SESSION, `0x${"00".repeat(65)}`]),
     };
+
+    // Let the bundler size the gas (hardcoded limits trip Alchemy's efficiency check on Arbitrum).
+    // Alchemy over-pads verificationGasLimit (~1M) then rejects it for low efficiency; cap it.
+    const est = await this.estimateGas(userOp);
+    const verificationGasLimit = est.verificationGasLimit > 150_000n ? 150_000n : est.verificationGasLimit;
+    userOp.accountGasLimits = pack(verificationGasLimit, est.callGasLimit);
+    userOp.preVerificationGas = est.preVerificationGas;
 
     // EntryPoint computes the canonical hash (binds chainId + entrypoint → replay-safe).
     const userOpHash = (await this.pub.readContract({
@@ -118,6 +132,33 @@ export class ExecutionRelayer {
 
     await this.sendToBundler(userOp);
     return userOpHash;
+  }
+
+  /** Ask the bundler to size verification/call/preVerification gas for this op. */
+  private async estimateGas(
+    userOp: PackedUserOperation,
+  ): Promise<{ preVerificationGas: bigint; verificationGasLimit: bigint; callGasLimit: bigint }> {
+    const res = await fetch(this.cfg.bundlerUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_estimateUserOperationGas",
+        params: [serializeUserOp(userOp), this.cfg.entryPoint],
+      }),
+    });
+    const json = (await res.json()) as {
+      result?: { preVerificationGas: `0x${string}`; verificationGasLimit: `0x${string}`; callGasLimit: `0x${string}` };
+      error?: { message: string };
+    };
+    if (json.error) throw new Error(`bundler estimate: ${json.error.message}`);
+    const r = json.result!;
+    return {
+      preVerificationGas: BigInt(r.preVerificationGas),
+      verificationGasLimit: BigInt(r.verificationGasLimit),
+      callGasLimit: BigInt(r.callGasLimit),
+    };
   }
 
   /** Poll the bundler for a UserOperation receipt. Returns null until it is mined. */
@@ -167,16 +208,30 @@ export class ExecutionRelayer {
   }
 }
 
+/** Split a packed bytes32 (hi<<128 | lo) into its two 16-byte halves. */
+function unpack(b32: `0x${string}`): [bigint, bigint] {
+  const h = b32.slice(2).padStart(64, "0");
+  return [BigInt(`0x${h.slice(0, 32)}`), BigInt(`0x${h.slice(32)}`)];
+}
+
+const hex = (v: bigint): `0x${string}` => `0x${v.toString(16)}`;
+
+/**
+ * Convert the on-chain PACKED UserOperation into the UNPACKED JSON-RPC shape the bundler
+ * expects (EntryPoint v0.7/v0.8). Packed fields are split; empty factory/paymaster omitted.
+ */
 function serializeUserOp(op: PackedUserOperation) {
+  const [verificationGasLimit, callGasLimit] = unpack(op.accountGasLimits);
+  const [maxPriorityFeePerGas, maxFeePerGas] = unpack(op.gasFees);
   return {
     sender: op.sender,
-    nonce: `0x${op.nonce.toString(16)}`,
-    initCode: op.initCode,
+    nonce: hex(op.nonce),
     callData: op.callData,
-    accountGasLimits: op.accountGasLimits,
-    preVerificationGas: `0x${op.preVerificationGas.toString(16)}`,
-    gasFees: op.gasFees,
-    paymasterAndData: op.paymasterAndData,
+    callGasLimit: hex(callGasLimit),
+    verificationGasLimit: hex(verificationGasLimit),
+    preVerificationGas: hex(op.preVerificationGas),
+    maxFeePerGas: hex(maxFeePerGas),
+    maxPriorityFeePerGas: hex(maxPriorityFeePerGas),
     signature: op.signature,
   };
 }

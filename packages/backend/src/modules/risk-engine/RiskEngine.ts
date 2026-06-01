@@ -2,7 +2,7 @@ import type { IRiskAnalyzer } from "./RiskAnalyzer.interface.js";
 import type { IRiskEngine } from "./RiskEngine.interface.js";
 import { RiskLevel, type RiskContext, type RiskResult } from "./types.js";
 
-class RiskEngineImplement implements IRiskEngine {
+export class RiskEngineImplement implements IRiskEngine {
   constructor(private readonly analyzers: IRiskAnalyzer[]) {}
 
   async analyze(context: RiskContext) {

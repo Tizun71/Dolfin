@@ -11,17 +11,29 @@ export class AdvisorNode {
   constructor(private readonly model = google("gemini-2.0-flash")) {}
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {
-    const { text } = await generateText({
-      model: this.model,
-      system:
-        "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
-        "actions that were already decided by the rule engine. Reference concrete numbers from " +
-        "the data. Never invent positions or actions that are not present in the provided data.",
-      prompt: this.buildPrompt(state),
-    });
-
-    return { advice: text };
+    try {
+      const { text } = await generateText({
+        model: this.model,
+        system:
+          "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
+          "actions that were already decided by the rule engine. Reference concrete numbers from " +
+          "the data. Never invent positions or actions that are not present in the provided data.",
+        prompt: this.buildPrompt(state),
+      });
+      return { advice: text };
+    } catch (err) {
+      // Narration is non-critical and runs AFTER execution — never fail the pipeline on it.
+      const reason = err instanceof Error ? err.message : String(err);
+      return { advice: `${this.fallbackAdvice(state)}\n\n(LLM narration unavailable: ${reason})` };
+    }
   };
+
+  /** Deterministic summary when the LLM is unavailable. */
+  private fallbackAdvice(state: AdvisorState): string {
+    const done = (state.validDecisions ?? []).map((d) => d.reason ?? d.actionType).join("; ") || "no actions";
+    const dropped = (state.rejected ?? []).length;
+    return `Risk ${state.risk?.level ?? "?"}. Executed: ${done}. Rejected: ${dropped}.`;
+  }
 
   private buildPrompt(state: AdvisorState): string {
     return [
