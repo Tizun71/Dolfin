@@ -1,0 +1,47 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-0563ec10fab188c5b4187342fd5d1401842efdd3",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.4.5"
+  },
+  "userSourceNameMap": {
+    "contracts/DolfinAccount.sol": "project/contracts/DolfinAccount.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": ["ast"],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/DolfinAccount.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.28;\n\ncontract DolfinAccount {\n    error CallFailed(uint256 index, bytes returnData);\n    error UnauthorizedCaller();\n    error AlreadyWhitelisted();\n    error NotWhitelisted();\n\n    event CallExecuted(\n        uint256 indexed index,\n        address indexed to,\n        uint256 value,\n        bytes data\n    );\n    event CallerWhitelisted(address indexed caller);\n    event CallerRemovedFromWhitelist(address indexed caller);\n\n    struct Call {\n        address to;\n        uint256 value;\n        bytes data;\n    }\n\n    struct AccountStorage {\n        mapping(address => bool) whitelistedCallers;\n        bool executing;\n    }\n\n    bytes32 private constant _ACCOUNT_STORAGE_SLOT =\n        keccak256(abi.encode(uint256(keccak256(\"DolfinAccount\")) - 1)) &\n            ~bytes32(uint256(0xff));\n\n    function _getAccountStorage()\n        private\n        pure\n        returns (AccountStorage storage $)\n    {\n        bytes32 slot = _ACCOUNT_STORAGE_SLOT;\n        assembly {\n            $.slot := slot\n        }\n    }\n\n    function initialize() external {}\n\n    // Chỉ owner (address(this)) gọi trực tiếp từ bên ngoài, không phải từ trong _executeCalls\n    function executeDirect(Call[] calldata calls) external payable {\n        if (msg.sender != address(this)) revert UnauthorizedCaller();\n        AccountStorage storage $ = _getAccountStorage();\n        if ($.executing) revert UnauthorizedCaller();\n        _executeCalls(calls);\n    }\n\n    // Owner hoặc whitelisted caller\n    function execute(Call[] calldata calls) external payable {\n        AccountStorage storage $ = _getAccountStorage();\n        if (msg.sender != address(this) && !$.whitelistedCallers[msg.sender]) {\n            revert UnauthorizedCaller();\n        }\n        _executeCalls(calls);\n    }\n\n    // Chỉ owner gọi trực tiếp, không được gọi từ trong _executeCalls\n    function addToWhitelist(address caller) external {\n        if (msg.sender != address(this)) revert UnauthorizedCaller();\n        AccountStorage storage $ = _getAccountStorage();\n        if ($.executing) revert UnauthorizedCaller();\n        if ($.whitelistedCallers[caller]) revert AlreadyWhitelisted();\n        $.whitelistedCallers[caller] = true;\n        emit CallerWhitelisted(caller);\n    }\n\n    // Chỉ owner gọi trực tiếp, không được gọi từ trong _executeCalls\n    function removeFromWhitelist(address caller) external {\n        if (msg.sender != address(this)) revert UnauthorizedCaller();\n        AccountStorage storage $ = _getAccountStorage();\n        if ($.executing) revert UnauthorizedCaller();\n        if (!$.whitelistedCallers[caller]) revert NotWhitelisted();\n        $.whitelistedCallers[caller] = false;\n        emit CallerRemovedFromWhitelist(caller);\n    }\n\n    function isWhitelisted(address caller) external view returns (bool) {\n        return _getAccountStorage().whitelistedCallers[caller];\n    }\n\n    function _executeCalls(Call[] calldata calls) internal {\n        AccountStorage storage $ = _getAccountStorage();\n        $.executing = true;\n        for (uint256 i = 0; i < calls.length; i++) {\n            (bool ok, bytes memory ret) = calls[i].to.call{\n                value: calls[i].value\n            }(calls[i].data);\n            if (!ok) revert CallFailed(i, ret);\n            emit CallExecuted(i, calls[i].to, calls[i].value, calls[i].data);\n        }\n        $.executing = false;\n    }\n\n    fallback() external payable {}\n\n    receive() external payable {}\n}\n"
+      }
+    }
+  }
+}

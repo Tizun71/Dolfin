@@ -2,6 +2,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
+import userModule from "./modules/user/index.js";
+import aaveModule from "./modules/aave/index.js";
+import aiModule from "./modules/ai/index.js";
+import gmxModule from "./modules/gmx/index.js";
+import { saveMarketHistory } from "./jobs/save_market_history.js";
+
+// Start the cron job to save market history
+saveMarketHistory.start();
 
 // Configure Logtape logger
 await configure({
@@ -21,16 +29,25 @@ const logger = getLogger("hono");
 const app = new Hono();
 app.use(honoLogger());
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
+// Register user module
+app.route("/user", userModule);
+
+// Register aave module
+app.route("/aave", aaveModule);
+
+// Register AI module
+app.route("/ai", aiModule);
+
+// Register GMX module
+app.route("/gmx", gmxModule);
 
 serve(
   {
     fetch: app.fetch,
-    port: 8080,
+    port: parseInt(process.env.PORT || "8080"),
+    hostname: process.env.HOSTNAME || "localhost",
   },
   (info) => {
-    logger.info(`Server is running on http://localhost:${info.port}`);
+    logger.info(`Server is running on ${info.address}:${info.port}`);
   },
 );
