@@ -6,6 +6,7 @@ import { formatUnits, parseUnits, type Address } from "viem";
 import { TRANSFER_TOKENS, type TransferToken } from "@/constants/dolfin";
 import { buildWalletClient, errMsg, getActiveWallet } from "@/lib/dolfin-wallet";
 import { balanceOf, deposit, withdraw } from "@/lib/dolfin-actions";
+import { toast } from "sonner";
 
 export type TransferMode = "deposit" | "withdraw";
 
@@ -22,8 +23,6 @@ export function useAccountTransfer(
   const [ownerBal, setOwnerBal] = useState<bigint | null>(null);
   const [acctBal, setAcctBal] = useState<bigint | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   // Source balance = where funds come FROM (owner for deposit, account for withdraw).
   const sourceBal = mode === "deposit" ? ownerBal : acctBal;
@@ -37,7 +36,7 @@ export function useAccountTransfer(
         setOwnerBal(o);
         setAcctBal(a);
       })
-      .catch((e) => !cancelled && setError(errMsg(e, "Failed to read balances.")));
+      .catch((e) => !cancelled && toast.error(errMsg(e, "Failed to read balances.")));
     return () => {
       cancelled = true;
     };
@@ -49,8 +48,6 @@ export function useAccountTransfer(
 
   const submit = async () => {
     setLoading(true);
-    setError("");
-    setSuccess("");
     try {
       const wallet = getActiveWallet(wallets);
       if (!wallet) throw new Error("Please connect an external wallet first.");
@@ -68,7 +65,7 @@ export function useAccountTransfer(
       if (mode === "deposit") await deposit(walletClient, o, account, token, value);
       else await withdraw(walletClient, o, account, token, value);
 
-      setSuccess(`${mode === "deposit" ? "Deposited" : "Withdrew"} ${amount} ${token.symbol}.`);
+      toast.success(`${mode === "deposit" ? "Deposited" : "Withdrew"} ${amount} ${token.symbol}.`);
       setAmount("");
       // refresh balances
       const [no, na] = await Promise.all([balanceOf(token, o), balanceOf(token, account)]);
@@ -77,7 +74,7 @@ export function useAccountTransfer(
       onDone();
     } catch (e: unknown) {
       console.error(`[DOLFIN] ${mode} failed:`, e);
-      setError(errMsg(e, `${mode} failed.`));
+      toast.error(errMsg(e, `${mode} failed.`));
     } finally {
       setLoading(false);
     }
@@ -93,8 +90,6 @@ export function useAccountTransfer(
     acctBal,
     sourceBal,
     loading,
-    error,
-    success,
     submit,
   };
 }

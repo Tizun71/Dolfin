@@ -7,16 +7,15 @@ import { type PolicySettings } from "@/constants/dolfin";
 import { buildWalletClient, errMsg, getActiveWallet } from "@/lib/dolfin-wallet";
 import { grantSession } from "@/lib/dolfin-actions";
 import { addSession, newSession } from "@/lib/account-store";
+import { toast } from "sonner";
 
 // Create a new scoped session (AI agent) on an already-deployed account.
 export function useCreateSession(account: Address | null, onDone: () => void) {
   const { wallets } = useWallets();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const create = async (settings: PolicySettings) => {
     setLoading(true);
-    setError("");
     try {
       const wallet = getActiveWallet(wallets);
       if (!wallet) throw new Error("Please connect an external wallet first.");
@@ -29,11 +28,11 @@ export function useCreateSession(account: Address | null, onDone: () => void) {
       onDone();
     } catch (e: unknown) {
       console.error("[DOLFIN] create session failed:", e);
-      setError(errMsg(e, "Failed to create session."));
+      toast.error(errMsg(e, "Failed to create session."));
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, error, create };
+  return { loading, create };
 }

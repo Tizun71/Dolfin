@@ -19,7 +19,7 @@ export default function CreateSessionForm({
   onDone: () => void;
 }) {
   const [settings, setSettings] = useState<PolicySettings>(DEFAULT_POLICY_SETTINGS);
-  const { loading, error, create } = useCreateSession(account, onDone);
+  const { loading, create } = useCreateSession(account, onDone);
 
   const onChange = (patch: Partial<PolicySettings>) => setSettings((s) => ({ ...s, ...patch }));
 
@@ -40,7 +40,7 @@ export default function CreateSessionForm({
           <ProtocolGrants settings={settings} onChange={onChange} />
           <RiskPolicySection settings={settings} onChange={onChange} />
         </div>
-        <SummaryPanel settings={settings} loading={loading} error={error} onSubmit={() => create(settings)} />
+        <SummaryPanel settings={settings} loading={loading} onSubmit={() => create(settings)} />
       </div>
     </div>
   );

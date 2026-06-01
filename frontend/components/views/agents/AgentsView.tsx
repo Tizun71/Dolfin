@@ -9,7 +9,7 @@ const short = (a: string) => `${a.slice(0, 8)}…${a.slice(-6)}`;
 
 export default function AgentsView() {
   const { authenticated, login } = usePrivy();
-  const { accounts, loading, error, createAccount } = useAccounts();
+  const { accounts, loading, createAccount } = useAccounts();
   const router = useRouter();
 
   const onCreate = async () => {
@@ -36,8 +36,6 @@ export default function AgentsView() {
           </button>
         )}
       </div>
-
-      {error && <p className="text-red-500 text-xs font-mono mb-6 break-words">{error}</p>}
 
       {!authenticated ? (
         <div className="card-3d p-16 text-center">

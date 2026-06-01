@@ -8,6 +8,7 @@ import { ACCOUNT_ABI, POLICY_MANAGER_ABI } from "@/constants/dolfin-abi";
 import { buildWalletClient, errMsg, feeOverrides, getActiveWallet, publicClient } from "@/lib/dolfin-wallet";
 import { grantSession, revokeKey } from "@/lib/dolfin-actions";
 import { addSession, getSession, newSession, replaceSession } from "@/lib/account-store";
+import { toast } from "sonner";
 
 export interface AgentStatus {
   paused: boolean;
@@ -67,14 +68,13 @@ export function useAgentManage(
   const { wallets } = useWallets();
   const [status, setStatus] = useState<AgentStatus | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
     if (!account || !sessionKey) return;
     try {
       setStatus(await readStatus(account, sessionKey));
     } catch (e: unknown) {
-      setError(errMsg(e, "Failed to load agent status."));
+      toast.error(errMsg(e, "Failed to load agent status."));
     }
   }, [account, sessionKey]);
 
@@ -83,7 +83,7 @@ export function useAgentManage(
     let cancelled = false;
     readStatus(account, sessionKey)
       .then((s) => !cancelled && setStatus(s))
-      .catch((e) => !cancelled && setError(errMsg(e, "Failed to load agent status.")));
+      .catch((e) => !cancelled && toast.error(errMsg(e, "Failed to load agent status.")));
     return () => {
       cancelled = true;
     };
@@ -93,7 +93,6 @@ export function useAgentManage(
   const run = async (label: string, fn: (wallet: Awaited<ReturnType<typeof buildWalletClient>>) => Promise<void>) => {
     if (!account || !owner) return;
     setLoading(true);
-    setError("");
     try {
       const w = getActiveWallet(wallets);
       if (!w) throw new Error("Please connect an external wallet first.");
@@ -102,7 +101,7 @@ export function useAgentManage(
       await refresh();
     } catch (e: unknown) {
       console.error(`[DOLFIN] ${label} failed:`, e);
-      setError(errMsg(e, `${label} failed.`));
+      toast.error(errMsg(e, `${label} failed.`));
     } finally {
       setLoading(false);
     }
@@ -153,7 +152,6 @@ export function useAgentManage(
   return {
     status,
     loading,
-    error,
     refresh,
     pause: () => lifecycle("pauseAgent"),
     resume: () => lifecycle("resumeAgent"),

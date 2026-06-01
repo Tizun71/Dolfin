@@ -25,7 +25,7 @@ export default function SessionPanel({
   settings: PolicySettings | null;
   onSessionKeyChange: (key: Address) => void;
 }) {
-  const { status, loading, error, pause, resume, revoke, register, rotate, refresh } = useAgentManage(
+  const { status, loading, pause, resume, revoke, register, rotate, refresh } = useAgentManage(
     owner,
     account,
     sessionKey,
@@ -76,8 +76,6 @@ export default function SessionPanel({
       </div>
 
       <PermissionsBreakdown settings={settings} />
-
-      {error && <p className="text-red-500 text-xs font-mono mt-6 break-words">{error}</p>}
 
       <div className="flex flex-wrap gap-3 mt-8">
         {dead ? (

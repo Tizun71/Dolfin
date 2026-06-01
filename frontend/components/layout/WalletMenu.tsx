@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { Copy, Check, LogOut, ChevronDown } from "lucide-react";
+import { toast } from "sonner";
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 
@@ -26,6 +27,7 @@ export default function WalletMenu() {
     if (!address) return;
     await navigator.clipboard.writeText(address);
     setCopied(true);
+    toast.success("Address copied", { description: short(address) });
     setTimeout(() => setCopied(false), 1500);
   };
 

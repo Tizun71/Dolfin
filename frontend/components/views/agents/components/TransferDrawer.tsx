@@ -77,9 +77,6 @@ export default function TransferDrawer({
         {isDeposit ? "Owner wallet → smart account" : "Smart account → owner wallet"}
       </p>
 
-      {t.error && <p className="text-red-500 text-xs font-mono mb-4 break-words">{t.error}</p>}
-      {t.success && <p className="text-green-500 text-xs font-mono mb-4">{t.success}</p>}
-
       <button
         onClick={t.submit}
         disabled={t.loading}

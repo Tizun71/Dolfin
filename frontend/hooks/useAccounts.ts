@@ -6,6 +6,7 @@ import { type Address } from "viem";
 import { buildWalletClient, errMsg, getActiveWallet } from "@/lib/dolfin-wallet";
 import { provisionAccount } from "@/lib/dolfin-actions";
 import { addAccount, listAccounts, nextSalt, type StoredAccount } from "@/lib/account-store";
+import { toast } from "sonner";
 
 // Owner's smart accounts (multi-account via salt). Lists registry + provisions new accounts.
 export function useAccounts() {
@@ -13,7 +14,6 @@ export function useAccounts() {
   const [owner, setOwner] = useState<Address | null>(null);
   const [accounts, setAccounts] = useState<StoredAccount[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const reload = useCallback((ownerAddr: Address) => {
     setAccounts(listAccounts(ownerAddr));
@@ -36,7 +36,6 @@ export function useAccounts() {
 
   const createAccount = async () => {
     setLoading(true);
-    setError("");
     try {
       const wallet = getActiveWallet(wallets);
       if (!wallet) throw new Error("Please connect an external wallet first.");
@@ -48,12 +47,12 @@ export function useAccounts() {
       return address;
     } catch (e: unknown) {
       console.error("[DOLFIN] create account failed:", e);
-      setError(errMsg(e, "Failed to create account."));
+      toast.error(errMsg(e, "Failed to create account."));
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  return { owner, accounts, loading, error, createAccount };
+  return { owner, accounts, loading, createAccount };
 }

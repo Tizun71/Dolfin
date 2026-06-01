@@ -10,12 +10,10 @@ const symbolOf = (addr: string) => TOKENS.find((t) => t.address.toLowerCase() ==
 export default function SummaryPanel({
   settings,
   loading,
-  error,
   onSubmit,
 }: {
   settings: PolicySettings;
   loading: boolean;
-  error: string;
   onSubmit: () => void;
 }) {
   const grants = PROTOCOLS.filter((p) => (settings.protocols[p.key] ?? []).length > 0).map(
@@ -54,8 +52,6 @@ export default function SummaryPanel({
       <p className="text-[#555] text-xs font-mono leading-relaxed mb-6">
         Generates a fresh session key, grants it this policy, and registers it on-chain. Owner signs once.
       </p>
-
-      {error && <p className="text-red-500 text-xs font-mono mb-4 break-words">{error}</p>}
 
       <button
         onClick={onSubmit}
