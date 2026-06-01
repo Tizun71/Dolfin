@@ -4,7 +4,9 @@
   "scripts": {
     "build": "hardhat build",
     "test": "hardhat test",
-    "deploy:testnet": "hardhat ignition deploy ignition/modules/DolfinAccount.ts --network arbitrumSepolia"
+    "deploy:testnet": "hardhat ignition deploy ignition/modules/DolfinAccount.ts --network arbitrumSepolia",
+    "deploy:stack": "hardhat ignition deploy ignition/modules/DolfinStack.ts --network arbitrumSepolia",
+    "configure-session": "tsx scripts/configure-session.ts"
   },
   "dependencies": {
     "@aave-dao/aave-address-book": "^4.49.10",

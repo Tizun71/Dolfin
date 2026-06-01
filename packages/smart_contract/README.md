@@ -1,7 +1,20 @@
-# Sample Hardhat 3 Beta Project (minimal)
+### Smart Contract Setup
 
-This project has a minimal setup of Hardhat 3 Beta, without any plugins.
+```bash
+cd packages/smart_contract
 
-## What's included?
+# Create the environment file and populate the required values
+cp .env.example .env
 
-The project includes native support for TypeScript, Hardhat scripts, tasks, and support for Solidity compilation and tests.
+# Required variables:
+# - PRIVATE_KEY
+# - ALCHEMY_RPC_URL
+# - ALCHEMY_BUNDLER_URL
+# - SESSION_KEY
+
+# Fund the deployer EOA with Arbitrum Sepolia ETH
+pnpm build                 # Compile contract artifacts
+pnpm deploy:stack          # Deploy the protocol contracts
+pnpm configure-session     # Create and configure a Smart Account
+```
+

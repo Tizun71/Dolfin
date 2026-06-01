@@ -1,3 +1,6 @@
 {
-  "DolfinAccount#DolfinAccount": "0xA8E99C6E7c7a40e89Bd20e8B68e1Cacb87BB0743"
+  "DolfinAccount#DolfinAccount": "0xF1D11915cb461C9B2d375a69C0A969b78cFA9808",
+  "DolfinStack#AaveV3Adapter": "0x36e0D11A242C2c580F354c57a4993b3c894e8270",
+  "DolfinStack#PolicyManager": "0x6790d288B68BA06D01Ed3Bd33C421F29782B09e9",
+  "DolfinStack#DolfinAccountFactory": "0x2D44cF1fD244a910Eb3Aafd0aF0C37B0284C0f96"
 }

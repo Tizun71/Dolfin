@@ -15,16 +15,29 @@ export default defineConfig({
     hardhatIgnitionViemPlugin,
   ],
   solidity: {
-    version: "0.8.28",
-    settings: {
-      evmVersion: "cancun",
-      optimizer: { enabled: true, runs: 200 },
-      viaIR: true,
+    profiles: {
+      default: {
+        version: "0.8.28",
+        settings: {
+          evmVersion: "cancun",
+          optimizer: { enabled: true, runs: 200 },
+          viaIR: true,
+        },
+      },
+      production: {
+        version: "0.8.28",
+        settings: {
+          evmVersion: "cancun",
+          optimizer: { enabled: true, runs: 200 },
+          viaIR: true,
+        },
+      },
     },
   },
   networks: {
     arbitrumSepolia: {
-      url: "https://arbitrum-sepolia-rpc.publicnode.com",
+      // Prefer Alchemy RPC (also used by the relayer/bundler); fall back to a public node.
+      url: process.env.ALCHEMY_RPC_URL ?? "https://arbitrum-sepolia-rpc.publicnode.com",
       type: "http",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
