@@ -85,18 +85,18 @@ export default function SessionPanel({
         ) : (
           <>
             {status?.paused ? (
-              <button onClick={resume} disabled={loading} className={`${BTN} border-green-600 text-green-400 hover:bg-green-600/10`}>
+              <button onClick={resume} disabled={loading} className={`${BTN} border-green-600 text-green-400 hover:bg-green-600 hover:text-black`}>
                 Resume
               </button>
             ) : (
-              <button onClick={pause} disabled={loading} className={`${BTN} border-yellow-600 text-yellow-400 hover:bg-yellow-600/10`}>
+              <button onClick={pause} disabled={loading} className={`${BTN} border-yellow-600 text-yellow-400 hover:bg-yellow-600 hover:text-black`}>
                 Pause
               </button>
             )}
-            <button onClick={rotate} disabled={loading} className={`${BTN} border-[#627EEA] text-[#aab8f5] hover:bg-[#627EEA1a]`}>
+            <button onClick={rotate} disabled={loading} className={`${BTN} btn-brand-outline`}>
               Rotate Key
             </button>
-            <button onClick={revoke} disabled={loading} className={`${BTN} border-red-700 text-red-400 hover:bg-red-700/10`}>
+            <button onClick={revoke} disabled={loading} className={`${BTN} border-red-700 text-red-400 hover:bg-red-700 hover:text-white`}>
               Revoke Key
             </button>
           </>

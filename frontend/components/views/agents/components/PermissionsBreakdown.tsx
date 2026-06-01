@@ -7,7 +7,7 @@ const tokenOf = (addr: string) => TOKENS.find((t) => t.address.toLowerCase() ===
 
 // Allocation-style breakdown (Hyperbeat) of what a session key is permitted to touch.
 export default function PermissionsBreakdown({ settings }: { settings: PolicySettings | null }) {
-  const chip = "flex items-center gap-2 px-3 py-1.5 border border-[#2a2a2a] bg-[#111] text-xs font-mono uppercase tracking-[1px] text-[#aab8f5]";
+  const chip = "flex items-center gap-2 px-3 py-1.5 border border-[#2a2a2a] bg-[#111] text-xs font-mono uppercase tracking-[1px] text-[#fbbf24]";
 
   return (
     <div className="card-3d p-8">

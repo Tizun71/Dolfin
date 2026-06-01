@@ -37,11 +37,11 @@ export default function RiskPolicySection({
   const drawdownPct = Math.round(settings.maxDrawdownBps / 100);
   const presetCls = (active: boolean) =>
     `flex-1 min-w-[120px] text-left p-4 border transition ${
-      active ? "border-[#627EEA] bg-[#627EEA12]" : "border-[#222] hover:border-[#333]"
+      active ? "border-[#f97316] bg-[#f9731612]" : "border-[#222] hover:border-[#333]"
     }`;
   const chip = (active: boolean) =>
     `px-3 py-2 border text-xs font-mono transition ${
-      active ? "border-[#627EEA] bg-[#627EEA1a] text-[#aab8f5]" : "border-[#222] text-[#666] hover:border-[#333]"
+      active ? "border-[#f97316] bg-[#f973161a] text-[#fbbf24]" : "border-[#222] text-[#666] hover:border-[#333]"
     }`;
 
   return (
@@ -70,7 +70,7 @@ export default function RiskPolicySection({
             {USD_FIELDS.map((f) => (
               <div key={f.key as string}>
                 <label className="text-[#888] text-xs font-mono uppercase tracking-[1px] mb-2 block">{f.label}</label>
-                <div className="flex items-center border border-[#222] bg-[#050505] focus-within:border-[#627EEA] transition">
+                <div className="flex items-center border border-[#222] bg-[#050505] focus-within:border-[#f97316] transition">
                   <span className="text-[#555] font-mono px-3">$</span>
                   <input
                     type="number"
@@ -106,7 +106,7 @@ export default function RiskPolicySection({
               step="5"
               value={drawdownPct}
               onChange={(e) => editCustom({ maxDrawdownBps: Number(e.target.value) * 100 })}
-              className="w-full accent-[#627EEA]"
+              className="w-full accent-[#f97316]"
             />
           </div>
 

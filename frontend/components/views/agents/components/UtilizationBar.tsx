@@ -9,7 +9,7 @@ export default function UtilizationBar({
   label,
   used,
   cap,
-  color = "#627EEA",
+  color = "#f97316",
 }: {
   label: string;
   used: bigint;

@@ -37,7 +37,7 @@ export default function TransferDrawer({
             onClick={() => t.setToken(tok)}
             className={`px-4 py-2 border text-xs font-mono uppercase tracking-[1px] transition ${
               t.token.symbol === tok.symbol
-                ? "border-[#627EEA] bg-[#627EEA1a] text-[#aab8f5]"
+                ? "border-[#f97316] bg-[#f973161a] text-[#fbbf24]"
                 : "border-[#222] text-[#666] hover:border-[#333]"
             }`}
           >
@@ -61,7 +61,7 @@ export default function TransferDrawer({
       {/* Amount */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-[#888] text-xs font-mono uppercase tracking-[1.5px] font-medium">Amount</p>
-        <button onClick={t.setMax} className="text-[#627EEA] text-xs font-mono uppercase tracking-[1px] hover:text-[#aab8f5]">
+        <button onClick={t.setMax} className="text-[#f97316] text-xs font-mono uppercase tracking-[1px] hover:text-[#fbbf24]">
           Max
         </button>
       </div>
@@ -71,7 +71,7 @@ export default function TransferDrawer({
         value={t.amount}
         onChange={(e) => t.setAmount(e.target.value)}
         placeholder="0.0"
-        className="w-full bg-[#050505] border border-[#222] text-[#f0f0f0] text-lg font-mono px-4 py-3 focus:border-[#627EEA] focus:outline-none transition mb-2"
+        className="w-full bg-[#050505] border border-[#222] text-[#f0f0f0] text-lg font-mono px-4 py-3 focus:border-[#f97316] focus:outline-none transition mb-2"
       />
       <p className="text-[#444] text-xs font-mono mb-8">
         {isDeposit ? "Owner wallet → smart account" : "Smart account → owner wallet"}

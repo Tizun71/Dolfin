@@ -43,7 +43,7 @@ export default function SummaryPanel({
       <ul className="space-y-3 mb-8">
         {lines.map((l, i) => (
           <li key={i} className="flex items-start gap-2 text-[#bbb] text-xs font-mono leading-relaxed">
-            <Check className="w-3.5 h-3.5 text-[#627EEA] mt-0.5 shrink-0" />
+            <Check className="w-3.5 h-3.5 text-[#f97316] mt-0.5 shrink-0" />
             {l}
           </li>
         ))}

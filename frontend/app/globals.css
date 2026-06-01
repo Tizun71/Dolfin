@@ -49,7 +49,7 @@ body {
   opacity: 0.4;
 }
 
-/* Outlined brand button */
+/* Outlined brand button — fills solid + dark text on hover */
 .btn-brand-outline {
   border-color: var(--brand-500);
   color: var(--brand-400);
@@ -57,7 +57,14 @@ body {
 }
 
 .btn-brand-outline:hover:not(:disabled) {
-  background: rgba(249, 115, 22, 0.1);
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+  color: #0a0a0a;
+}
+
+/* Buttons feel clickable */
+button:not(:disabled) {
+  cursor: pointer;
 }
 
 .card-3d {

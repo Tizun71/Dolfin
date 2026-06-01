@@ -53,7 +53,7 @@ export default function AccountDetailView({ address }: { address: Address }) {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono border border-[#333] text-[#ccc] hover:border-[#555] hover:text-white transition"
+          className="btn-brand px-6 py-3 text-xs uppercase tracking-[3px] font-mono"
         >
           + New Agent
         </button>
@@ -64,10 +64,10 @@ export default function AccountDetailView({ address }: { address: Address }) {
 
         {/* Fund movement */}
         <div className="flex flex-wrap gap-3">
-          <button onClick={() => setDrawer("deposit")} className={`${BTN} border-green-600 text-green-400 hover:bg-green-600/10`}>
+          <button onClick={() => setDrawer("deposit")} className={`${BTN} border-green-600 text-green-400 hover:bg-green-600 hover:text-black`}>
             ↓ Deposit
           </button>
-          <button onClick={() => setDrawer("withdraw")} className={`${BTN} border-[#627EEA] text-[#aab8f5] hover:bg-[#627EEA1a]`}>
+          <button onClick={() => setDrawer("withdraw")} className={`${BTN} btn-brand-outline`}>
             ↑ Withdraw
           </button>
         </div>
