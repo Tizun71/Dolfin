@@ -1,69 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { usePrivy } from "@privy-io/react-auth";
-import { ActionType, TOKENS, type PolicySettings } from "@/constants/dolfin";
-import { useCreateAgent } from "@/hooks/useCreateAgent";
-import CreateAgent from "./CreateAgent";
-import ManagePanel from "./components/ManagePanel";
+import { useAccounts } from "@/hooks/useAccounts";
 
-const DEFAULT_SETTINGS: PolicySettings = {
-  maxTradePerTx: "1000",
-  maxDailyVolume: "5000",
-  maxExposure: "5000",
-  maxLossPerDay: "500",
-  maxDrawdownBps: 5000,
-  maxLeverageBps: 10000,
-  expiryDays: 7,
-  tokens: [TOKENS[0].address],
-  protocols: {
-    aave: [ActionType.SUPPLY, ActionType.WITHDRAW, ActionType.BORROW, ActionType.REPAY],
-  },
-};
+const short = (a: string) => `${a.slice(0, 8)}…${a.slice(-6)}`;
 
 export default function AgentsView() {
   const { authenticated, login } = usePrivy();
-  const [settings, setSettings] = useState<PolicySettings>(DEFAULT_SETTINGS);
-  const [forceCreate, setForceCreate] = useState(false);
-  const agent = useCreateAgent(() => setForceCreate(false));
+  const { accounts, loading, error, createAccount } = useAccounts();
+  const router = useRouter();
 
-  const onChange = (patch: Partial<PolicySettings>) => setSettings((s) => ({ ...s, ...patch }));
-
-  const hasAgent = agent.accountExists && !!agent.sessionKey;
-  const showManage = hasAgent && !forceCreate;
+  const onCreate = async () => {
+    const addr = await createAccount();
+    if (addr) router.push(`/agents/${addr}`);
+  };
 
   return (
     <div className="text-white font-sans">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <h1 className="text-3xl font-normal uppercase tracking-[4px] text-white">AI Agent</h1>
+          <h1 className="text-3xl font-normal uppercase tracking-[4px] text-white">Accounts</h1>
           <p className="text-[#666] text-sm font-mono mt-3 tracking-wide">
-            Deploy a smart account and grant a scoped, revocable trading session to the Dolfin AI.
+            Your Dolfin smart accounts. Each holds funds and delegates scoped agents.
           </p>
         </div>
-        {authenticated && showManage && (
+        {authenticated && (
           <button
-            onClick={() => setForceCreate(true)}
-            className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono border border-[#333] text-[#ccc] hover:border-[#555] hover:text-white transition"
+            onClick={onCreate}
+            disabled={loading}
+            className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition disabled:opacity-50"
           >
-            + New Agent
-          </button>
-        )}
-        {authenticated && !showManage && hasAgent && (
-          <button
-            onClick={() => setForceCreate(false)}
-            className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono border border-[#333] text-[#ccc] hover:border-[#555] hover:text-white transition"
-          >
-            ← Back to Manage
+            {loading ? "Deploying…" : "+ New Account"}
           </button>
         )}
       </div>
 
+      {error && <p className="text-red-500 text-xs font-mono mb-6 break-words">{error}</p>}
+
       {!authenticated ? (
         <div className="card-3d p-16 text-center">
-          <p className="text-[#888] text-sm font-mono uppercase tracking-[2px] mb-6">
-            Connect a wallet to continue
-          </p>
+          <p className="text-[#888] text-sm font-mono uppercase tracking-[2px] mb-6">Connect a wallet to continue</p>
           <button
             onClick={login}
             className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -71,15 +49,30 @@ export default function AgentsView() {
             Connect Wallet →
           </button>
         </div>
-      ) : showManage ? (
-        <ManagePanel
-          owner={agent.owner}
-          account={agent.account}
-          sessionKey={agent.sessionKey}
-          onSessionKeyChange={agent.setSessionKey}
-        />
+      ) : accounts.length ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {accounts.map((a) => (
+            <Link key={a.address} href={`/agents/${a.address}`} className="card-3d p-8 block">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-normal tracking-[1px] text-white">Account #{a.salt + 1}</h2>
+                <span className="flex items-center gap-2 text-xs uppercase tracking-[1px] font-mono text-green-400">
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" /> Live
+                </span>
+              </div>
+              <p className="text-[#666] text-xs font-mono uppercase tracking-[1.5px] mb-2">Address</p>
+              <p className="text-[#f0f0f0] text-sm font-mono mb-6">{short(a.address)}</p>
+              <div className="flex items-center justify-between border-t border-[#1a1a1a] pt-4">
+                <span className="text-[#888] text-xs font-mono uppercase tracking-[1px]">Agents</span>
+                <span className="text-white text-sm font-mono">{a.sessions.length}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
       ) : (
-        <CreateAgent agent={agent} settings={settings} onChange={onChange} />
+        <div className="card-3d p-16 text-center">
+          <p className="text-[#444] text-xs font-mono uppercase tracking-[3px] mb-4">No accounts yet</p>
+          <p className="text-[#333] text-sm font-mono">Create a smart account to delegate AI trading</p>
+        </div>
       )}
     </div>
   );

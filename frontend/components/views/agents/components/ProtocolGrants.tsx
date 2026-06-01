@@ -1,7 +1,8 @@
 "use client";
 
 import { type Address } from "viem";
-import { ACTION_LABELS, PROTOCOLS, TOKENS, type ActionType, type PolicySettings } from "@/constants/dolfin";
+import { ACTION_LABELS, PROTOCOLS, TOKENS, TOKEN_LOGOS, type ActionType, type PolicySettings } from "@/constants/dolfin";
+import { ACTION_ICONS } from "./action-icons";
 
 export default function ProtocolGrants({
   settings,
@@ -22,7 +23,7 @@ export default function ProtocolGrants({
   };
 
   const chip = (active: boolean) =>
-    `px-3 py-2 border text-xs font-mono uppercase tracking-[1px] transition ${
+    `flex items-center gap-2 px-3 py-2 border text-xs font-mono uppercase tracking-[1px] transition ${
       active
         ? "border-[#627EEA] bg-[#627EEA1a] text-[#aab8f5]"
         : "border-[#222] text-[#666] hover:border-[#333]"
@@ -39,33 +40,40 @@ export default function ProtocolGrants({
         Allowed Tokens
       </p>
       <div className="flex flex-wrap gap-2 mb-8">
-        {TOKENS.map((t) => (
-          <button
-            key={t.symbol}
-            type="button"
-            onClick={() => toggleToken(t.address as Address)}
-            className={chip(settings.tokens.includes(t.address as Address))}
-          >
-            {t.symbol}
-          </button>
-        ))}
+        {TOKENS.map((t) => {
+          const active = settings.tokens.includes(t.address as Address);
+          const logo = TOKEN_LOGOS[t.symbol];
+          return (
+            <button key={t.symbol} type="button" onClick={() => toggleToken(t.address as Address)} className={chip(active)}>
+              {logo && <img src={logo} alt={t.symbol} className={`w-4 h-4 rounded-full ${active ? "" : "opacity-50"}`} />}
+              {t.symbol}
+            </button>
+          );
+        })}
       </div>
 
       {/* Protocols + actions */}
       {PROTOCOLS.map((p) => (
         <div key={p.key} className="mb-6 last:mb-0">
-          <p className="text-[#ccc] text-sm font-mono mb-3">{p.name}</p>
+          <div className="flex items-center gap-2 mb-3">
+            <img src={p.logo} alt={p.name} className="w-5 h-5 rounded-full" />
+            <p className="text-[#ccc] text-sm font-mono">{p.name}</p>
+          </div>
           <div className="flex flex-wrap gap-2">
-            {p.actions.map((a) => (
-              <button
-                key={a}
-                type="button"
-                onClick={() => toggleAction(p.key, a)}
-                className={chip((settings.protocols[p.key] ?? []).includes(a))}
-              >
-                {ACTION_LABELS[a]}
-              </button>
-            ))}
+            {p.actions.map((a) => {
+              const Icon = ACTION_ICONS[a];
+              return (
+                <button
+                  key={a}
+                  type="button"
+                  onClick={() => toggleAction(p.key, a)}
+                  className={chip((settings.protocols[p.key] ?? []).includes(a))}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {ACTION_LABELS[a]}
+                </button>
+              );
+            })}
           </div>
         </div>
       ))}

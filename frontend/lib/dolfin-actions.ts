@@ -1,18 +1,18 @@
 // Owner-driven Dolfin transactions, shared by the create + manage hooks. Each fn sends a tx
 // and waits for the receipt. Reads use the shared publicClient.
 import { encodeFunctionData, erc20Abi, parseUnits, type Address, type WalletClient } from "viem";
-import { ACCOUNT_SALT, DOLFIN, PROTOCOLS, buildActionMask, type PolicySettings, type TransferToken } from "@/constants/dolfin";
+import { DOLFIN, PROTOCOLS, buildActionMask, type PolicySettings, type TransferToken } from "@/constants/dolfin";
 import { ACCOUNT_ABI, FACTORY_ABI } from "@/constants/dolfin-abi";
-import { publicClient } from "./dolfin-wallet";
+import { feeOverrides, publicClient } from "./dolfin-wallet";
 
 const usd = (v: string) => parseUnits(v || "0", 18);
 
-export function counterfactualAddress(owner: Address) {
+export function counterfactualAddress(owner: Address, salt: number) {
   return publicClient.readContract({
     address: DOLFIN.factory,
     abi: FACTORY_ABI,
     functionName: "getAddress",
-    args: [owner, ACCOUNT_SALT],
+    args: [owner, BigInt(salt)],
   }) as Promise<Address>;
 }
 
@@ -21,17 +21,18 @@ export async function isDeployed(account: Address): Promise<boolean> {
   return !!code && code !== "0x";
 }
 
-// Deploy the smart account if not already deployed. Returns the account address.
-export async function provisionAccount(wallet: WalletClient, owner: Address): Promise<Address> {
-  const account = await counterfactualAddress(owner);
+// Deploy the smart account at `salt` if not already deployed. Returns the account address.
+export async function provisionAccount(wallet: WalletClient, owner: Address, salt: number): Promise<Address> {
+  const account = await counterfactualAddress(owner, salt);
   if (await isDeployed(account)) return account;
   const hash = await wallet.writeContract({
     address: DOLFIN.factory,
     abi: FACTORY_ABI,
     functionName: "createAccount",
-    args: [owner, ACCOUNT_SALT],
+    args: [owner, BigInt(salt)],
     account: owner,
     chain: wallet.chain,
+    ...(await feeOverrides()),
   });
   await publicClient.waitForTransactionReceipt({ hash });
   return account;
@@ -74,6 +75,7 @@ export async function grantSession(
     args: [sessionKey, expiry, policy, adapters, s.tokens, grants],
     account: owner,
     chain: wallet.chain,
+    ...(await feeOverrides()),
   });
   await publicClient.waitForTransactionReceipt({ hash });
 }
@@ -91,6 +93,7 @@ export async function revokeKey(
     args: [key],
     account: owner,
     chain: wallet.chain,
+    ...(await feeOverrides()),
   });
   await publicClient.waitForTransactionReceipt({ hash });
 }
@@ -116,6 +119,7 @@ export async function deposit(
   token: TransferToken,
   amount: bigint,
 ): Promise<void> {
+  const fees = await feeOverrides();
   const hash = token.address
     ? await wallet.writeContract({
         address: token.address,
@@ -124,8 +128,9 @@ export async function deposit(
         args: [account, amount],
         account: owner,
         chain: wallet.chain,
+        ...fees,
       })
-    : await wallet.sendTransaction({ to: account, value: amount, account: owner, chain: wallet.chain });
+    : await wallet.sendTransaction({ to: account, value: amount, account: owner, chain: wallet.chain, ...fees });
   await publicClient.waitForTransactionReceipt({ hash });
 }
 
@@ -147,6 +152,7 @@ export async function withdraw(
     args: [target, value, data],
     account: owner,
     chain: wallet.chain,
+    ...(await feeOverrides()),
   });
   await publicClient.waitForTransactionReceipt({ hash });
 }

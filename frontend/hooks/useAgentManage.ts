@@ -5,9 +5,9 @@ import { useWallets } from "@privy-io/react-auth";
 import { type Address } from "viem";
 import { DOLFIN } from "@/constants/dolfin";
 import { ACCOUNT_ABI, POLICY_MANAGER_ABI } from "@/constants/dolfin-abi";
-import { buildWalletClient, errMsg, getActiveWallet, publicClient } from "@/lib/dolfin-wallet";
-import { grantSession, provisionAccount, revokeKey } from "@/lib/dolfin-actions";
-import { generateSessionKey, loadSession, saveSession } from "@/lib/session-key-store";
+import { buildWalletClient, errMsg, feeOverrides, getActiveWallet, publicClient } from "@/lib/dolfin-wallet";
+import { grantSession, revokeKey } from "@/lib/dolfin-actions";
+import { addSession, getSession, newSession, replaceSession } from "@/lib/account-store";
 
 export interface AgentStatus {
   paused: boolean;
@@ -117,6 +117,7 @@ export function useAgentManage(
         args: [],
         account: o,
         chain: walletClient.chain,
+        ...(await feeOverrides()),
       });
       await publicClient.waitForTransactionReceipt({ hash });
     });
@@ -129,25 +130,24 @@ export function useAgentManage(
   // Generate a fresh key + grant it from stored settings. Used when the current key is dead.
   const register = () =>
     run("register", async ({ walletClient, owner: o }) => {
-      const stored = loadSession(o);
-      if (!stored) throw new Error("No stored policy — create the agent first.");
-      const acct = await provisionAccount(walletClient, o);
-      const session = generateSessionKey(stored.settings);
-      await grantSession(walletClient, o, acct, session.address, stored.settings);
-      saveSession(o, session);
-      onSessionKeyChange(session.address);
+      const stored = sessionKey && getSession(o, account!, sessionKey);
+      if (!stored) throw new Error("No stored policy for this session.");
+      const session = newSession(stored.settings);
+      await grantSession(walletClient, o, account!, session.key, stored.settings);
+      addSession(o, account!, session);
+      onSessionKeyChange(session.key);
     });
 
   // Rotate: grant a new key (same policy), then revoke the old one. Owner signs both txs.
   const rotate = () =>
     sessionKey && run("rotate", async ({ walletClient, owner: o }) => {
-      const stored = loadSession(o);
-      if (!stored) throw new Error("No stored policy — create the agent first.");
-      const session = generateSessionKey(stored.settings);
-      await grantSession(walletClient, o, account!, session.address, stored.settings);
+      const stored = getSession(o, account!, sessionKey);
+      if (!stored) throw new Error("No stored policy for this session.");
+      const session = newSession(stored.settings);
+      await grantSession(walletClient, o, account!, session.key, stored.settings);
       await revokeKey(walletClient, o, account!, sessionKey);
-      saveSession(o, session);
-      onSessionKeyChange(session.address);
+      replaceSession(o, account!, sessionKey, session);
+      onSessionKeyChange(session.key);
     });
 
   return {

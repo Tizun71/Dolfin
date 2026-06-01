@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Vault, History, Settings, Bell } from "lucide-react";
+import { LayoutDashboard, Vault, History, Settings, Bell, Bot } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Sidebar() {
@@ -11,10 +11,11 @@ export default function Sidebar() {
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Vaults", href: "/vaults", icon: Vault },
-    { name: "History", href: "/history", icon: History },
-    { name: "Notifications", href: "/notifications", icon: Bell },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Agents", href: "/agents", icon: Bot },
+    // { name: "Vaults", href: "/vaults", icon: Vault },
+    // { name: "History", href: "/history", icon: History },
+    // { name: "Notifications", href: "/notifications", icon: Bell },
+    // { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (

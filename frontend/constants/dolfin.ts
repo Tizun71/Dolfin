@@ -43,11 +43,22 @@ export enum ActionType {
 // Account salt strategy: fixed 0 (one Dolfin account per owner EOA). Bump per-user if multi-account needed.
 export const ACCOUNT_SALT = BigInt(0);
 
+// Token / protocol logos (cryptocurrency-icons CDN, pinned commit). WETH reuses the ETH glyph.
+const ICON = (s: string) =>
+  `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/${s}.svg`;
+
+export const TOKEN_LOGOS: Record<string, string> = {
+  ETH: ICON("eth"),
+  WETH: ICON("eth"),
+  USDC: ICON("usdc"),
+};
+
 // v1 protocol catalog. Only the Aave adapter is deployed on this network.
 export const PROTOCOLS = [
   {
     key: "aave",
     name: "Aave V3",
+    logo: 'https://icons.llamao.fi/icons/protocols/aave?w=48&h=48',
     protocol: DOLFIN.aavePool,
     adapter: DOLFIN.aaveAdapter,
     actions: [ActionType.SUPPLY, ActionType.WITHDRAW, ActionType.BORROW, ActionType.REPAY],
@@ -81,3 +92,51 @@ export interface PolicySettings {
   tokens: Address[]; // whitelisted token addresses
   protocols: Record<string, ActionType[]>; // protocol key -> allowed actions
 }
+
+// Numeric risk caps (everything in PolicySettings except token/protocol grants).
+export type RiskCaps = Pick<
+  PolicySettings,
+  "maxTradePerTx" | "maxDailyVolume" | "maxExposure" | "maxLossPerDay" | "maxDrawdownBps" | "maxLeverageBps" | "expiryDays"
+>;
+
+export interface RiskPreset {
+  key: string;
+  name: string;
+  desc: string;
+  caps: RiskCaps;
+}
+
+export const RISK_PRESETS: RiskPreset[] = [
+  {
+    key: "conservative",
+    name: "Conservative",
+    desc: "Tight caps, no leverage",
+    caps: { maxTradePerTx: "250", maxDailyVolume: "1000", maxExposure: "1000", maxLossPerDay: "100", maxDrawdownBps: 3000, maxLeverageBps: 10000, expiryDays: 7 },
+  },
+  {
+    key: "balanced",
+    name: "Balanced",
+    desc: "Moderate caps, up to 2x",
+    caps: { maxTradePerTx: "1000", maxDailyVolume: "5000", maxExposure: "5000", maxLossPerDay: "500", maxDrawdownBps: 5000, maxLeverageBps: 20000, expiryDays: 7 },
+  },
+  {
+    key: "aggressive",
+    name: "Aggressive",
+    desc: "Wide caps, up to 5x",
+    caps: { maxTradePerTx: "5000", maxDailyVolume: "25000", maxExposure: "25000", maxLossPerDay: "2500", maxDrawdownBps: 8000, maxLeverageBps: 50000, expiryDays: 30 },
+  },
+];
+
+export const DEFAULT_POLICY_SETTINGS: PolicySettings = {
+  maxTradePerTx: "1000",
+  maxDailyVolume: "5000",
+  maxExposure: "5000",
+  maxLossPerDay: "500",
+  maxDrawdownBps: 5000,
+  maxLeverageBps: 10000,
+  expiryDays: 7,
+  tokens: [TOKENS[0].address],
+  protocols: {
+    aave: [ActionType.SUPPLY, ActionType.WITHDRAW, ActionType.BORROW, ActionType.REPAY],
+  },
+};
