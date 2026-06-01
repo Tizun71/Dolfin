@@ -1,5 +1,6 @@
 {
   "name": "dolfin",
+  "packageManager": "pnpm@10.15.1",
   "scripts": {
     "fmt": "oxfmt"
   },
