@@ -62,6 +62,15 @@ export interface RelayerConfig {
   sessionKey: Account; // viem account derived from the SESSION key
 }
 
+/** ERC-4337 UserOperation receipt (bundler `eth_getUserOperationReceipt`). */
+export interface UserOpReceipt {
+  userOpHash: `0x${string}`;
+  success: boolean;
+  reason?: string;
+  actualGasUsed?: `0x${string}`;
+  receipt?: { transactionHash: `0x${string}`; blockNumber: `0x${string}` };
+}
+
 export class ExecutionRelayer {
   private pub;
   constructor(private cfg: RelayerConfig) {
@@ -109,6 +118,35 @@ export class ExecutionRelayer {
 
     await this.sendToBundler(userOp);
     return userOpHash;
+  }
+
+  /** Poll the bundler for a UserOperation receipt. Returns null until it is mined. */
+  async getReceipt(userOpHash: `0x${string}`): Promise<UserOpReceipt | null> {
+    const res = await fetch(this.cfg.bundlerUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_getUserOperationReceipt", params: [userOpHash] }),
+    });
+    const json = (await res.json()) as { result?: UserOpReceipt | null; error?: { message: string } };
+    if (json.error) throw new Error(`bundler: ${json.error.message}`);
+    return json.result ?? null;
+  }
+
+  /** Wait until the UserOperation is mined (or timeout). Throws if the op reverted on-chain. */
+  async waitForReceipt(
+    userOpHash: `0x${string}`,
+    { timeoutMs = 60_000, intervalMs = 3_000 }: { timeoutMs?: number; intervalMs?: number } = {},
+  ): Promise<UserOpReceipt> {
+    const deadline = Date.now() + timeoutMs;
+    for (;;) {
+      const receipt = await this.getReceipt(userOpHash);
+      if (receipt) {
+        if (!receipt.success) throw new Error(`userOp reverted: ${userOpHash} (reason: ${receipt.reason ?? "unknown"})`);
+        return receipt;
+      }
+      if (Date.now() > deadline) throw new Error(`userOp receipt timeout after ${timeoutMs}ms: ${userOpHash}`);
+      await new Promise((r) => setTimeout(r, intervalMs));
+    }
   }
 
   private async sendToBundler(userOp: PackedUserOperation) {
