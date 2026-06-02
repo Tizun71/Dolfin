@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import FloatingLines from "../../shared/FloatingLines";
+import { ArtificialHero } from "../../shared/artificial-hero";
 import HeroButton from "./HeroButton";
 import { useHeroAnimation } from "./hooks/useHeroAnimation";
 
@@ -11,17 +11,8 @@ export default function Hero() {
 
   return (
     <main className="relative z-10 flex-1 flex flex-col items-center justify-center text-center p-8 pt-32 min-h-screen">
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-auto z-0 overflow-hidden mix-blend-screen opacity-75">
-        <FloatingLines
-          linesGradient={["#f97316", "#000000", "#fbbf24"]}
-          animationSpeed={1}
-          interactive
-          bendRadius={8}
-          bendStrength={-2}
-          mouseDamping={0.05}
-          parallax
-          parallaxStrength={0.2}
-        />
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <ArtificialHero />
       </div>
 
       <div className="relative z-10 flex flex-col items-center">
