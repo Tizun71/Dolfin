@@ -1,19 +1,13 @@
-"use client";
+import { Navbar, Hero, Footer, DevsSection } from "@/components/introduce";
 
-import { useState } from "react";
-
-export default function Home() {
-  const [count, setCount] = useState(0);
-
+export default function LandingPage() {
   return (
-    <div className="mx-auto">
-      <h1>Spam</h1>
-      <button
-        className="w-fit border px-3 py-1 mt-10 rounded active:scale-95"
-        onClick={() => setCount(count + 1)}
-      >
-        {count}
-      </button>
+    <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden pt-24">
+      <Navbar />
+      <Hero />
+      <DevsSection />
+      <div className="flex-1" />
+      <Footer />
     </div>
   );
 }

@@ -1,1 +1,99 @@
 @import "tailwindcss";
+
+:root {
+  /* Brand palette derived from Dolfin logo (amber-gold → orange) */
+  --brand-50: #fff7ed;
+  --brand-300: #fcd9a8;
+  --brand-400: #fbbf24; /* gold */
+  --brand-500: #fb923c; /* soft orange */
+  --brand-600: #f97316; /* orange */
+  --brand-glow: rgba(251, 146, 60, 0.22);
+}
+
+body {
+  background-color: #000;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dolphin gradient text — yellow → orange, matches logo */
+.text-brand-gradient {
+  background: linear-gradient(
+    100deg,
+    #fde047 0%,
+    #fbbf24 35%,
+    #fb923c 70%,
+    #f97316 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Primary brand button — logo gradient, dark text for contrast */
+.btn-brand {
+  background: linear-gradient(90deg, var(--brand-400) 0%, var(--brand-500) 100%);
+  color: #0a0a0a;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-brand:hover:not(:disabled) {
+  background: linear-gradient(90deg, var(--brand-300) 0%, var(--brand-400) 100%);
+  box-shadow: 0 0 24px var(--brand-glow);
+}
+
+.btn-brand:disabled {
+  opacity: 0.4;
+}
+
+/* Outlined brand button — fills solid + dark text on hover */
+.btn-brand-outline {
+  border-color: var(--brand-500);
+  color: var(--brand-400);
+  transition: all 0.3s ease;
+}
+
+.btn-brand-outline:hover:not(:disabled) {
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+  color: #0a0a0a;
+}
+
+/* Buttons feel clickable */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+.card-3d {
+  border: 1px solid #333;
+  background: #0a0a0a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -3px 0 rgba(0, 0, 0, 1),
+    0 6px 24px rgba(0, 0, 0, 0.8);
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  /* lift only — no color change */
+  transform: translateY(-2px);
+}
+
+.row-3d {
+  border-bottom: 1px solid #141414;
+  transition: all 0.3s ease;
+}
+
+.row-3d:hover {
+  background: linear-gradient(180deg, #161616 0%, #0d0d0d 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 1);
+}
+
+.hero-title {
+  text-shadow: 0 0 80px var(--brand-glow);
+}
