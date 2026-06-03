@@ -11,6 +11,7 @@ import {
 } from "./persistence.js";
 import type { AdvisorState } from "./state.js";
 import { DolfinAgent } from "./DolfinAgent.js";
+import { logStep } from "../../utils/logger.js";
 
 const logger = getLogger(["dolfin", "agent-manager"]);
 
@@ -81,6 +82,7 @@ class AgentManager {
       "dolfin agent run start user={userId} smartAccount={smartAccount} runId={runId}",
       { userId, smartAccount, runId },
     );
+    logStep("RUN", `AI workflow started runId=${runId} wallet=${wallet}`);
 
     let result!: AdvisorState;
     let error: unknown;
@@ -88,9 +90,11 @@ class AgentManager {
       result = await agent.run(wallet);
       const records = buildActionRecords(runId, result, onchain);
       await persistActions(records);
+      logStep("SUCCESS", `AI workflow completed runId=${runId}`);
     } catch (e) {
       error = e;
       logger.error("dolfin agent run failed runId={runId}: {error}", { runId, error });
+      logStep("FAILED", `AI workflow failed runId=${runId}: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       await finalizeRunRecord(runId, result ?? { wallet }, new Date(), error);
     }
