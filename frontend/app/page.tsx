@@ -6,7 +6,6 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <DevsSection />
-      <div className="flex-1" />
       <Footer />
     </div>
   );

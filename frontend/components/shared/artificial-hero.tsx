@@ -96,7 +96,6 @@ export const ArtificialHero = () => {
         ctx.scale(glitchScale, 1 / glitchScale);
       }
 
-      // Brand gold hue: 40~50 = vàng cam (#fbbf24 → #f97316)
       const hue = 40 + params.atmosphereShift * 15; // 40~55
 
       const orbGradient = ctx.createRadialGradient(
@@ -172,7 +171,6 @@ export const ArtificialHero = () => {
         }
       }
 
-      // Outer ring
       ctx.strokeStyle = `hsla(${hue + 10}, 90%, 65%, 0.6)`;
       ctx.lineWidth = 2;
 
@@ -221,7 +219,6 @@ export const ArtificialHero = () => {
       const centerY = height / 2;
       const radius = Math.min(width, height) * 0.2;
 
-      // Brand gold atmospheric background
       const hue = 40 + params.atmosphereShift * 15;
       const bgGradient = ctx.createRadialGradient(
         centerX,
@@ -241,7 +238,6 @@ export const ArtificialHero = () => {
 
       drawGlitchedOrb(centerX, centerY, radius, time, params.glitchIntensity);
 
-      // ASCII sphere — màu vàng cam
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -282,7 +278,6 @@ export const ArtificialHero = () => {
               }
 
               const alpha = Math.max(0.2, brightness);
-              // ASCII chars màu vàng cam
               ctx.fillStyle = `rgba(251, 191, 36, ${alpha})`;
               ctx.fillText(char, x, y);
             }
@@ -290,7 +285,6 @@ export const ArtificialHero = () => {
         }
       }
 
-      // Film grain
       grainCtx.clearRect(0, 0, width, height);
       const grainIntensity = 0.22 + Math.sin(time * 10) * 0.03;
       const grainImageData = generateFilmGrain(width, height, grainIntensity);
