@@ -6,3 +6,7 @@ dist/
 .env.*
 .claude
 plans/
+
+# Subgraph
+packages/subgraph/build/
+packages/subgraph/generated/

@@ -112,12 +112,21 @@ export class ExecutionRelayer {
       signature: concat([SIG_MODE_SESSION, `0x${"00".repeat(65)}`]),
     };
 
-    // Let the bundler size the gas (hardcoded limits trip Alchemy's efficiency check on Arbitrum).
-    // Alchemy over-pads verificationGasLimit (~1M) then rejects it for low efficiency; cap it.
+    // Gas sizing strategy: prioritise reliable inclusion over cost.
+    //
+    // - callGasLimit / preVerificationGas: pad generously. Over-provisioning here only costs more
+    //   (refunded if unused) and prevents the most common failure — execution out-of-gas reverts.
+    // - verificationGasLimit: the ONE field where padding backfires. Alchemy/Rundler enforces
+    //   efficiency = actualGasUsed / limit >= 0.4, so a high limit is REJECTED, not just expensive.
+    //   Session-key validation uses ~40-60k, so cap it tight to keep efficiency >= 0.4.
+    const VERIFICATION_GAS_CAP = 90_000n;
     const est = await this.estimateGas(userOp);
-    const verificationGasLimit = est.verificationGasLimit > 150_000n ? 150_000n : est.verificationGasLimit;
-    userOp.accountGasLimits = pack(verificationGasLimit, est.callGasLimit);
-    userOp.preVerificationGas = est.preVerificationGas;
+    const verificationGasLimit =
+      est.verificationGasLimit > VERIFICATION_GAS_CAP ? VERIFICATION_GAS_CAP : est.verificationGasLimit;
+    // Pad the non-efficiency-gated limits 2x for headroom (cost is refunded if unused).
+    const callGasLimit = est.callGasLimit * 2n;
+    userOp.accountGasLimits = pack(verificationGasLimit, callGasLimit);
+    userOp.preVerificationGas = est.preVerificationGas * 2n;
 
     // EntryPoint computes the canonical hash (binds chainId + entrypoint → replay-safe).
     const userOpHash = (await this.pub.readContract({

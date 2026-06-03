@@ -1,0 +1,48 @@
+type SmartAccount @entity(immutable: false) {
+  id: ID!
+  owner: Bytes!
+  address: Bytes!
+  salt: BigInt!
+  createdAt: BigInt!
+  txHash: Bytes!
+  sessionKeys: [SessionKey!]! @derivedFrom(field: "smartAccount")
+}
+
+type SessionKey @entity(immutable: false) {
+  id: ID!
+  smartAccount: SmartAccount!
+  sessionKey: Bytes!
+  validUntil: BigInt!
+  revoked: Boolean!
+  exists: Boolean!
+  registeredAt: BigInt!
+  revokedAt: BigInt
+  txHash: Bytes!
+}
+
+type Action @entity(immutable: true) {
+  id: ID!
+  smartAccount: SmartAccount!
+  sessionKey: Bytes!
+  adapter: Bytes!
+  actionType: Int!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  txHash: Bytes!
+}
+
+type PolicySnapshot @entity(immutable: true) {
+  id: ID!
+  smartAccount: SmartAccount!
+  sessionKey: Bytes!
+  expiry: BigInt!
+  maxTradePerTx: BigInt!
+  maxDailyVolume: BigInt!
+  maxExposure: BigInt!
+  maxLossPerDay: BigInt!
+  maxDrawdownBps: Int!
+  maxLeverageBps: Int!
+  paused: Boolean!
+  timestamp: BigInt!
+  txHash: Bytes!
+}

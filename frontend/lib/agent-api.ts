@@ -1,0 +1,110 @@
+// Client for the backend Dolfin agent API (packages/backend, /agent/*). Keeps the
+// autonomous cron agent in sync with on-chain session lifecycle: after each owner tx
+// (create/rotate/revoke/edit) the FE pushes the session key + policy + enabled state here.
+// Backend keys config on `userId:smartAccount`; userId = owner EOA address (lowercased).
+import { type Address } from "viem";
+import { type BackendAgentPolicy } from "./policy-to-backend";
+
+const BASE = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+function base(): string {
+  if (!BASE) throw new Error("NEXT_PUBLIC_BACKEND_URL is not set");
+  return BASE.replace(/\/$/, "");
+}
+
+function configPath(owner: Address, account: Address): string {
+  return `${base()}/agent/${owner.toLowerCase()}/${account.toLowerCase()}`;
+}
+
+async function expectOk(res: Response, action: string): Promise<unknown> {
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`${action} failed (${res.status}): ${text}`);
+  }
+  return res.json().catch(() => ({}));
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Retry transient failures (network down, 5xx). 4xx are caller/validation errors — fail fast,
+// retrying won't help. The on-chain tx already committed by the time we sync, so a flaky
+// backend must not silently leave the agent unconfigured.
+async function putWithRetry(url: string, body: string, attempts = 3): Promise<void> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body,
+      });
+      if (res.ok) return;
+      // Client error → no point retrying.
+      if (res.status >= 400 && res.status < 500) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`sync agent config failed (${res.status}): ${text}`);
+      }
+      lastErr = new Error(`sync agent config failed (${res.status})`);
+    } catch (e) {
+      lastErr = e;
+    }
+    if (i < attempts - 1) await sleep(300 * 3 ** i); // 300ms, 900ms
+  }
+  throw lastErr instanceof Error ? lastErr : new Error("sync agent config failed");
+}
+
+// Partial config update. Pass only what changed. `sessionKey` is a 0x 32-byte private key
+// (or null to clear). NEVER log this object — it carries the private key.
+export interface AgentConfigPatch {
+  enabled?: boolean;
+  sessionKey?: `0x${string}` | null;
+  policy?: BackendAgentPolicy;
+}
+
+export async function syncAgentConfig(
+  owner: Address,
+  account: Address,
+  patch: AgentConfigPatch,
+): Promise<void> {
+  await putWithRetry(`${configPath(owner, account)}/config`, JSON.stringify(patch));
+}
+
+export interface AgentConfigView {
+  enabled: boolean;
+  hasSessionKey: boolean;
+  policy: unknown;
+}
+
+// Read current backend config. Returns null when none exists (404) — used by reconciliation
+// to detect divergence (e.g. on-chain grant succeeded but a prior sync never landed).
+export async function getAgentConfig(
+  owner: Address,
+  account: Address,
+): Promise<AgentConfigView | null> {
+  const res = await fetch(`${configPath(owner, account)}/config`);
+  if (res.status === 404) return null;
+  return (await expectOk(res, "get agent config")) as AgentConfigView;
+}
+
+// Delete the backend agent config (row + cached instance). 404 is treated as success — the
+// goal (no config) is already met. Other failures throw so the caller can surface them.
+export async function deleteAgentConfig(owner: Address, account: Address): Promise<void> {
+  const res = await fetch(`${configPath(owner, account)}/config`, { method: "DELETE" });
+  if (res.ok || res.status === 404) return;
+  const text = await res.text().catch(() => "");
+  throw new Error(`delete agent config failed (${res.status}): ${text}`);
+}
+
+export async function runAgent(owner: Address, account: Address): Promise<unknown> {
+  const res = await fetch(`${configPath(owner, account)}/run`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({}),
+  });
+  return expectOk(res, "run agent");
+}
+
+export async function getLatestSession(owner: Address, account: Address): Promise<unknown> {
+  const res = await fetch(`${configPath(owner, account)}/sessions/latest`);
+  return expectOk(res, "get latest session");
+}

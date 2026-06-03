@@ -7,7 +7,9 @@ import { DOLFIN } from "@/constants/dolfin";
 import { ACCOUNT_ABI, POLICY_MANAGER_ABI } from "@/constants/dolfin-abi";
 import { buildWalletClient, errMsg, feeOverrides, getActiveWallet, publicClient } from "@/lib/dolfin-wallet";
 import { editSession, grantSession, revokeKey } from "@/lib/dolfin-actions";
-import { addSession, getSession, newSession, replaceSession, updateSessionSettings } from "@/lib/account-store";
+import { addSession, getSession, newSession, removeSession, replaceSession, updateSessionSettings } from "@/lib/account-store";
+import { deleteAgentConfig, getAgentConfig, syncAgentConfig } from "@/lib/agent-api";
+import { policyToBackend } from "@/lib/policy-to-backend";
 import { type PolicySettings } from "@/constants/dolfin";
 import { toast } from "sonner";
 
@@ -90,6 +92,36 @@ export function useAgentManage(
     };
   }, [account, sessionKey]);
 
+  // Reconciliation: the on-chain grant and the backend sync are two non-atomic writes. If a
+  // prior sync failed (backend down) the chain holds the key but the backend doesn't, so the
+  // cron never runs this agent. On mount, re-push the locally-stored key when the backend is
+  // missing it. Best-effort + silent: buttons still work, and we only heal the key-missing case
+  // (the most damaging create/rotate failure), not policy drift.
+  useEffect(() => {
+    if (!owner || !account || !sessionKey) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const stored = getSession(owner, account, sessionKey);
+        if (!stored) return; // no local key (e.g. different browser) — nothing to heal from
+        const cfg = await getAgentConfig(owner, account);
+        if (cancelled) return;
+        if (!cfg || !cfg.hasSessionKey) {
+          await syncAgentConfig(owner, account, {
+            sessionKey: stored.privateKey,
+            policy: policyToBackend(stored.settings),
+            enabled: true,
+          });
+        }
+      } catch {
+        // best-effort; don't block the UI if the backend is unreachable
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [owner, account, sessionKey]);
+
   // Run an owner-driven action with shared loading/error handling, then refresh.
   const run = async (label: string, fn: (wallet: Awaited<ReturnType<typeof buildWalletClient>>) => Promise<void>) => {
     if (!account || !owner) return;
@@ -120,11 +152,16 @@ export function useAgentManage(
         ...(await feeOverrides()),
       });
       await publicClient.waitForTransactionReceipt({ hash });
+      // Mirror to the backend so the cron skips paused agents (on-chain pause already
+      // blocks execution; this just avoids wasted runs).
+      await syncAgentConfig(o, account!, { enabled: functionName === "resumeAgent" });
     });
 
   const revoke = () =>
     sessionKey && run("revoke", async ({ walletClient, owner: o }) => {
       await revokeKey(walletClient, o, account!, sessionKey);
+      // Clear the key + disable so the cron stops running this (now revoked) session.
+      await syncAgentConfig(o, account!, { sessionKey: null, enabled: false });
     });
 
   // Generate a fresh key + grant it from stored settings. Used when the current key is dead.
@@ -135,6 +172,11 @@ export function useAgentManage(
       const session = newSession(stored.settings);
       await grantSession(walletClient, o, account!, session.key, stored.settings);
       addSession(o, account!, session);
+      await syncAgentConfig(o, account!, {
+        sessionKey: session.privateKey,
+        policy: policyToBackend(stored.settings),
+        enabled: true,
+      });
       onSessionKeyChange(session.key);
     });
 
@@ -147,6 +189,8 @@ export function useAgentManage(
       await grantSession(walletClient, o, account!, session.key, stored.settings);
       await revokeKey(walletClient, o, account!, sessionKey);
       replaceSession(o, account!, sessionKey, session);
+      // Point the backend at the new key (policy unchanged) so the next tick signs with it.
+      await syncAgentConfig(o, account!, { sessionKey: session.privateKey });
       onSessionKeyChange(session.key);
     });
 
@@ -157,7 +201,22 @@ export function useAgentManage(
       if (!stored) throw new Error("No stored policy for this session.");
       await editSession(walletClient, o, account!, sessionKey, stored.settings, next);
       updateSessionSettings(o, account!, sessionKey, next);
+      // Same key, new caps/scope: push the mapped policy so the agent honors the new limits.
+      await syncAgentConfig(o, account!, { policy: policyToBackend(next) });
       onSessionKeyChange(sessionKey);
+    });
+
+  // Delete the agent entirely: revoke on-chain (only if the key is still live), drop the backend
+  // config row, then remove it from the local store. Revoking a dead key would waste gas / revert,
+  // so it's skipped when the status reads revoked/expired.
+  const del = (onDeleted: () => void) =>
+    run("delete", async ({ walletClient, owner: o }) => {
+      if (sessionKey && status && !status.revoked && !status.expired) {
+        await revokeKey(walletClient, o, account!, sessionKey);
+      }
+      await deleteAgentConfig(o, account!);
+      if (sessionKey) removeSession(o, account!, sessionKey);
+      onDeleted();
     });
 
   return {
@@ -170,5 +229,6 @@ export function useAgentManage(
     register,
     rotate,
     edit,
+    del,
   };
 }

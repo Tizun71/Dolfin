@@ -1,0 +1,44 @@
+# Backend + Postgres for local/dev. Frontend runs on the host (pnpm --filter frontend dev)
+# and points at http://localhost:8080 via NEXT_PUBLIC_BACKEND_URL.
+#
+#   docker compose up --build
+#
+# Backend reads packages/backend/.env (Privy, Alchemy, Gemini, SESSION_KEY,
+# SESSION_KEY_ENC_SECRET, ...). DATABASE_URL + HOSTNAME + PORT are overridden below so the
+# container talks to the postgres service and binds on all interfaces. Migrations are applied
+# on container start (see backend.Dockerfile CMD).
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dolfin
+      POSTGRES_PASSWORD: dolfin
+      POSTGRES_DB: dolfin
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dolfin -d dolfin"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    env_file:
+      - packages/backend/.env
+    environment:
+      DATABASE_URL: postgresql://dolfin:dolfin@postgres:5432/dolfin
+      HOSTNAME: 0.0.0.0
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
