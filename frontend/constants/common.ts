@@ -70,3 +70,34 @@ export const FEATURES_ITEMS = [
       "Monitor portfolio performance, track agent activities, and view predictive market forecasts powered by advanced time-series analysis.",
   },
 ];
+
+export const HOW_IT_WORKS_ITEMS = [
+  {
+    number: "01",
+    title: "Authenticate with Privy",
+    description:
+      "Sign in with Google or connect your MetaMask wallet. Dolfin supports MetaMask and Rabby Wallet for seamless wallet integration.",
+    icon: "lock",
+  },
+  {
+    number: "02",
+    title: "Deploy Your AI Agent",
+    description:
+      "Create a secure smart account (ERC-4337) powered by Arbitrum. Your agent is deployed with full control and protection.",
+    icon: "cpu",
+  },
+  {
+    number: "03",
+    title: "Deposit & Fund Your Agent",
+    description:
+      "Transfer ETH or USDC from your wallet to your AI agent account. Your funds are ready for automated trading.",
+    icon: "wallet",
+  },
+  {
+    number: "04",
+    title: "AI Executes Trades 24/7",
+    description:
+      "Set your risk policy (Conservative/Balanced/Aggressive) and let Dolfin's AI automatically execute profitable strategies around the clock.",
+    icon: "trending-up",
+  },
+];

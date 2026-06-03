@@ -3,12 +3,20 @@
 import { FEATURES_ITEMS } from "@/constants/common";
 import { useSectionAnimation } from "./hooks/useSectionAnimation";
 import { Bot, Zap, LineChart } from "lucide-react";
+import { useMemo } from "react";
 
-const iconMap = {
+// Static icon map - optimized
+const ICON_MAP = {
   bot: Bot,
   zap: Zap,
   chart: LineChart,
-};
+} as const;
+
+// Memoize delay calculations
+const getFeatureDelays = (isVisible: boolean, index: number) => ({
+  delay: isVisible ? `${200 + index * 150}ms` : "0ms",
+  iconDelay: isVisible ? `${400 + index * 150}ms` : "0ms",
+});
 
 export default function FeaturesSection() {
   const { isVisible, sectionRef } = useSectionAnimation();
@@ -39,44 +47,39 @@ export default function FeaturesSection() {
       {/* Features Grid with stagger animation */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         {FEATURES_ITEMS.map((feature, index) => {
-          const IconComponent = iconMap[feature.icon as keyof typeof iconMap];
+          const IconComponent = ICON_MAP[feature.icon as keyof typeof ICON_MAP];
+          const { delay, iconDelay } = getFeatureDelays(isVisible, index);
 
           return (
             <div
               key={feature.title}
-              className={`flex flex-col gap-6 border border-[#1a1a1a] rounded-xl p-8 relative overflow-hidden transition-all duration-500 group hover:bg-[#0a0a0a] hover:border-yellow-500/30 ${
+              className={`group relative flex flex-col gap-6 overflow-hidden rounded-xl border border-[#1a1a1a] p-8 transition-all duration-500 ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-              }`}
-              style={{
-                transitionDelay: isVisible ? `${200 + index * 150}ms` : "0ms",
-              }}
+              } hover:bg-[#0a0a0a] hover:border-yellow-500/30`}
+              style={{ transitionDelay: delay }}
             >
               {/* Glow effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/0 via-yellow-500/0 to-yellow-500/0 group-hover:from-yellow-500/5 group-hover:via-yellow-500/0 group-hover:to-yellow-500/5 transition-all duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
               {/* Icon with scale animation */}
               <div
-                className={`relative w-16 h-16 flex items-center justify-center rounded-2xl bg-[#0d0d0d] border border-[#222] group-hover:border-yellow-500/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.15)] ${
+                className={`relative flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-[#222] bg-[#0d0d0d] transition-all duration-300 group-hover:border-yellow-500/50 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.15)] ${
                   isVisible ? "scale-100" : "scale-0"
                 }`}
-                style={{
-                  transitionDelay: isVisible
-                    ? `${400 + index * 150}ms`
-                    : "0ms",
-                }}
+                style={{ transitionDelay: iconDelay }}
               >
                 <IconComponent
-                  className="w-8 h-8 text-yellow-400 group-hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] transition-all duration-300"
+                  className="h-8 w-8 text-yellow-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]"
                   strokeWidth={1.5}
                 />
               </div>
 
               {/* Content */}
               <div className="relative z-10">
-                <h3 className="text-xl font-mono uppercase tracking-[2px] mb-3 text-white group-hover:text-yellow-400 transition-colors duration-300">
+                <h3 className="mb-3 text-xl font-mono uppercase tracking-[2px] text-white group-hover:text-yellow-400 transition-colors duration-300">
                   {feature.title}
                 </h3>
-                <p className="text-[#888] text-sm font-light leading-relaxed group-hover:text-[#aaa] transition-colors duration-300">
+                <p className="text-sm font-light leading-relaxed text-[#888] group-hover:text-[#aaa] transition-colors duration-300">
                   {feature.description}
                 </p>
               </div>
