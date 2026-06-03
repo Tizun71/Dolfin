@@ -49,3 +49,24 @@ export const SUPPORT_ITEMS = [
     logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.svg",
   },
 ];
+
+export const FEATURES_ITEMS = [
+  {
+    icon: "bot",
+    title: "AI Trading Agents",
+    description:
+      "Create and manage autonomous AI agents that execute DeFi strategies 24/7 based on your custom policies and risk parameters.",
+  },
+  {
+    icon: "zap",
+    title: "Flash Loan Execution",
+    description:
+      "Access instant, uncollateralized loans for arbitrage and yield farming—all executed automatically within a single transaction block.",
+  },
+  {
+    icon: "chart",
+    title: "Real-Time Analytics",
+    description:
+      "Monitor portfolio performance, track agent activities, and view predictive market forecasts powered by advanced time-series analysis.",
+  },
+];
