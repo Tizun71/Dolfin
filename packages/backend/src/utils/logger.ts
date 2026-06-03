@@ -4,10 +4,7 @@ import winston from "winston";
  * Winston logger for the AI workflow.
  *
  * Output format: `[Date:Time] [Status] message`
- *   e.g. [2026-06-03:09:53:51] [START] Portfolio node bắt đầu
- *
- * `Status` is a free-form label (START / DONE / ERROR / INFO / ...) passed via
- * the `status` meta field; it falls back to the winston level when absent.
+ *   e.g. [2026-06-03:09:53:51] [START] Portfolio node started
  */
 const lineFormat = winston.format.printf((info) => {
   const status = String(info.status ?? info.level).toUpperCase();

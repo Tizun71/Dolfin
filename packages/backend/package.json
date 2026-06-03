@@ -16,7 +16,6 @@
     "@ai-sdk/google": "^3.0.72",
     "@dolfin/onchain": "workspace:*",
     "@duneanalytics/client-sdk": "^0.4.0",
-    "@gmx-io/sdk": "1.5.0-alpha-17",
     "@hono/node-server": "^1.19.14",
     "@hono/zod-validator": "^0.8.0",
     "@langchain/core": "^1.1.48",

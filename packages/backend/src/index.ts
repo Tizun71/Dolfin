@@ -3,10 +3,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
-import userModule from "./modules/user/index.js";
-import aaveModule from "./modules/aave/index.js";
-import aiModule from "./modules/ai/index.js";
-import gmxModule from "./modules/gmx/index.js";
 import agentModule from "./modules/dolfin-agent/index.js";
 import { saveMarketHistory } from "./jobs/save_market_history.js";
 import { runDolfinAgents } from "./jobs/run_dolfin_agents.js";
@@ -49,18 +45,6 @@ app.use(
     allowHeaders: ["Content-Type"],
   }),
 );
-
-// Register user module
-app.route("/user", userModule);
-
-// Register aave module
-app.route("/aave", aaveModule);
-
-// Register AI module
-app.route("/ai", aiModule);
-
-// Register GMX module
-app.route("/gmx", gmxModule);
 
 // Register Dolfin agent module
 app.route("/agent", agentModule);
