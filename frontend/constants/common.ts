@@ -34,3 +34,18 @@ export const ASSET_CONFIG: Record<string, { icon: string; color: string }> = {
   wsteth: { icon: "◆", color: "#00A3FF" },
   weeth: { icon: "◆", color: "#9B59B6" },
 };
+
+export const SUPPORT_ITEMS = [
+  {
+    name: "GitHub",
+    description: "View source code and contribute to Dolfin",
+    href: "https://github.com/Tizun71/Dolfin",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/github.svg",
+  },
+  {
+    name: "Arbitrum",
+    description: "Learn about the network powering Dolfin",
+    href: "https://arbitrum.io",
+    logo: "https://cryptologos.cc/logos/arbitrum-arb-logo.svg",
+  },
+];

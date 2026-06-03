@@ -1,4 +1,4 @@
-import { Navbar, Hero, Footer, DevsSection } from "@/components/introduce";
+import { Navbar, Hero, Footer, DevsSection, SupportSection } from "@/components/introduce";
 
 export default function LandingPage() {
   return (
@@ -6,6 +6,7 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <DevsSection />
+      <SupportSection />
       <Footer />
     </div>
   );
