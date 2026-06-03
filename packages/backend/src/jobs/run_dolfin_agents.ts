@@ -1,11 +1,11 @@
 import { CronJob } from "cron";
-import { getLogger } from "@logtape/logtape";
 import { eq } from "drizzle-orm";
 import db from "../db/index.js";
 import { agentConfigTable } from "../db/schema.js";
 import { agentManager } from "../modules/dolfin-agent/agent-manager.js";
+import { logStep } from "../utils/logger.js";
 
-const logger = getLogger(["cron", "dolfin-agents"]);
+const CRON = process.env.DOLFIN_AGENT_CRON ?? "0 * * * *";
 
 /**
  * Run every enabled Dolfin agent on a schedule. Cadence is controlled by
@@ -13,29 +13,35 @@ const logger = getLogger(["cron", "dolfin-agents"]);
  * the loop — each is wrapped in its own try/catch so a bad config can't
  * starve the others.
  */
-export const runDolfinAgents = new CronJob(
-  process.env.DOLFIN_AGENT_CRON ?? "0 * * * *",
-  async () => {
-    logger.info("dolfin agents tick start");
-    const rows = await db
-      .select({
-        userId: agentConfigTable.user_id,
-        smartAccount: agentConfigTable.smart_account,
-      })
-      .from(agentConfigTable)
-      .where(eq(agentConfigTable.enabled, true));
+export const runDolfinAgents = new CronJob(CRON, async () => {
+  logStep("TICK", `Cron tick start (schedule=${CRON})`);
+  const rows = await db
+    .select({
+      userId: agentConfigTable.user_id,
+      smartAccount: agentConfigTable.smart_account,
+    })
+    .from(agentConfigTable)
+    .where(eq(agentConfigTable.enabled, true));
 
-    for (const row of rows) {
-      try {
-        const { runId } = await agentManager.run(row.userId, row.smartAccount, row.smartAccount);
-        logger.info("dolfin agent run ok runId={runId} user={userId}", { runId, userId: row.userId });
-      } catch (e) {
-        logger.error(
-          "dolfin agent run failed user={userId} smartAccount={smartAccount}: {error}",
-          { userId: row.userId, smartAccount: row.smartAccount, error: e },
-        );
-      }
+  if (rows.length === 0) {
+    logStep("IDLE", "No enabled agents — nothing to run this tick");
+  }
+
+  for (const row of rows) {
+    try {
+      const { runId } = await agentManager.run(row.userId, row.smartAccount, row.smartAccount);
+      logStep("DONE", `Agent run ok runId=${runId} user=${row.userId}`);
+    } catch (e) {
+      logStep("ERROR", `Agent run failed user=${row.userId} smartAccount=${row.smartAccount}: ${e instanceof Error ? e.message : String(e)}`);
     }
-    logger.info("dolfin agents tick done count={count}", { count: rows.length });
-  },
-);
+  }
+
+  const next = runDolfinAgents.nextDate()?.toISO() ?? "unknown";
+  logStep("TICK", `Cron tick done count=${rows.length} nextRun=${next}`);
+});
+
+/** Log the schedule + first run time once the job is started. */
+export function logDolfinAgentsSchedule(): void {
+  const next = runDolfinAgents.nextDate()?.toISO() ?? "unknown";
+  logStep("CRON", `Dolfin agents scheduled (schedule=${CRON}) nextRun=${next}`);
+}

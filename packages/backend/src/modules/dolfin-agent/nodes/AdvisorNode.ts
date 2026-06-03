@@ -1,6 +1,10 @@
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import type { AdvisorState } from "../state.js";
+
+const SYSTEM_PROMPT =
+  "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
+  "actions that were already decided by the rule engine. Reference concrete numbers from " +
+  "the data. Never invent positions or actions that are not present in the provided data.";
 
 /**
  * Explain-only sink: narrates portfolio + risk + market + the rule-engine's decisions
@@ -8,19 +12,34 @@ import type { AdvisorState } from "../state.js";
  * Transaction encoding/execution is handled by downstream Planner/Executor nodes.
  */
 export class AdvisorNode {
-  constructor(private readonly model = google("gemini-2.0-flash")) {}
+  private model?: ChatGoogleGenerativeAI;
+
+  constructor(model?: ChatGoogleGenerativeAI) {
+    this.model = model;
+  }
+
+  /**
+   * Lazy-init the LLM client. Constructing ChatGoogleGenerativeAI throws when
+   * GOOGLE_API_KEY is missing — doing it here (inside execute's try/catch) keeps
+   * a config issue from killing the whole pipeline before the run is persisted.
+   */
+  private getModel(): ChatGoogleGenerativeAI {
+    if (!this.model) {
+      this.model = new ChatGoogleGenerativeAI({
+        model: "gemini-2.0-flash-lite",
+        apiKey: process.env.GOOGLE_API_KEY,
+      });
+    }
+    return this.model;
+  }
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {
     try {
-      const { text } = await generateText({
-        model: this.model,
-        system:
-          "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
-          "actions that were already decided by the rule engine. Reference concrete numbers from " +
-          "the data. Never invent positions or actions that are not present in the provided data.",
-        prompt: this.buildPrompt(state),
-      });
-      return { advice: text };
+      const response = await this.getModel().invoke([
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: this.buildPrompt(state) },
+      ]);
+      return { advice: String(response.content) };
     } catch (err) {
       // Narration is non-critical and runs AFTER execution — never fail the pipeline on it.
       const reason = err instanceof Error ? err.message : String(err);
