@@ -53,7 +53,7 @@ export const agentConfigTable = pgTable(
       .references(() => userTable.id, { onDelete: "cascade" }),
     smart_account: varchar("smart_account").notNull(),
     enabled: boolean().notNull().default(false),
-    /** Optional per-user session key (hex). If null, falls back to env SESSION_KEY. */
+    /** Per-user session key, encrypted at rest (AES-GCM envelope). Null = agent not runnable. */
     session_key: text("session_key"),
     /** Mirrors on-chain UserPolicy: maxTradePerTxUsd, maxDailyVolumeUsd, etc. */
     policy: jsonb().notNull(),

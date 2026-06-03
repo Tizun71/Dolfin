@@ -9,6 +9,7 @@ import { getAccount, type StoredAccount } from "@/lib/account-store";
 import { type TransferMode } from "@/hooks/useAccountTransfer";
 import AccountStatusCard from "./components/AccountStatusCard";
 import SessionPanel from "./components/SessionPanel";
+import AgentActivityPanel from "./components/AgentActivityPanel";
 import CreateSessionForm from "./components/CreateSessionForm";
 import TransferDrawer from "./components/TransferDrawer";
 import Modal from "./components/Modal";
@@ -71,17 +72,21 @@ export default function AccountDetailView({ address }: { address: Address }) {
           Agents ({sessions.length})
         </h2>
         {sessions.length ? (
-          sessions.map((s, i) => (
-            <SessionPanel
-              key={s.key}
-              index={i}
-              owner={owner}
-              account={address}
-              sessionKey={s.key}
-              settings={s.settings}
-              onSessionKeyChange={reload}
-            />
-          ))
+          <>
+            {sessions.map((s, i) => (
+              <SessionPanel
+                key={s.key}
+                index={i}
+                owner={owner}
+                account={address}
+                sessionKey={s.key}
+                settings={s.settings}
+                onSessionKeyChange={reload}
+              />
+            ))}
+            {/* What the backend AI agent is actually doing for this account. */}
+            <AgentActivityPanel owner={owner} account={address} />
+          </>
         ) : (
           <div className="card-3d p-12 text-center">
             <p className="text-[#444] text-xs font-mono uppercase tracking-[3px]">No agents yet</p>

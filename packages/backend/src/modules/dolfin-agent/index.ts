@@ -4,9 +4,10 @@ import { z } from "zod";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { getLogger } from "@logtape/logtape";
 import db from "../../db/index.js";
-import { agentActionTable, agentConfigTable, agentRunTable } from "../../db/schema.js";
+import { agentActionTable, agentConfigTable, agentRunTable, userTable } from "../../db/schema.js";
 import { agentManager } from "./agent-manager.js";
 import { AgentConfigNotFoundError } from "./create-dolfin-agent.js";
+import { encryptSessionKey } from "./session-key-crypto.js";
 
 const logger = getLogger(["dolfin", "agent-api"]);
 
@@ -87,7 +88,8 @@ agentModule.get(
       userId: row.user_id,
       smartAccount: row.smart_account,
       enabled: row.enabled,
-      sessionKey: row.session_key,
+      // sessionKey is a private key: never returned. `hasSessionKey` lets the FE know one is set.
+      hasSessionKey: row.session_key != null,
       policy: row.policy,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
@@ -102,6 +104,15 @@ agentModule.put(
   async (c) => {
     const { userId, smartAccount } = c.req.valid("param");
     const body = c.req.valid("json");
+    // Encrypt the session key at rest (AES-GCM). null clears it; undefined leaves it untouched.
+    const encryptedKey =
+      body.sessionKey == null ? body.sessionKey : encryptSessionKey(body.sessionKey);
+    // agent_config.user_id is a FK to user.id. userId here is the owner EOA address, so ensure a
+    // matching user row exists before inserting the config (idempotent).
+    await db
+      .insert(userTable)
+      .values({ id: userId, wallet_address: userId })
+      .onConflictDoNothing();
     const existing = await db
       .select({ id: agentConfigTable.id })
       .from(agentConfigTable)
@@ -115,7 +126,7 @@ agentModule.put(
           user_id: userId,
           smart_account: smartAccount,
           enabled: body.enabled ?? false,
-          session_key: body.sessionKey ?? null,
+          session_key: encryptedKey ?? null,
           policy: body.policy ?? {},
         })
         .returning();
@@ -127,7 +138,7 @@ agentModule.put(
       updated_at: new Date(),
     };
     if (body.enabled !== undefined) updates.enabled = body.enabled;
-    if (body.sessionKey !== undefined) updates.session_key = body.sessionKey;
+    if (body.sessionKey !== undefined) updates.session_key = encryptedKey;
     if (body.policy !== undefined) updates.policy = body.policy;
     await db
       .update(agentConfigTable)
@@ -135,6 +146,24 @@ agentModule.put(
       .where(eq(agentConfigTable.id, existing[0].id));
     agentManager.remove(userId, smartAccount);
     return c.json({ id: existing[0].id, created: false });
+  },
+);
+
+agentModule.delete(
+  "/:userId/:smartAccount/config",
+  zValidator("param", paramsSchema),
+  async (c) => {
+    const { userId, smartAccount } = c.req.valid("param");
+    const deleted = await db
+      .delete(agentConfigTable)
+      .where(and(eq(agentConfigTable.user_id, userId), eq(agentConfigTable.smart_account, smartAccount)))
+      .returning({ id: agentConfigTable.id });
+    // Drop the cached agent so the cron/manual run stops serving this (now gone) config.
+    agentManager.remove(userId, smartAccount);
+    if (deleted.length === 0) {
+      return c.json({ error: "agent_config not found" }, 404);
+    }
+    return c.json({ id: deleted[0].id, deleted: true });
   },
 );
 

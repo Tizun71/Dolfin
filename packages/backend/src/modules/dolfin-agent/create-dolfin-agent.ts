@@ -14,6 +14,7 @@ import {
   type TokenInfo,
 } from "./config/onchain-config.js";
 import { DolfinAgent } from "./DolfinAgent.js";
+import { decryptSessionKey } from "./session-key-crypto.js";
 
 export interface AgentConfigRow {
   id: string;
@@ -54,10 +55,17 @@ async function loadAgentConfigRow(userId: string, smartAccount: string): Promise
   };
 }
 
-function reqEnv(key: string): string {
-  const v = process.env[key];
-  if (!v) throw new Error(`missing env: ${key} (see smart_contract/.env.example)`);
-  return v;
+/**
+ * The DB stores `allowedActions` as `address -> string` (JSON has no bigint), but
+ * `buildUserPolicy` ORs the mask as a bigint. Coerce the masks back to bigint here so
+ * the on-chain action whitelist is correct. Malformed values throw (caught by the cron).
+ */
+function normalizePolicyOverrides(policy: PolicyOverrides): PolicyOverrides {
+  if (!policy.allowedActions) return policy;
+  const allowedActions = Object.fromEntries(
+    Object.entries(policy.allowedActions).map(([protocol, mask]) => [protocol, BigInt(mask as unknown as string)]),
+  ) as PolicyOverrides["allowedActions"];
+  return { ...policy, allowedActions };
 }
 
 /**
@@ -70,11 +78,18 @@ export async function createDolfinAgentForUser(args: {
   smartAccount: string;
 }): Promise<{ agent: DolfinAgent; onchain: OnchainConfig; tokens: Record<string, TokenInfo> }> {
   const row = await loadAgentConfigRow(args.userId, args.smartAccount);
-  const sessionKey = (row.session_key ?? reqEnv("SESSION_KEY")) as `0x${string}`;
+  // No env SESSION_KEY fallback: a config without its own session key is not runnable.
+  // Using a shared key here would execute on the wrong account. Fail loud so the cron skips it.
+  if (!row.session_key) {
+    throw new Error(
+      `agent has no session key, not runnable (user=${args.userId} smartAccount=${args.smartAccount})`,
+    );
+  }
+  const sessionKey = decryptSessionKey(row.session_key) as `0x${string}`;
   const onchain = loadOnchainConfigFor({
     smartAccount: row.smart_account as Address,
     sessionKey,
-    policyOverrides: row.policy,
+    policyOverrides: normalizePolicyOverrides(row.policy),
   });
 
   const portfolioEngine = new PortfolioEngine(ChainId.ARBITRUM_SEPOLIA, Object.values(onchain.tokens));

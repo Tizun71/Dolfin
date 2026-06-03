@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { configure, getConsoleSink, getLogger } from "@logtape/logtape";
 import { honoLogger } from "@logtape/hono";
 import userModule from "./modules/user/index.js";
@@ -33,6 +34,21 @@ const logger = getLogger("hono");
 
 const app = new Hono();
 app.use(honoLogger());
+
+// CORS: the frontend (separate origin) calls this API directly from the browser.
+// CORS_ORIGINS is a comma-separated allowlist; defaults to the local Next dev server.
+const corsOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:3000")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+app.use(
+  "*",
+  cors({
+    origin: corsOrigins,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type"],
+  }),
+);
 
 // Register user module
 app.route("/user", userModule);

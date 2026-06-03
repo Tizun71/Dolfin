@@ -89,6 +89,13 @@ export function updateSessionSettings(owner: Address, address: Address, key: Add
   });
 }
 
+// Delete a session entirely from the local store (used by "delete agent").
+export function removeSession(owner: Address, address: Address, key: Address): void {
+  mutateAccount(owner, address, (a) => {
+    a.sessions = a.sessions.filter((s) => s.key.toLowerCase() !== key.toLowerCase());
+  });
+}
+
 export function getSession(owner: Address, address: Address, key: Address): StoredSession | null {
   return getAccount(owner, address)?.sessions.find((s) => s.key.toLowerCase() === key.toLowerCase()) ?? null;
 }
