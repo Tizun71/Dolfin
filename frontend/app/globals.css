@@ -5,7 +5,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Brand palette derived from Dolfin logo (amber-gold → orange) */
   --brand-50: #fff7ed;
   --brand-300: #fcd9a8;
   --brand-400: #fbbf24; /* gold */
@@ -53,7 +52,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dolphin gradient text — yellow → orange, matches logo */
 .text-brand-gradient {
   background: linear-gradient(
     100deg,
@@ -68,7 +66,6 @@ body {
   color: transparent;
 }
 
-/* Primary brand button — logo gradient, dark text for contrast */
 .btn-brand {
   background: linear-gradient(
     90deg,
@@ -93,7 +90,6 @@ body {
   opacity: 0.4;
 }
 
-/* Outlined brand button — fills solid + dark text on hover */
 .btn-brand-outline {
   border-color: var(--brand-500);
   color: var(--brand-400);
@@ -106,7 +102,6 @@ body {
   color: #0a0a0a;
 }
 
-/* Buttons feel clickable */
 button:not(:disabled) {
   cursor: pointer;
 }
@@ -122,7 +117,7 @@ button:not(:disabled) {
 }
 
 .card-3d:hover {
-  /* lift only — no color change */
+
   transform: translateY(-2px);
 }
 

@@ -4,6 +4,7 @@ import LogoDolfin from "@/components/shared/LogoDolfin";
 import Link from "next/link";
 import NavActions from "./NavActions";
 import { useNavScroll } from "./hooks/useNavScroll";
+import { NAV_ITEMS } from "./constants";
 
 export default function Navbar() {
   const { scrolled, scrollToTop, scrollToSection } = useNavScroll();
@@ -28,24 +29,24 @@ export default function Navbar() {
         </button>
 
         <nav className="flex items-center gap-10">
-          <Link
-            href="#devs"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection("devs");
-            }}
-            className="relative text-[#666] text-sm font-mono uppercase tracking-[4px] hover:text-white transition-colors duration-300 group"
-          >
-            Devs
-            <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300 ease-in-out" />
-          </Link>
-          <Link
-            href="#"
-            className="relative text-[#666] text-sm font-mono uppercase tracking-[4px] hover:text-white transition-colors duration-300 group"
-          >
-            Docs
-            <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300 ease-in-out" />
-          </Link>
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={(e) => {
+                if (!item.external && item.section) {
+                  e.preventDefault();
+                  scrollToSection(item.section);
+                }
+              }}
+              target={item.external ? "_blank" : undefined}
+              rel={item.external ? "noopener noreferrer" : undefined}
+              className="relative text-[#666] text-sm font-mono uppercase tracking-[4px] hover:text-white transition-colors duration-300 group"
+            >
+              {item.label}
+              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300 ease-in-out" />
+            </Link>
+          ))}
         </nav>
 
         <NavActions />

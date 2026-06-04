@@ -1,27 +1,29 @@
 "use client";
 
-import { FEATURES_ITEMS } from "@/constants/common";
+import { VALUE_PROPOSITION_ITEMS } from "@/constants/common";
 import { useSectionAnimation } from "./hooks/useSectionAnimation";
 import { SpotlightBackground } from "@/components/shared/spotlight-background";
-import { Bot, Zap, LineChart } from "lucide-react";
+import { Clock, TrendingUp, Shield } from "lucide-react";
 
+// Static icon map
 const ICON_MAP = {
-  bot: Bot,
-  zap: Zap,
-  chart: LineChart,
+  clock: Clock,
+  "trending-up": TrendingUp,
+  shield: Shield,
 } as const;
 
-const getFeatureDelays = (isVisible: boolean, index: number) => ({
+// Delay calculations
+const getValueDelays = (isVisible: boolean, index: number) => ({
   delay: isVisible ? `${200 + index * 150}ms` : "0ms",
   iconDelay: isVisible ? `${400 + index * 150}ms` : "0ms",
 });
 
-export default function FeaturesSection() {
+export default function WhyDolfinSection() {
   const { isVisible, sectionRef } = useSectionAnimation();
 
   return (
     <section
-      id="features"
+      id="why-dolfin"
       ref={sectionRef}
       className="relative z-10 px-6 py-24 border-t border-[#111]"
     >
@@ -33,26 +35,26 @@ export default function FeaturesSection() {
           }`}
         >
           <p className="text-yellow-300 text-sm font-mono uppercase tracking-[5px] mb-6 text-center">
-            Core Capabilities
+            The Dolfin Advantage
           </p>
           <h2 className="text-4xl md:text-5xl font-light uppercase tracking-[0.08em] text-white text-center mb-4 leading-tight">
-            Features that Empower
+            Why Dolfin?
           </h2>
           <p className="text-yellow-100/70 text-base md:text-lg font-light uppercase tracking-[0.03em] text-center max-w-2xl mx-auto mb-16 leading-relaxed">
-            Leverage cutting-edge AI and DeFi infrastructure to maximize your
-            capital efficiency and trading performance.
+            The most advanced AI-powered DeFi automation platform. Built for
+            traders who demand efficiency, security, and control.
           </p>
         </div>
 
-        {/* Features Grid with stagger animation */}
+        {/* Value Cards Grid with stagger animation */}
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          {FEATURES_ITEMS.map((feature, index) => {
-            const IconComponent = ICON_MAP[feature.icon as keyof typeof ICON_MAP];
-            const { delay, iconDelay } = getFeatureDelays(isVisible, index);
+          {VALUE_PROPOSITION_ITEMS.map((item, index) => {
+            const IconComponent = ICON_MAP[item.icon as keyof typeof ICON_MAP];
+            const { delay, iconDelay } = getValueDelays(isVisible, index);
 
             return (
               <div
-                key={feature.title}
+                key={item.title}
                 className={`group relative transition-all duration-500 ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
                 }`}
@@ -77,12 +79,12 @@ export default function FeaturesSection() {
 
                     {/* Title */}
                     <h3 className="text-lg font-mono uppercase tracking-[2px] text-white group-hover:text-yellow-300 transition-colors duration-300">
-                      {feature.title}
+                      {item.title}
                     </h3>
 
                     {/* Description */}
                     <p className="text-sm font-light leading-relaxed text-[#aaa] group-hover:text-yellow-100/80 transition-colors duration-300">
-                      {feature.description}
+                      {item.description}
                     </p>
                   </div>
 

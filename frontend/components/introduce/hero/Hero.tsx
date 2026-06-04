@@ -45,7 +45,7 @@ export default function Hero() {
       {/* Bottom section - Main content */}
       <div className="relative z-10 flex flex-col items-center mt-auto mb-12">
         <h1
-          className="text-6xl md:text-8xl lg:text-9xl font-light uppercase tracking-[0.08em] leading-none mb-6 bg-linear-to-r from-yellow-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent"
+          className="text-6xl md:text-8xl lg:text-9xl font-light uppercase tracking-[0.08em] leading-none mb-6 bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent"
           style={getStyle(200)}
         >
           Dolfin

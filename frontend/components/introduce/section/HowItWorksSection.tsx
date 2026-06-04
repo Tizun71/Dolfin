@@ -21,6 +21,7 @@ export default function HowItWorksSection() {
 
   return (
     <section
+      id="how-it-works"
       ref={sectionRef}
       className="relative z-10 px-6 py-24 border-t border-[#111] overflow-hidden"
     >
@@ -63,7 +64,7 @@ export default function HowItWorksSection() {
                   style={{ transitionDelay: delay }}
                 >
                   {/* Glassmorphism card */}
-                  <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-linear-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-[#000]/80 p-6 backdrop-blur-xl transition-all duration-300 group-hover:border-yellow-500/50 group-hover:bg-gradient-to-br group-hover:from-[#0d0d0d]/90 group-hover:via-[#0a0a0a]/80 group-hover:to-[#000]/90">
+                  <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-linear-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-300 group-hover:border-yellow-500/50 group-hover:bg-linear-to-br group-hover:from-[#0d0d0d]/90 group-hover:via-[#0a0a0a]/80 group-hover:to-black/90">
                     {/* Glow effect */}
                     <div className="absolute inset-0 bg-linear-to-br from-yellow-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 

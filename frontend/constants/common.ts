@@ -71,6 +71,27 @@ export const FEATURES_ITEMS = [
   },
 ];
 
+export const VALUE_PROPOSITION_ITEMS = [
+  {
+    icon: "clock",
+    title: "24/7 Autonomous Trading",
+    description:
+      "Your AI agent works around the clock, executing strategies based on real-time market conditions without manual intervention.",
+  },
+  {
+    icon: "trending-up",
+    title: "Maximum Capital Efficiency",
+    description:
+      "Leverage flash loans, arbitrage opportunities, and yield farming strategies to optimize every dollar of your capital.",
+  },
+  {
+    icon: "shield",
+    title: "Full User Control",
+    description:
+      "Non-custodial architecture with open-source code. You maintain 100% control over your funds and strategies at all times.",
+  },
+];
+
 export const HOW_IT_WORKS_ITEMS = [
   {
     number: "01",

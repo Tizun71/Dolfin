@@ -15,6 +15,7 @@ export default function SupportSection() {
 
   return (
     <section
+      id="resources"
       ref={sectionRef}
       className="relative z-10 px-6 py-24 border-t border-[#111]"
     >
