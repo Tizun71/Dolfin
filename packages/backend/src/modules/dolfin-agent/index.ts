@@ -326,6 +326,12 @@ function serializeState(state: import("./state.js").AdvisorState) {
       ...d,
       amount: d.amount.toString(),
     })),
+    // Decisions dropped by the client-side policy mirror, with the reasons why.
+    // Surfaced so the UI can show "executed vs rejected (+ reason)" side by side.
+    rejected: state.rejected?.map((r) => ({
+      decision: { ...r.decision, amount: r.decision.amount.toString() },
+      errors: r.errors,
+    })),
     userOpHashes: state.userOpHashes ?? [],
     transactions: state.transactions ?? [],
   };

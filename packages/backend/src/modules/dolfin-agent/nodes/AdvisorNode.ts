@@ -3,8 +3,12 @@ import type { AdvisorState } from "../state.js";
 
 const SYSTEM_PROMPT =
   "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
-  "actions that were already decided by the rule engine. Reference concrete numbers from " +
-  "the data. Never invent positions or actions that are not present in the provided data.";
+  "actions that were already decided by the rule engine. Always cite concrete numbers from " +
+  "the data (health factor, debt USD, collateral USD, APY, trade sizes). Never invent positions " +
+  "or actions not present in the data. Answer in exactly three short labelled parts:\n" +
+  "Situation: <portfolio + risk in numbers>\n" +
+  "Actions: <what was executed / rejected, with sizes>\n" +
+  "Why: <one-sentence rationale tied to the numbers>";
 
 /**
  * Explain-only sink: narrates portfolio + risk + market + the rule-engine's decisions
@@ -55,15 +59,20 @@ export class AdvisorNode {
   }
 
   private buildPrompt(state: AdvisorState): string {
+    const lending = state.portfolio?.lending;
+    const lendingLine = lending
+      ? `Lending: healthFactor=${lending.healthFactor}, collateralUsd=${lending.collateralUsd}, debtUsd=${lending.debtUsd}`
+      : "Lending: no Aave position";
     return [
       `Wallet: ${state.wallet}`,
       `Portfolio: ${JSON.stringify(state.portfolio ?? {})}`,
+      lendingLine,
       `Risk: ${JSON.stringify(state.risk ?? {})}`,
       `Market: ${JSON.stringify(state.market ?? {})}`,
-      `Decided actions: ${JSON.stringify(state.validDecisions ?? [], bigintReplacer)}`,
-      `Rejected actions: ${JSON.stringify(state.rejected ?? [], bigintReplacer)}`,
+      `Executed actions: ${JSON.stringify(state.validDecisions ?? [], bigintReplacer)}`,
+      `Rejected actions (blocked by policy): ${JSON.stringify(state.rejected ?? [], bigintReplacer)}`,
       "",
-      "Explain the current risk level and why these actions are recommended.",
+      "Explain in the Situation/Actions/Why format. Cite the health factor and trade sizes explicitly.",
     ].join("\n");
   }
 }
