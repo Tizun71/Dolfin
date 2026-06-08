@@ -5,6 +5,7 @@
     "dev": "tsx --env-file .env --watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "test": "vitest run",
     "agent:run": "tsx --env-file .env src/modules/dolfin-agent/run-agent.ts",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate"
@@ -37,6 +38,7 @@
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.8"
   }
 }

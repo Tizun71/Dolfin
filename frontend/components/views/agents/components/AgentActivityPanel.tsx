@@ -2,6 +2,7 @@
 
 import { type Address } from "viem";
 import { useAgentActivity, type AgentRun } from "@/hooks/useAgentActivity";
+import { type RejectedDecisionView } from "@/lib/agent-api";
 
 const BTN = "px-5 py-2.5 text-xs uppercase tracking-[2px] font-mono border transition disabled:opacity-50";
 const TX_BASE = "https://sepolia.arbiscan.io/tx/";
@@ -20,6 +21,7 @@ function fmtTime(iso: string | null): string {
 }
 
 function RunHeader({ run }: { run: AgentRun }) {
+  const hf = run.portfolioSnapshot?.lending?.healthFactor;
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
       <span className={`w-2 h-2 rounded-full ${statusDot(run.status)}`} />
@@ -35,6 +37,38 @@ function RunHeader({ run }: { run: AgentRun }) {
           </span>
         </>
       )}
+      {hf !== undefined && (
+        <>
+          <span className="text-[#555]">·</span>
+          <span className={hf < 1.5 ? "text-[#f87171]" : "text-[#888]"}>
+            Health: {hf >= 999 ? "∞" : hf.toFixed(2)}
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Decisions the policy blocked before they cost gas. The headline guardrail proof:
+// the agent proposed these, but the policy mirror (and on-chain PolicyManager) rejected them.
+function RejectedList({ rejected }: { rejected: RejectedDecisionView[] }) {
+  if (rejected.length === 0) return null;
+  return (
+    <div>
+      <p className="text-[#666] text-xs font-mono uppercase tracking-[2px] mb-2">
+        Blocked by Policy ({rejected.length})
+      </p>
+      <ul className="space-y-2">
+        {rejected.map((r, i) => (
+          <li key={i} className="border border-[#3a1f1f] rounded px-3 py-2">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-[#f87171]">✕</span>
+              <span className="text-[#ddd]">{r.decision.reason ?? `action ${r.decision.actionType}`}</span>
+            </div>
+            <p className="text-xs font-mono text-[#a06666] mt-1">{r.errors.join("; ")}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -48,9 +82,10 @@ export default function AgentActivityPanel({
   owner: Address | null;
   account: Address | null;
 }) {
-  const { data, loading, running, run, refresh } = useAgentActivity(owner, account);
+  const { data, loading, running, run, refresh, runState } = useAgentActivity(owner, account);
   const latest = data?.run ?? null;
   const actions = data?.actions ?? [];
+  const rejected = runState?.rejected ?? [];
 
   return (
     <div className="card-3d p-6">
@@ -129,6 +164,8 @@ export default function AgentActivityPanel({
               </ul>
             )}
           </div>
+
+          <RejectedList rejected={rejected} />
 
           <p className="text-[#444] text-xs font-mono">
             Finished: {fmtTime(latest.finishedAt)}

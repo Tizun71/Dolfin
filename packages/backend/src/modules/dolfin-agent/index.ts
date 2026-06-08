@@ -8,6 +8,8 @@ import { agentActionTable, agentConfigTable, agentRunTable, userTable } from "..
 import { agentManager } from "./agent-manager.js";
 import { AgentConfigNotFoundError } from "./create-dolfin-agent.js";
 import { encryptSessionKey } from "./session-key-crypto.js";
+import { readCrossChainPortfolio } from "./cross-chain-portfolio.js";
+import type { Address } from "viem";
 
 const logger = getLogger(["dolfin", "agent-api"]);
 
@@ -164,6 +166,25 @@ agentModule.delete(
       return c.json({ error: "agent_config not found" }, 404);
     }
     return c.json({ id: deleted[0].id, deleted: true });
+  },
+);
+
+// --- Cross-chain portfolio (read-only) ---
+
+// Aggregates DeFi (Arb Sepolia) + tokenized equity (Robinhood Chain) for the same
+// smart-account address. Pure read + allocation advice; no session key, no execution.
+agentModule.get(
+  "/:userId/:smartAccount/portfolio/cross-chain",
+  zValidator("param", paramsSchema),
+  async (c) => {
+    const { smartAccount } = c.req.valid("param");
+    try {
+      const view = await readCrossChainPortfolio(smartAccount as Address);
+      return c.json(view);
+    } catch (e) {
+      logger.error("cross-chain portfolio failed: {error}", { error: e });
+      return c.json({ error: e instanceof Error ? e.message : "cross-chain read failed" }, 500);
+    }
   },
 );
 
