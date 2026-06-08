@@ -20,15 +20,15 @@ export default function Navbar() {
       >
         <button
           onClick={scrollToTop}
-          className="flex items-center gap-3 group cursor-pointer"
+          className="flex items-center gap-2.5 group cursor-pointer"
         >
           <LogoDolfin />
-          <span className="text-brand-gradient text-xl font-semibold uppercase tracking-[4px] group-hover:tracking-[6px] transition-all duration-300 ease-in-out">
+          <span className="text-brand-gradient text-xl font-semibold uppercase tracking-widest transition-colors duration-300">
             Dolfin
           </span>
         </button>
 
-        <nav className="flex items-center gap-10">
+        <nav className="flex items-center gap-8">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.label}
@@ -41,7 +41,7 @@ export default function Navbar() {
               }}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
-              className="relative text-[#666] text-sm font-mono uppercase tracking-[4px] hover:text-white transition-colors duration-300 group"
+              className="relative text-gray-400 text-sm font-medium uppercase tracking-wider hover:text-white transition-colors duration-300 group"
             >
               {item.label}
               <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300 ease-in-out" />
