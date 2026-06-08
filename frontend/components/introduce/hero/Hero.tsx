@@ -11,10 +11,10 @@ export default function Hero() {
   const canvasRef = useShaderBackground();
 
   return (
-    <main className="relative z-10 w-full flex flex-col items-center justify-center text-center p-8 pt-32 min-h-screen overflow-hidden">
+    <main className="relative z-10 w-full flex flex-col items-center justify-center text-center p-8 pt-20 min-h-screen overflow-hidden">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 z-0 w-full h-full overflow-hidden pointer-events-none touch-none"
+        className="absolute inset-0 -top-24 z-0 w-full h-[calc(100%+6rem)] overflow-hidden pointer-events-none touch-none"
         style={{ background: "black" }}
       />
 
