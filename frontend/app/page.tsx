@@ -6,6 +6,7 @@ import {
   FeaturesSection, 
   HowItWorksSection, 
   TrustSection,
+  BenefitsSection,
   SupportSection 
 } from "@/components/introduce";
 import SectionDivider from "@/components/shared/SectionDivider";
@@ -15,15 +16,16 @@ export default function LandingPage() {
     <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden">
       <Navbar />
       <Hero />
-      <SectionDivider variant="gradient" />
+      <BenefitsSection />
+      <SectionDivider />
       <TrustSection />
-      <SectionDivider variant="dots" />
+      <SectionDivider />
       <WhyDolfinSection />
-      <SectionDivider variant="dots" />
+      <SectionDivider />
       <FeaturesSection />
-      <SectionDivider variant="gradient" />
+      <SectionDivider />
       <HowItWorksSection />
-      <SectionDivider variant="default" />
+      <SectionDivider />
       <SupportSection />
       <Footer />
     </div>

@@ -47,9 +47,9 @@ export default function WhyDolfinSection() {
                 className={`group transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
                 style={{ transitionDelay: delay }}
               >
-                <div className="flex flex-col h-full p-8 border border-yellow-500/30 rounded-xl bg-gradient-to-br from-[#0f0f0f] to-[#0a0a0a] hover:border-yellow-500/60 hover:shadow-[0_0_20px_rgba(250,204,21,0.15)] hover:-translate-y-2 transition-all duration-300">
+                <div className="flex flex-col h-full p-8 border border-yellow-500/30 bg-gradient-to-br from-[#0f0f0f] to-[#0a0a0a] hover:border-yellow-500/60 hover:shadow-[0_0_20px_rgba(250,204,21,0.15)] hover:-translate-y-2 transition-all duration-300">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-500/20 group-hover:bg-yellow-500/40 transition-colors duration-300">
+                    <div className="flex h-12 w-12 items-center justify-center bg-yellow-500/20 group-hover:bg-yellow-500/40 transition-colors duration-300">
                       <IconComponent className="h-6 w-6 text-yellow-400" />
                     </div>
                     <span className="text-lg font-mono font-bold text-yellow-400/60 group-hover:text-yellow-400 transition-colors duration-300">

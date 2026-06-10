@@ -50,18 +50,17 @@ export default function HowItWorksSection() {
 
               return (
                   <div key={item.number} className={`group relative transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`} style={{ transitionDelay: delay }}>
-                  <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-500 group-hover:border-yellow-500/60 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.25)] group-hover:scale-[1.03] group-hover:-translate-y-2">
+                  <div className="relative h-full overflow-hidden border border-yellow-500/20 bg-gradient-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-500 group-hover:border-yellow-500/60 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.25)] group-hover:scale-[1.03] group-hover:-translate-y-2">
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/0 via-amber-500/0 to-orange-500/0 opacity-0 transition-all duration-700 group-hover:from-yellow-500/10 group-hover:via-amber-500/5 group-hover:to-orange-500/10 group-hover:opacity-100" />
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent opacity-0 -translate-x-full group-hover:translate-x-full group-hover:opacity-100 transition-all duration-1000" />
-                    <div className="absolute -top-2 -right-2 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-sm font-bold font-mono text-black shadow-lg shadow-yellow-500/50 group-hover:shadow-yellow-500/80 transition-shadow duration-300">
-                      {item.number}
-                    </div>
-                    {index < HOW_IT_WORKS_ITEMS.length - 1 && (
-                      <div className="hidden lg:block absolute top-6 -right-3 w-6 h-0.5 bg-gradient-to-r from-yellow-500/50 to-transparent" />
-                    )}
                     <div className="relative z-10 flex flex-col gap-4">
-                      <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-500 group-hover:from-yellow-500/50 group-hover:to-amber-600/30 group-hover:rotate-12 group-hover:scale-110">
-                        <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-500 group-hover:text-yellow-300 group-hover:drop-shadow-[0_0_15px_rgba(250,204,21,1)]" />
+                      <div className="flex items-start justify-between">
+                        <div className="inline-flex h-14 w-14 items-center justify-center bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-500 group-hover:from-yellow-500/50 group-hover:to-amber-600/30 group-hover:rotate-12 group-hover:scale-110">
+                          <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-500 group-hover:text-yellow-300 group-hover:drop-shadow-[0_0_15px_rgba(250,204,21,1)]" />
+                        </div>
+                        <span className="text-sm font-mono font-bold text-yellow-400/60">
+                          {item.number}
+                        </span>
                       </div>
                       <h3 className="text-lg font-mono uppercase tracking-[2px] text-white group-hover:text-yellow-300 transition-all duration-300 group-hover:neon-glow">
                         {item.title}
@@ -70,7 +69,7 @@ export default function HowItWorksSection() {
                         {item.description}
                       </p>
                     </div>
-                    <div className="absolute inset-0 rounded-2xl border border-yellow-400/0 transition-all duration-300 group-hover:border-yellow-400/30 pointer-events-none" />
+                    <div className="absolute inset-0 border border-yellow-400/0 transition-all duration-300 group-hover:border-yellow-400/30 pointer-events-none" />
                   </div>
                 </div>
               );
