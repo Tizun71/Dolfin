@@ -39,7 +39,7 @@ export default function Hero() {
         <div className="w-20 h-px bg-yellow-500/40 mb-8" style={getStyle(400)} />
 
         <p className="text-yellow-100/80 text-base md:text-lg font-light uppercase tracking-[0.03em] max-w-2xl mb-12 leading-relaxed" style={getStyle(600)}>
-          Autonomous Yield Optimization Across Every Chain. Powered by AI.
+          AI-Powered Predictions. Automated Flash Loans. On Arbitrum.
         </p>
 
         <HeroButton onClick={() => router.push("/dashboard")} style={getStyle(800)} />

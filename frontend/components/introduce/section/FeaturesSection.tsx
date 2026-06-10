@@ -14,8 +14,7 @@ export default function FeaturesSection() {
             FEATURES THAT EMPOWER
           </h2>
           <p className="text-base text-[#c8c6c5] max-w-2xl mx-auto uppercase tracking-wider leading-relaxed">
-            LEVERAGE CUTTING-EDGE AI AND DEFI INFRASTRUCTURE TO MAXIMIZE YOUR
-            CAPITAL EFFICIENCY AND TRADING PERFORMANCE.
+            ARIMA predictions. Flash loans. Atomic execution. Everything you need to trade smarter.
           </p>
         </div>
 
@@ -45,12 +44,11 @@ export default function FeaturesSection() {
                 </svg>
               </div>
               <h3 className="text-[32px] uppercase mb-4 tracking-[0.2em] font-semibold">
-                AI Trading Agents
+                AI Market Prediction
               </h3>
               <p className="text-lg text-[#c8c6c5] max-w-md leading-relaxed">
-                Create and manage autonomous AI agents that execute DeFi
-                strategies 24/7 based on your custom policies and risk
-                parameters.
+                ARIMA algorithm analyzes market patterns. Predicts opportunities.
+                Executes automatically when conditions align.
               </p>
             </div>
             <div className="absolute top-8 right-8 text-[64px] opacity-5 text-[#ffd700] font-bold pointer-events-none">
@@ -80,9 +78,8 @@ export default function FeaturesSection() {
                 Flash Loan Execution
               </h3>
               <p className="text-base text-[#c8c6c5] leading-relaxed">
-                Access instant, uncollateralized loans for arbitrage and yield
-                farming—all executed automatically within a single transaction
-                block.
+                Identify arbitrage. Execute instantly. No capital required.
+                All automated within a single transaction.
               </p>
             </div>
 
@@ -104,12 +101,11 @@ export default function FeaturesSection() {
                 <span className="font-mono text-sm text-[#ffd700]/30">03</span>
               </div>
               <h3 className="text-xl uppercase mb-3 font-semibold tracking-wider">
-                Real-time Analytics
+                Real-Time Dashboard
               </h3>
               <p className="text-base text-[#c8c6c5] leading-relaxed">
-                Monitor portfolio performance, track agent activities, and view
-                predictive market forecasts powered by advanced time-series
-                analysis.
+                Monitor predictions, trades, and your agent performance.
+                See what ARIMA is analyzing. Always in control.
               </p>
             </div>
           </div>

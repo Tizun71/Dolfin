@@ -18,7 +18,7 @@ export const NAV_ITEMS = [
     external: false,
   },
   {
-    label: "Documentation",
+    label: "Support",
     href: "#resources",
     section: "resources",
     external: false,

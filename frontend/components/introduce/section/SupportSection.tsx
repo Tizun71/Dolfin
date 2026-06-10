@@ -17,7 +17,7 @@ export default function SupportSection() {
     <section
       id="resources"
       ref={sectionRef}
-      className="relative z-10 px-6 py-24"
+      className="relative z-10 px-6 py-24 bg-[#0f0f0f] border-y border-yellow-500/5"
     >
       <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
         <p className="text-yellow-300 text-sm font-mono uppercase tracking-[5px] mb-6 text-center">
@@ -27,7 +27,7 @@ export default function SupportSection() {
           Built in the Open
         </h2>
         <p className="text-yellow-100/70 text-base md:text-lg font-light uppercase tracking-[0.03em] text-center max-w-2xl mx-auto mb-16 leading-relaxed">
-          Dolfin is open-source and deployed on Arbitrum, bringing transparency and security to DeFi automation.
+          Open-source code. Arbitrum network. No black boxes. Verify everything.
         </p>
       </div>
 
@@ -58,11 +58,11 @@ export default function SupportSection() {
                 <h3 className="mb-2 text-xl font-mono uppercase tracking-[3px] text-white group-hover:text-yellow-400 transition-colors duration-300">
                   {item.name}
                 </h3>
-                <p className="text-xs font-mono leading-relaxed text-[#666] group-hover:text-[#888] transition-colors duration-300">
+                <p className="text-sm font-mono leading-relaxed text-[#777] group-hover:text-[#999] transition-colors duration-300">
                   {item.description}
                 </p>
               </div>
-              <span className="text-sm font-mono text-[#444] transition-all duration-300 group-hover:translate-x-1 group-hover:text-yellow-400">
+              <span className="text-base font-mono text-[#555] transition-all duration-300 group-hover:translate-x-1 group-hover:text-yellow-400">
                 →
               </span>
             </Link>

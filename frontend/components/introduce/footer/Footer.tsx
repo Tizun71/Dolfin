@@ -19,7 +19,7 @@ export default function Footer() {
                 </h3>
               </div>
               <p className="text-base text-[#ddd] font-light leading-relaxed max-w-sm">
-                Autonomous DeFi Intelligence. AI-powered trading agents that optimize your yield across every chain.
+                AI market predictions. Automated flash loans. Executed on Arbitrum. Non-custodial. Open-source.
               </p>
               
               <div className="flex items-center gap-4 mt-2">

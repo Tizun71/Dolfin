@@ -1,30 +1,3 @@
-export const ITEMS_DEVS = [
-  {
-    index: "01",
-    title: "Security",
-    desc: "Find and report vulnerabilities, receive generous rewards.",
-    href: "#",
-  },
-  {
-    index: "02",
-    title: "SDK",
-    desc: "Utilize our SDK to streamline frontend development and enhance user experiences.",
-    href: "#",
-  },
-  {
-    index: "03",
-    title: "Github",
-    desc: "Explore our open-source repository for collaborative development.",
-    href: "https://github.com/Tizun71/Dolfin",
-  },
-  {
-    index: "04",
-    title: "Developer Docs",
-    desc: "Access comprehensive documentation for seamless API integration.",
-    href: "#",
-  },
-];
-
 export const ASSET_CONFIG: Record<string, { icon: string; color: string }> = {
   eth: { icon: "Ξ", color: "#627EEA" },
   sgho: { icon: "◎", color: "#22c55e" },
@@ -53,72 +26,72 @@ export const SUPPORT_ITEMS = [
 export const FEATURES_ITEMS = [
   {
     icon: "bot",
-    title: "AI Trading Agents",
+    title: "AI Market Prediction",
     description:
-      "Create and manage autonomous AI agents that execute DeFi strategies 24/7 based on your custom policies and risk parameters.",
+      "ARIMA algorithm analyzes market patterns. Predicts opportunities. Executes automatically when conditions align.",
   },
   {
     icon: "zap",
     title: "Flash Loan Execution",
     description:
-      "Access instant, uncollateralized loans for arbitrage and yield farming—all executed automatically within a single transaction block.",
+      "Identify arbitrage. Execute instantly. No capital required. All automated within a single transaction.",
   },
   {
     icon: "chart",
-    title: "Real-Time Analytics",
+    title: "Real-Time Dashboard",
     description:
-      "Monitor portfolio performance, track agent activities, and view predictive market forecasts powered by advanced time-series analysis.",
+      "Monitor predictions, trades, and your agent performance. See what ARIMA is analyzing. Always in control.",
   },
 ];
 
 export const VALUE_PROPOSITION_ITEMS = [
   {
     icon: "clock",
-    title: "24/7 Autonomous Trading",
+    title: "ARIMA-Powered Predictions",
     description:
-      "Your AI agent works around the clock, executing strategies based on real-time market conditions without manual intervention.",
+      "Advanced time-series analysis predicts market trends in real-time. Your AI sees patterns before they happen.",
   },
   {
     icon: "trending-up",
-    title: "Maximum Capital Efficiency",
+    title: "Flash Loans Without Capital",
     description:
-      "Leverage flash loans, arbitrage opportunities, and yield farming strategies to optimize every dollar of your capital.",
+      "Execute profitable arbitrage using automated flash loans. No collateral needed. Your capital stays safe.",
   },
   {
     icon: "shield",
-    title: "Full User Control",
+    title: "Atomic Execution",
     description:
-      "Non-custodial architecture with open-source code. You maintain 100% control over your funds and strategies at all times.",
+      "All trades happen in one transaction block. No slippage. No MEV exposure. Predictable and secure.",
   },
 ];
 
 export const HOW_IT_WORKS_ITEMS = [
   {
     number: "01",
-    title: "Authenticate with Privy",
+    title: "Connect Wallet",
     description:
-      "Sign in with Google or connect your MetaMask wallet. Dolfin supports MetaMask and Rabby Wallet for seamless wallet integration.",
+      "Sign in with Google or connect MetaMask. Supports MetaMask, Rabby, and more.",
     icon: "lock",
   },
   {
     number: "02",
-    title: "Deploy Your AI Agent",
+    title: "Deploy Agent",
     description:
-      "Create a secure smart account (ERC-4337) powered by Arbitrum. Your agent is deployed with full control and protection.",
+      "We create a secure smart account (ERC-4337) on Arbitrum. Your AI agent. Your complete control.",
     icon: "cpu",
   },
   {
     number: "03",
-    title: "Deposit & Fund Your Agent",
+    title: "Fund Your Agent",
     description:
-      "Transfer ETH or USDC from your wallet to your AI agent account. Your funds are ready for automated trading.",
+      "Transfer ETH or USDC to your agent account. Ready to trade.",
     icon: "wallet",
   },
   {
     number: "04",
-    title: "AI Executes Trades 24/7",
+    title: "AI Predicts & Executes",
     description:
-      "Set your risk policy (Conservative/Balanced/Aggressive) and let Dolfin's AI automatically execute profitable strategies around the clock.",
+      "ARIMA analyzes markets. When opportunities match your risk level, it executes. Automatically.",
     icon: "trending-up",
   },
 ];

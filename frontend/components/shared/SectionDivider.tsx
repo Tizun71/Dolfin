@@ -9,30 +9,30 @@ export default function SectionDivider({
 }: SectionDividerProps) {
   if (variant === "gradient") {
     return (
-      <div className="w-full py-12">
-        <div className="max-w-4xl mx-auto h-px bg-linear-to-r from-transparent via-yellow-500/30 to-transparent" />
+      <div className="w-full py-12 bg-gradient-to-b from-black via-black to-[#131313]">
+        <div className="max-w-6xl mx-auto h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-full" />
       </div>
     );
   }
 
   if (variant === "dots") {
     return (
-      <div className="w-full py-12 flex items-center justify-center gap-2">
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/40" />
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/60" />
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
-        <div className="w-20 h-px bg-yellow-500/30" />
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/60" />
-        <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/40" />
+      <div className="w-full py-12 flex items-center justify-center gap-3 bg-black">
+        <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
+        <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
+        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+        <div className="w-16 h-0.5 bg-gradient-to-r from-yellow-500/50 to-yellow-500/20 rounded-full" />
+        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+        <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
+        <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
       </div>
     );
   }
 
   return (
-    <div className="w-full py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="h-px bg-yellow-500/20" />
+    <div className="w-full py-12 bg-black">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent rounded-full" />
       </div>
     </div>
   );

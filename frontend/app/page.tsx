@@ -5,6 +5,7 @@ import {
   WhyDolfinSection, 
   FeaturesSection, 
   HowItWorksSection, 
+  TrustSection,
   SupportSection 
 } from "@/components/introduce";
 import SectionDivider from "@/components/shared/SectionDivider";
@@ -15,6 +16,8 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <SectionDivider variant="gradient" />
+      <TrustSection />
+      <SectionDivider variant="dots" />
       <WhyDolfinSection />
       <SectionDivider variant="dots" />
       <FeaturesSection />
