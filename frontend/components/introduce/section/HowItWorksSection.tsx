@@ -2,7 +2,8 @@
 
 import { HOW_IT_WORKS_ITEMS } from "@/constants/common";
 import { useSectionAnimation } from "./hooks/useSectionAnimation";
-import { SpotlightBackground } from "@/components/shared/spotlight-background";
+import { AnimatedGridBackground } from "@/components/shared/animated-grid-background";
+import { FloatingOrbsBackground } from "@/components/shared/floating-orbs-background";
 import { Lock, Cpu, Wallet, TrendingUp } from "lucide-react";
 
 const ICON_MAP = {
@@ -25,7 +26,19 @@ export default function HowItWorksSection() {
       ref={sectionRef}
       className="relative z-10 px-6 py-24 border-t border-[#111] overflow-hidden"
     >
-      <SpotlightBackground>
+      <FloatingOrbsBackground
+        orbCount={6}
+        colors={[
+          "rgba(250, 204, 21, 0.12)",
+          "rgba(251, 191, 36, 0.10)",
+          "rgba(245, 158, 11, 0.12)",
+          "rgba(234, 179, 8, 0.08)",
+        ]}
+      >
+        <AnimatedGridBackground
+          gridColor="rgba(250, 204, 21, 0.08)"
+          glowColor="rgba(250, 204, 21, 0.25)"
+        >
         {/* Fade-in animation wrapper */}
         <div
           className={`transition-all duration-700 ${
@@ -63,25 +76,33 @@ export default function HowItWorksSection() {
                   }`}
                   style={{ transitionDelay: delay }}
                 >
-                  {/* Glassmorphism card */}
-                  <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-linear-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-300 group-hover:border-yellow-500/50 group-hover:bg-linear-to-br group-hover:from-[#0d0d0d]/90 group-hover:via-[#0a0a0a]/80 group-hover:to-black/90">
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-linear-to-br from-yellow-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  {/* Enhanced Glassmorphism card with step indicator line */}
+                  <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-500 group-hover:border-yellow-500/60 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.25)] group-hover:scale-[1.03]">
+                    {/* Animated gradient background on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/0 via-amber-500/0 to-orange-500/0 opacity-0 transition-all duration-700 group-hover:from-yellow-500/10 group-hover:via-amber-500/5 group-hover:to-orange-500/10 group-hover:opacity-100" />
+                    
+                    {/* Moving shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent opacity-0 -translate-x-full group-hover:translate-x-full group-hover:opacity-100 transition-all duration-1000" />
 
-                    {/* Number badge */}
-                    <div className="absolute -top-2 -right-2 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-yellow-400 to-yellow-500 text-sm font-bold font-mono text-black shadow-lg">
+                    {/* Number badge with pulse */}
+                    <div className="absolute -top-2 -right-2 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-sm font-bold font-mono text-black shadow-lg shadow-yellow-500/50 group-hover:shadow-yellow-500/80 transition-shadow duration-300">
                       {item.number}
                     </div>
 
+                    {/* Step indicator line (connects cards visually) */}
+                    {index < HOW_IT_WORKS_ITEMS.length - 1 && (
+                      <div className="hidden lg:block absolute top-6 -right-3 w-6 h-0.5 bg-gradient-to-r from-yellow-500/50 to-transparent" />
+                    )}
+
                     {/* Content */}
                     <div className="relative z-10 flex flex-col gap-4">
-                      {/* Icon */}
-                      <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-linear-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-300 group-hover:from-yellow-500/40 group-hover:to-amber-600/20">
-                        <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" />
+                      {/* Icon with rotation and glow */}
+                      <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-500 group-hover:from-yellow-500/50 group-hover:to-amber-600/30 group-hover:rotate-12 group-hover:scale-110">
+                        <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-500 group-hover:text-yellow-300 group-hover:drop-shadow-[0_0_15px_rgba(250,204,21,1)]" />
                       </div>
 
-                      {/* Title */}
-                      <h3 className="text-lg font-mono uppercase tracking-[2px] text-white group-hover:text-yellow-300 transition-colors duration-300">
+                      {/* Title with neon effect on hover */}
+                      <h3 className="text-lg font-mono uppercase tracking-[2px] text-white group-hover:text-yellow-300 transition-all duration-300 group-hover:neon-glow">
                         {item.title}
                       </h3>
 
@@ -99,7 +120,8 @@ export default function HowItWorksSection() {
             })}
           </div>
         </div>
-      </SpotlightBackground>
+        </AnimatedGridBackground>
+      </FloatingOrbsBackground>
     </section>
   );
 }

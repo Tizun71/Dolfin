@@ -3,20 +3,17 @@
 import { useRouter } from "next/navigation";
 import HeroButton from "./HeroButton";
 import { useHeroAnimation } from "./hooks/useHeroAnimation";
-import { useShaderBackground } from "../../shared/animated-shader-hero";
+import { GLSLHills } from "../../shared/glsl-hill";
 
 export default function Hero() {
   const router = useRouter();
   const { getStyle } = useHeroAnimation();
-  const canvasRef = useShaderBackground();
 
   return (
     <main className="relative z-10 w-full flex flex-col items-center justify-center text-center p-8 pt-20 min-h-screen overflow-hidden">
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 -top-24 z-0 w-full h-[calc(100%+6rem)] overflow-hidden pointer-events-none touch-none"
-        style={{ background: "black" }}
-      />
+      <div className="absolute inset-0 -top-24 z-0 w-full h-[calc(100%+6rem)] overflow-hidden pointer-events-none touch-none bg-black">
+        <GLSLHills width="100%" height="100%" cameraZ={125} planeSize={256} speed={0.35} />
+      </div>
 
       {/* Left side tagline */}
       <div

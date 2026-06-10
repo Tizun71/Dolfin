@@ -2,20 +2,18 @@
 
 import { VALUE_PROPOSITION_ITEMS } from "@/constants/common";
 import { useSectionAnimation } from "./hooks/useSectionAnimation";
-import { SpotlightBackground } from "@/components/shared/spotlight-background";
+import { ParticleNetworkBackground } from "@/components/shared/particle-network-background";
+import { GradientMeshBackground } from "@/components/shared/gradient-mesh-background";
 import { Clock, TrendingUp, Shield } from "lucide-react";
 
-// Static icon map
 const ICON_MAP = {
   clock: Clock,
   "trending-up": TrendingUp,
   shield: Shield,
 } as const;
 
-// Delay calculations
 const getValueDelays = (isVisible: boolean, index: number) => ({
   delay: isVisible ? `${200 + index * 150}ms` : "0ms",
-  iconDelay: isVisible ? `${400 + index * 150}ms` : "0ms",
 });
 
 export default function WhyDolfinSection() {
@@ -25,9 +23,15 @@ export default function WhyDolfinSection() {
     <section
       id="why-dolfin"
       ref={sectionRef}
-      className="relative z-10 px-6 py-24 border-t border-[#111]"
+      className="relative z-10 px-6 py-24 border-t border-[#111] overflow-hidden"
     >
-      <SpotlightBackground>
+      <GradientMeshBackground variant="mesh">
+        <ParticleNetworkBackground
+          particleCount={60}
+          particleColor="rgba(250, 204, 21, 0.8)"
+          lineColor="rgba(250, 204, 21, 0.15)"
+          maxDistance={120}
+        >
         {/* Header with fade-in animation */}
         <div
           className={`transition-all duration-700 ${
@@ -50,7 +54,7 @@ export default function WhyDolfinSection() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {VALUE_PROPOSITION_ITEMS.map((item, index) => {
             const IconComponent = ICON_MAP[item.icon as keyof typeof ICON_MAP];
-            const { delay, iconDelay } = getValueDelays(isVisible, index);
+            const { delay } = getValueDelays(isVisible, index);
 
             return (
               <div
@@ -60,10 +64,13 @@ export default function WhyDolfinSection() {
                 }`}
                 style={{ transitionDelay: delay }}
               >
-                {/* Glassmorphism card */}
-                <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-300 group-hover:border-yellow-500/50 group-hover:bg-gradient-to-br group-hover:from-[#0d0d0d]/90 group-hover:via-[#0a0a0a]/80 group-hover:to-black/90">
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                {/* Enhanced Glassmorphism card with animations */}
+                <div className="relative h-full overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-[#0d0d0d]/80 via-[#0a0a0a]/60 to-black/80 p-6 backdrop-blur-xl transition-all duration-500 group-hover:border-yellow-500/60 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.2)] group-hover:scale-[1.02] animate-float" style={{ animationDelay: `${index * 0.5}s` }}>
+                  {/* Enhanced Glow effect with pulse */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 animate-pulse-glow" />
+                  
+                  {/* Shimmer effect on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 animate-shimmer" />
 
                   {/* Number badge */}
                   <div className="absolute -top-2 -right-2 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-sm font-bold font-mono text-black shadow-lg">
@@ -72,9 +79,9 @@ export default function WhyDolfinSection() {
 
                   {/* Content */}
                   <div className="relative z-10 flex flex-col gap-4">
-                    {/* Icon */}
-                    <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-300 group-hover:from-yellow-500/40 group-hover:to-amber-600/20">
-                      <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" />
+                    {/* Icon with enhanced effects */}
+                    <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-500 group-hover:from-yellow-500/50 group-hover:to-amber-600/30 group-hover:rotate-6 group-hover:scale-110">
+                      <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-300 group-hover:text-yellow-300 group-hover:drop-shadow-[0_0_12px_rgba(250,204,21,1)]" />
                     </div>
 
                     {/* Title */}
@@ -95,7 +102,8 @@ export default function WhyDolfinSection() {
             );
           })}
         </div>
-      </SpotlightBackground>
+        </ParticleNetworkBackground>
+      </GradientMeshBackground>
     </section>
   );
 }
