@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 interface GLSLHillsProps {
   width?: string;
@@ -11,12 +11,17 @@ interface GLSLHillsProps {
   speed?: number;
 }
 
-const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize = 256, speed = 0.5 }: GLSLHillsProps) => {
+const GLSLHills = ({
+  width = "100vw",
+  height = "100vh",
+  cameraZ = 125,
+  planeSize = 256,
+  speed = 0.5,
+}: GLSLHillsProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Plane class
     class Plane {
       uniforms: { time: { type: string; value: number } };
       mesh: THREE.Mesh;
@@ -24,7 +29,7 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
 
       constructor() {
         this.uniforms = {
-          time: { type: 'f', value: 0 },
+          time: { type: "f", value: 0 },
         };
         this.mesh = this.createMesh();
         this.time = speed;
@@ -131,16 +136,14 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
                 float sin1 = sin(radians(updatePosition.x / 128.0 * 90.0));
                 
                 vec3 noisePosition = updatePosition + vec3(0.0, 0.0, time * -25.0);
-                float noise1 = cnoise(noisePosition * 0.06);  // Sóng lớn
-                float noise2 = cnoise(noisePosition * 0.15);  // Sóng trung
-                float noise3 = cnoise(noisePosition * 0.25);  // Gợn sóng nhỏ
+                float noise1 = cnoise(noisePosition * 0.06);
+                float noise2 = cnoise(noisePosition * 0.15);
+                float noise3 = cnoise(noisePosition * 0.25);
                 
-        
                 float wave1 = sin(updatePosition.x * 0.03 + updatePosition.z * 0.02 + time * 2.5) * 2.5;
                 float wave2 = cos(updatePosition.x * 0.025 - updatePosition.z * 0.03 + time * 2.25) * 2.0;
                 float wave3 = sin(updatePosition.x * 0.04 + updatePosition.z * 0.025 + time * 3.0) * 1.5;
                 
-        
                 float ripple1 = sin(updatePosition.x * 0.1 + time * 4.0) * 0.3;
                 float ripple2 = cos(updatePosition.z * 0.12 + time * 3.75) * 0.3;
                 
@@ -163,10 +166,9 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
 
               void main(void) {
                 float opacity = (96.0 - length(vPosition)) / 256.0 * 0.5;
-                
                 float heightFactor = (vPosition.y + 50.0) / 100.0;
-                vec3 goldenYellow = vec3(1.0, 0.84, 0.0);     
-                vec3 lightGolden = vec3(1.0, 0.95, 0.6);      
+                vec3 goldenYellow = vec3(1.0, 0.84, 0.0);
+                vec3 lightGolden = vec3(1.0, 0.95, 0.6);
                 vec3 deepGolden = vec3(0.8, 0.65, 0.1);      
                 
                 vec3 color = mix(deepGolden, goldenYellow, heightFactor);
@@ -175,8 +177,8 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
                 gl_FragColor = vec4(color, opacity * 0.7);
               }
             `,
-            transparent: true
-          })
+            transparent: true,
+          }),
         );
       }
 
@@ -185,12 +187,19 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
       }
     }
 
-    // Three.js setup
     if (!canvasRef.current) return;
-    
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: false });
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      antialias: false,
+    });
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      1,
+      10000,
+    );
     const clock = new THREE.Clock();
     const plane = new Plane();
 
@@ -220,7 +229,7 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
       camera.position.set(0, 16, cameraZ);
       camera.lookAt(new THREE.Vector3(0, 28, 0));
       scene.add(plane.mesh);
-      window.addEventListener('resize', resize);
+      window.addEventListener("resize", resize);
       resize();
       renderLoop();
     };
@@ -228,21 +237,21 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
     init();
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
     };
   }, [cameraZ, planeSize, speed]);
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', width, height }}> 
+    <div ref={containerRef} style={{ position: "relative", width, height }}>
       <canvas
         ref={canvasRef}
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           right: 0,
           bottom: 0,
           left: 0,
-          zIndex: 1
+          zIndex: 1,
         }}
       />
     </div>
@@ -250,5 +259,3 @@ const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize
 };
 
 export { GLSLHills };
-
-

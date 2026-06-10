@@ -8,10 +8,8 @@ import LogoDolfin from "@/components/shared/LogoDolfin";
 export default function Footer() {
   return (
     <footer className="w-full border-t border-[#1a1a1a] bg-[#0e0e0e] relative z-20">
-      {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3 group">
@@ -21,11 +19,9 @@ export default function Footer() {
                 </h3>
               </div>
               <p className="text-base text-[#ddd] font-light leading-relaxed max-w-sm">
-                Autonomous DeFi Intelligence. AI-powered trading agents that
-                optimize your yield across every chain.
+                Autonomous DeFi Intelligence. AI-powered trading agents that optimize your yield across every chain.
               </p>
               
-              {/* Social Links */}
               <div className="flex items-center gap-4 mt-2">
                 {SOCIAL_LINKS.map((social) => (
                   <Link
@@ -53,7 +49,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Product Links */}
           <div>
             <h4 className="text-sm font-mono uppercase tracking-[3px] text-yellow-300 mb-5">
               Product
@@ -72,7 +67,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources Links */}
           <div>
             <h4 className="text-sm font-mono uppercase tracking-[3px] text-yellow-300 mb-5">
               Resources
@@ -96,7 +90,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Company Links */}
           <div>
             <h4 className="text-sm font-mono uppercase tracking-[3px] text-yellow-300 mb-5">
               Company
@@ -117,17 +110,14 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="border-t border-[#1a1a1a]">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* Copyright */}
           <div className="flex items-center gap-4">
             <span className="text-sm text-[#aaa] tracking-[0.15em] font-mono">
               © 2026 Dolfin Protocol. All rights reserved.
             </span>
           </div>
 
-          {/* System Status */}
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
             <span className="text-sm text-[#aaa] font-mono uppercase tracking-[2px]">
