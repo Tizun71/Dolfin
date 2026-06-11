@@ -129,7 +129,7 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
             chartData={data.chartData}
             minVal={data.minVal}
             maxVal={data.maxVal}
-            avgApr={data.avgApr}
+            avgApr={data.avgApr.toString()}
           />
 
           <div className="flex justify-between mt-2 px-1">

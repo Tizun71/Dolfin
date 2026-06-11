@@ -58,7 +58,7 @@ export default function SupportSection() {
                 <h3 className="mb-2 text-xl font-mono uppercase tracking-[3px] text-white group-hover:text-yellow-400 transition-colors duration-300">
                   {item.name}
                 </h3>
-                <p className="text-sm font-mono leading-relaxed text-[#777] group-hover:text-[#999] transition-colors duration-300">
+                <p className="text-base font-mono leading-relaxed text-[#777] group-hover:text-[#999] transition-colors duration-300">
                   {item.description}
                 </p>
               </div>

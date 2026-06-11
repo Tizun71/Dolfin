@@ -7,7 +7,7 @@ export default function FeaturesSection() {
     <section id="features" className="py-[120px] bg-[#131313]">
       <div className="max-w-[1280px] mx-auto px-5">
         <div className="text-center mb-24">
-          <p className="font-mono text-xs uppercase tracking-[0.4em] text-[#ffd700] mb-4">
+          <p className="font-mono text-sm uppercase tracking-[0.4em] text-[#ffd700] mb-4">
             CORE CAPABILITIES
           </p>
           <h2 className="text-5xl mb-6 uppercase tracking-tight font-semibold">
@@ -40,20 +40,20 @@ export default function FeaturesSection() {
 
           <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
             <div className="cyber-notch glass-card p-8 flex-1 group">
-              <h3 className="text-xl uppercase mb-3 font-semibold tracking-wider">
+              <h3 className="text-2xl uppercase mb-3 font-semibold tracking-wider">
                 Flash Loan Execution
               </h3>
-              <p className="text-base text-[#c8c6c5] leading-relaxed">
+              <p className="text-lg text-[#c8c6c5] leading-relaxed">
                 Identify arbitrage. Execute instantly. No capital required.
                 All automated within a single transaction.
               </p>
             </div>
 
             <div className="cyber-notch glass-card p-8 flex-1 group">
-              <h3 className="text-xl uppercase mb-3 font-semibold tracking-wider">
+              <h3 className="text-2xl uppercase mb-3 font-semibold tracking-wider">
                 Real-Time Dashboard
               </h3>
-              <p className="text-base text-[#c8c6c5] leading-relaxed">
+              <p className="text-lg text-[#c8c6c5] leading-relaxed">
                 Monitor predictions, trades, and your agent performance.
                 See what ARIMA is analyzing. Always in control.
               </p>
