@@ -36,7 +36,11 @@ export default function Navbar() {
               onClick={(e) => {
                 if (!item.external && item.section) {
                   e.preventDefault();
-                  scrollToSection(item.section);
+                  try {
+                    scrollToSection(item.section);
+                  } catch (error) {
+                    console.warn(`Failed to scroll to section: ${item.section}`, error);
+                  }
                 }
               }}
               target={item.external ? "_blank" : undefined}

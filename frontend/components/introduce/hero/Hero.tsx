@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import HeroButton from "./HeroButton";
 import { useHeroAnimation } from "./hooks/useHeroAnimation";
 import { GLSLHills } from "../../shared/glsl-hill";
 
@@ -16,7 +15,7 @@ export default function Hero() {
       </div>
 
       <div className="absolute left-6 md:left-12 top-1/3 md:top-2/5 z-20 text-left" style={getStyle(100)}>
-        <p className="text-orange-400 text-xs md:text-sm font-mono font-semibold uppercase tracking-tight leading-relaxed opacity-80 hover:opacity-100 transition-opacity duration-300">
+        <p className="text-yellow-400 text-xs md:text-sm font-mono font-semibold uppercase tracking-tight leading-relaxed opacity-80 hover:opacity-100 transition-opacity duration-300">
           AI-Powered<br />
           DeFi<br />
           Intelligence
@@ -24,7 +23,7 @@ export default function Hero() {
       </div>
 
       <div className="absolute right-6 md:right-12 top-1/3 md:top-2/5 z-20 text-right" style={getStyle(150)}>
-        <p className="text-orange-300/70 text-xs md:text-sm font-mono font-semibold uppercase tracking-tight leading-relaxed opacity-80 hover:opacity-100 transition-opacity duration-300">
+        <p className="text-yellow-300/70 text-xs md:text-sm font-mono font-semibold uppercase tracking-tight leading-relaxed opacity-80 hover:opacity-100 transition-opacity duration-300">
           Autonomous<br />
           Yield<br />
           Optimization
@@ -36,13 +35,25 @@ export default function Hero() {
           Dolfin
         </h1>
 
-        <div className="w-20 h-px bg-orange-500/40 mb-8" style={getStyle(400)} />
+        <div className="w-20 h-px bg-yellow-500/40 mb-8" style={getStyle(400)} />
 
-        <p className="text-orange-200/80 text-base md:text-lg font-mono font-semibold uppercase tracking-tight max-w-2xl mb-12 leading-relaxed" style={getStyle(600)}>
+        <p className="text-yellow-200/80 text-base md:text-lg font-mono font-semibold uppercase tracking-tight max-w-2xl mb-12 leading-relaxed" style={getStyle(600)}>
           AI-Powered Predictions. Automated Flash Loans. On Arbitrum.
         </p>
 
-        <HeroButton onClick={() => router.push("/dashboard")} style={getStyle(800)} />
+        <button
+          onClick={async () => {
+            try {
+              await router.push("/dashboard");
+            } catch (error) {
+              console.error("Navigation failed:", error);
+            }
+          }}
+          style={getStyle(800)}
+          className="px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-mono font-semibold text-sm uppercase tracking-wide rounded-lg transition-all duration-300 hover:scale-105"
+        >
+          Get Started
+        </button>
       </div>
     </main>
   );

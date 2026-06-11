@@ -7,16 +7,16 @@ export default function FeaturesSection() {
   const { isVisible, sectionRef } = useSectionAnimation();
 
   return (
-    <section id="features" ref={sectionRef} className="py-[120px] bg-[#131313]">
-      <div className="max-w-[1280px] mx-auto px-5">
-        <div className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <p className="font-mono font-semibold text-sm uppercase tracking-tight text-[#ffd700] mb-4">
-            CORE CAPABILITIES
+    <section id="features" ref={sectionRef} className="py-24 bg-[#131313]">
+      <div className="max-w-6xl mx-auto px-6">
+      <div className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-4">
+            Core Capabilities
           </p>
-          <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold">
-            FEATURES THAT EMPOWER
+          <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
+            Features That Empower
           </h2>
-          <p className="text-base text-[#c8c6c5] max-w-2xl mx-auto uppercase tracking-tight font-mono font-semibold leading-relaxed">
+          <p className="text-base text-yellow-100/70 max-w-2xl mx-auto uppercase tracking-tight font-mono font-semibold leading-relaxed">
             ARIMA predictions. Flash loans. Atomic execution. Everything you need to trade smarter.
           </p>
         </div>
@@ -31,10 +31,10 @@ export default function FeaturesSection() {
               sizes="(max-width: 1024px) 100vw, 58vw"
             />
             <div className="relative z-10">
-              <h3 className="text-[32px] uppercase mb-4 tracking-tight font-mono font-semibold">
+              <h3 className="text-2xl uppercase mb-4 tracking-tight font-mono font-semibold text-white">
                 AI Market Prediction
               </h3>
-              <p className="text-lg text-[#c8c6c5] max-w-md leading-relaxed">
+              <p className="text-base text-yellow-100/70 max-w-md leading-relaxed">
                 ARIMA algorithm analyzes market patterns. Predicts opportunities.
                 Executes automatically when conditions align.
               </p>
@@ -43,20 +43,20 @@ export default function FeaturesSection() {
 
           <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
             <div className={`cyber-notch glass-card p-8 flex-1 group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}>
-              <h3 className="text-2xl uppercase mb-3 font-mono font-semibold tracking-tight">
+              <h3 className="text-2xl uppercase mb-3 font-mono font-semibold tracking-tight text-white">
                 Flash Loan Execution
               </h3>
-              <p className="text-lg text-[#c8c6c5] leading-relaxed">
+              <p className="text-base text-yellow-100/70 leading-relaxed">
                 Identify arbitrage. Execute instantly. No capital required.
                 All automated within a single transaction.
               </p>
             </div>
 
             <div className={`cyber-notch glass-card p-8 flex-1 group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}>
-              <h3 className="text-2xl uppercase mb-3 font-mono font-semibold tracking-tight">
+              <h3 className="text-2xl uppercase mb-3 font-mono font-semibold tracking-tight text-white">
                 Real-Time Dashboard
               </h3>
-              <p className="text-lg text-[#c8c6c5] leading-relaxed">
+              <p className="text-base text-yellow-100/70 leading-relaxed">
                 Monitor predictions, trades, and your agent performance.
                 See what ARIMA is analyzing. Always in control.
               </p>

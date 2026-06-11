@@ -21,14 +21,20 @@ const AnimatedNumber = ({ value, duration = 2000 }: { value: number; duration?: 
     if (!hasStarted) return;
 
     let startTime: number | undefined;
+    let animationId: number;
+
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
       setDisplayValue(Math.floor(value * progress));
-      if (progress < 1) requestAnimationFrame(animate);
+      if (progress < 1) animationId = requestAnimationFrame(animate);
       else setDisplayValue(value);
     };
-    requestAnimationFrame(animate);
+    animationId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationId) cancelAnimationFrame(animationId);
+    };
   }, [value, duration, hasStarted]);
 
   const formatNumber = (num: number) => {
@@ -44,7 +50,7 @@ export default function TrustSection() {
   const { isVisible, sectionRef } = useSectionAnimation();
 
   return (
-    <section ref={sectionRef} className="relative z-10 bg-[#131313] py-16">
+    <section ref={sectionRef} className="relative z-10 bg-[#131313] py-24">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {STATS.map((stat, index) => (
@@ -55,7 +61,7 @@ export default function TrustSection() {
               }`}
               style={{ transitionDelay: isVisible ? `${index * 80}ms` : "0ms" }}
             >
-              <p className="text-base text-[#888] uppercase tracking-tight font-mono font-semibold mb-3">{stat.label}</p>
+              <p className="text-base text-neutral-400 uppercase tracking-tight font-mono font-semibold mb-3">{stat.label}</p>
               <p className="text-4xl font-mono font-semibold text-yellow-300">
                 <AnimatedNumber value={stat.value} />
               </p>

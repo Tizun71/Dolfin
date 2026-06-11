@@ -13,8 +13,8 @@ export default function BenefitsSection() {
   const { isVisible, sectionRef } = useSectionAnimation();
 
   return (
-    <section ref={sectionRef} className="relative z-10 px-6 py-8 bg-black">
-      <div className="max-w-6xl mx-auto">
+    <section ref={sectionRef} className="relative z-10 px-6 bg-[#131313]">
+      <div className="max-w-6xl mx-auto py-24">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {BENEFITS.map((item, index) => (
             <div
@@ -27,7 +27,7 @@ export default function BenefitsSection() {
               <Check className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-sm font-mono font-semibold uppercase tracking-tight text-white">{item.title}</h3>
-                <p className="text-xs text-[#888]">{item.description}</p>
+                <p className="text-xs text-neutral-400">{item.description}</p>
               </div>
             </div>
           ))}

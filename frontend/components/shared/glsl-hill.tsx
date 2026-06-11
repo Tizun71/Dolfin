@@ -218,8 +218,15 @@ const GLSLHills = ({
       renderer.render(scene, camera);
     };
 
-    const renderLoop = () => {
-      render();
+    let lastFrameTime = 0;
+    const targetFPS = 30; // Limit to 30fps for performance
+    const frameDuration = 1000 / targetFPS;
+
+    const renderLoop = (currentTime: number) => {
+      if (currentTime - lastFrameTime >= frameDuration) {
+        render();
+        lastFrameTime = currentTime;
+      }
       requestAnimationFrame(renderLoop);
     };
 
@@ -231,7 +238,7 @@ const GLSLHills = ({
       scene.add(plane.mesh);
       window.addEventListener("resize", resize);
       resize();
-      renderLoop();
+      requestAnimationFrame(renderLoop);
     };
 
     init();
