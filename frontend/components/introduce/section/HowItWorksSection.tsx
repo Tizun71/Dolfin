@@ -55,7 +55,7 @@ export default function HowItWorksSection() {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent opacity-0 -translate-x-full group-hover:translate-x-full group-hover:opacity-100 transition-all duration-1000" />
                     <div className="relative z-10 flex flex-col gap-4">
                       <div className="flex items-start justify-between">
-                        <div className="inline-flex h-14 w-14 items-center justify-center bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-500 group-hover:from-yellow-500/50 group-hover:to-amber-600/30 group-hover:rotate-12 group-hover:scale-110">
+                        <div className="inline-flex h-14 w-14 items-center justify-center bg-gradient-to-br from-yellow-500/20 to-amber-600/10 transition-all duration-500 group-hover:from-yellow-500/50 group-hover:to-amber-600/30">
                           <IconComponent className="h-7 w-7 text-yellow-400 transition-all duration-500 group-hover:text-yellow-300 group-hover:drop-shadow-[0_0_15px_rgba(250,204,21,1)]" />
                         </div>
                         <span className="text-sm font-mono font-bold text-yellow-400/60">
