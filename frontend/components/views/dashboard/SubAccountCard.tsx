@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { formatUnits } from "viem";
 import { useTokenBalances } from "@/hooks/useTokenBalances";
 import { useOnchainPortfolio } from "@/hooks/useOnchainPortfolio";
@@ -27,25 +29,33 @@ export default function SubAccountCard({
   const { balances, loading: balLoading } = useTokenBalances(account.address);
   const { data, loading } = useOnchainPortfolio(account.address);
   const hf = data.healthFactor;
+  const [aura, setAura] = useState(false);
 
   return (
-    <button
+    <div
       onClick={onSelect}
-      className={`card-3d p-6 text-left transition w-full ${
-        selected ? "border-[#fb923c]" : "hover:border-[#333]"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect()}
+      className={`card-3d p-6 text-left w-full cursor-pointer flex flex-col transition-all duration-300 ${
+        aura
+          ? "border-[#fb923c]/60 shadow-[0_0_40px_-8px_rgba(249,115,22,0.35)] -translate-y-0.5"
+          : selected
+          ? "border-[#fb923c]"
+          : "hover:border-[#333]"
       }`}
     >
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-white text-sm tracking-[1px]">Account #{account.salt + 1}</p>
           <p className="text-[#666] text-xs font-mono mt-1">{short(account.address)}</p>
         </div>
-        <span className="text-[#666] text-xs font-mono uppercase tracking-[1px]">
+        <span className="px-2.5 py-1 rounded-full bg-[#141414] border border-[#222] text-[#888] text-[10px] font-mono uppercase tracking-[1px]">
           {account.sessions.length} agent{account.sessions.length === 1 ? "" : "s"}
         </span>
       </div>
 
-      <div className="flex items-end justify-between mb-5">
+      <div className="flex items-end justify-between mb-6">
         <div>
           <p className="text-[#666] text-xs font-mono uppercase tracking-[1px]">Value</p>
           <p className="text-2xl text-white mt-1 tracking-[0.5px]">{loading ? "…" : usd(data.totalValueUsd)}</p>
@@ -62,17 +72,20 @@ export default function SubAccountCard({
         </div>
       </div>
 
-      <div className="border-t border-[#1a1a1a] pt-4 space-y-3">
+      <div className="space-y-4 mb-6">
         <div>
-          <p className="text-[#555] text-[10px] font-mono uppercase tracking-[1px] mb-1.5">Wallet</p>
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <p className="text-[#555] text-[10px] font-mono uppercase tracking-[1.5px] mb-2">Wallet</p>
+          <div className="flex flex-wrap gap-2">
             {balances.map(({ token, balance }) => (
-              <span key={token.symbol} className="flex items-center gap-1.5 text-xs font-mono text-[#888]">
+              <span
+                key={token.symbol}
+                className="flex items-center gap-1.5 rounded-full bg-[#0c0c0c] border border-[#1a1a1a] px-2.5 py-1 text-xs font-mono text-[#aaa]"
+              >
                 {TOKEN_LOGOS[token.symbol] && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={TOKEN_LOGOS[token.symbol]} alt={token.symbol} className="w-4 h-4 rounded-full" />
                 )}
-                <span className="text-[#555]">{token.symbol}</span>{" "}
+                <span className="text-[#666]">{token.symbol}</span>{" "}
                 {balLoading ? "…" : fmt(balance, token.decimals)}
               </span>
             ))}
@@ -80,15 +93,15 @@ export default function SubAccountCard({
         </div>
 
         <div>
-          <p className="text-[#555] text-[10px] font-mono uppercase tracking-[1px] mb-1.5">DeFi Positions</p>
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <p className="text-[#555] text-[10px] font-mono uppercase tracking-[1.5px] mb-2">DeFi Positions</p>
+          <div className="flex flex-wrap gap-2">
             {data.aavePositionUsd > 0 ? (
-              <span className="flex items-center gap-1.5 text-xs font-mono text-[#888]">
+              <span className="flex items-center gap-1.5 rounded-full bg-[#0c0c0c] border border-[#1a1a1a] px-2.5 py-1 text-xs font-mono text-[#aaa]">
                 {AAVE_LOGO && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={AAVE_LOGO} alt="Aave" className="w-4 h-4 rounded-full" />
                 )}
-                <span className="text-[#555]">Aave V3</span> {loading ? "…" : usd(data.aavePositionUsd)}
+                <span className="text-[#666]">Aave V3</span> {loading ? "…" : usd(data.aavePositionUsd)}
               </span>
             ) : (
               <span className="text-xs font-mono text-[#444]">{loading ? "…" : "No positions"}</span>
@@ -96,6 +109,18 @@ export default function SubAccountCard({
           </div>
         </div>
       </div>
-    </button>
+
+      <Link
+        href={`/agents/${account.address}`}
+        onClick={(e) => e.stopPropagation()}
+        onMouseEnter={() => setAura(true)}
+        onMouseLeave={() => setAura(false)}
+        onFocus={() => setAura(true)}
+        onBlur={() => setAura(false)}
+        className="mt-auto block w-full text-center py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition"
+      >
+        Manage →
+      </Link>
+    </div>
   );
 }

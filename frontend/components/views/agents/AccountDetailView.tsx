@@ -44,8 +44,8 @@ export default function AccountDetailView({ address }: { address: Address }) {
     <div className="text-white font-sans">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <Link href="/agents" className="text-[#666] hover:text-white text-xs font-mono uppercase tracking-[2px] transition">
-            ← Accounts
+          <Link href="/dashboard" className="text-[#666] hover:text-white text-xs font-mono uppercase tracking-[2px] transition">
+            ← Dashboard
           </Link>
           <h1 className="text-3xl font-normal uppercase tracking-[4px] text-white mt-4">
             {acct ? `Account #${acct.salt + 1}` : "Account"}

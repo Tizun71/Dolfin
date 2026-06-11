@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type Address } from "viem";
 import { useAccounts } from "@/hooks/useAccounts";
 import OwnerBalanceCard from "./OwnerBalanceCard";
@@ -10,24 +10,31 @@ import AgentActivityPanel from "@/components/views/agents/components/AgentActivi
 import CrossChainPanel from "@/components/views/agents/components/CrossChainPanel";
 
 export default function DashboardView() {
-  const { owner, accounts } = useAccounts();
+  const { owner, accounts, loading, createAccount } = useAccounts();
   const [selected, setSelected] = useState<Address | null>(null);
+  const router = useRouter();
 
   // Default to the first account once they load; keep the user's choice otherwise.
   useEffect(() => {
     if (!selected && accounts.length > 0) setSelected(accounts[0].address);
   }, [accounts, selected]);
 
+  const onCreate = async () => {
+    const addr = await createAccount();
+    if (addr) router.push(`/agents/${addr}`);
+  };
+
   return (
     <div className="text-white font-sans">
       <div className="flex items-end justify-between mb-12">
-        <h1 className="text-3xl font-normal uppercase tracking-[4px]">Dolfin A.I</h1>
-        <Link
-          href="/agents"
-          className="text-[#fb923c] text-xs font-mono uppercase tracking-[2px] hover:underline"
+        <h1 className="text-3xl font-normal uppercase tracking-[4px]"></h1>
+        <button
+          onClick={onCreate}
+          disabled={loading}
+          className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition"
         >
-          + New account
-        </Link>
+          {loading ? "Deploying…" : "+ New account"}
+        </button>
       </div>
 
       {/* Owner wallet balances — read straight from chain. */}
@@ -43,9 +50,13 @@ export default function DashboardView() {
         {accounts.length === 0 ? (
           <div className="border border-[#1a1a1a] bg-[#050505] p-16 text-center">
             <p className="text-[#444] text-xs font-mono uppercase tracking-[3px] mb-4">No accounts yet</p>
-            <Link href="/agents" className="text-[#fb923c] text-sm font-mono hover:underline">
-              Create an account to get started →
-            </Link>
+            <button
+              onClick={onCreate}
+              disabled={loading}
+              className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition"
+            >
+              {loading ? "Deploying…" : "Create an account to get started →"}
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
