@@ -3,7 +3,7 @@ import { ChatOpenAI } from "@langchain/openai";
 // Single source of truth for the agent's LLM client. Routes through OpenRouter
 // (OpenAI-compatible API). Swap the model via OPENROUTER_MODEL without code changes.
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
-const DEFAULT_MODEL = "google/gemini-2.0-flash-lite-001";
+const DEFAULT_MODEL = "google/gemini-2.5-flash-lite";
 
 export type AgentLlm = ChatOpenAI;
 
