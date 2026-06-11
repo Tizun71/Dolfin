@@ -139,6 +139,33 @@ export async function getLatestSession(owner: Address, account: Address): Promis
   return expectOk(res, "get latest session");
 }
 
+// One row in the paginated session list (mirrors the backend sessions list serializer).
+export interface SessionListItem {
+  id: string;
+  status: string;
+  startedAt: string;
+  finishedAt: string | null;
+  advice: string | null;
+  riskLevel: string | null;
+  riskScore: string | null;
+  actionCount: number;
+  rejectedCount: number;
+}
+
+export interface SessionList {
+  page: { pageIndex: number; pageSize: number };
+  items: SessionListItem[];
+}
+
+export async function getSessions(
+  owner: Address,
+  account: Address,
+  pageSize = 50,
+): Promise<SessionList> {
+  const res = await fetch(`${configPath(owner, account)}/sessions?pageSize=${pageSize}`);
+  return (await expectOk(res, "get sessions")) as SessionList;
+}
+
 // --- Cross-chain portfolio (read-only): DeFi (Arb) + tokenized equity (Robinhood) ---
 
 interface ChainPortfolio {

@@ -252,6 +252,7 @@ agentModule.get(
         riskLevel: agentRunTable.risk_level,
         riskScore: agentRunTable.risk_score,
         actionCount: sql<number>`(SELECT COUNT(*) FROM ${agentActionTable} WHERE ${agentActionTable.run_id} = ${agentRunTable.id})`,
+        rejectedCount: sql<number>`COALESCE(jsonb_array_length(${agentRunTable.rejected}), 0)`,
       })
       .from(agentRunTable)
       .where(and(eq(agentRunTable.user_id, userId), eq(agentRunTable.smart_account, smartAccount)))
@@ -270,6 +271,7 @@ agentModule.get(
         riskLevel: r.riskLevel,
         riskScore: r.riskScore,
         actionCount: Number(r.actionCount),
+        rejectedCount: Number(r.rejectedCount),
       })),
     });
   },
@@ -315,6 +317,7 @@ function serializeRun(row: RunRow) {
     riskLevel: row.risk_level,
     riskScore: row.risk_score,
     portfolioSnapshot: row.portfolio_snapshot,
+    rejected: row.rejected ?? [],
   };
 }
 

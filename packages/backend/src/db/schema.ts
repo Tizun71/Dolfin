@@ -86,6 +86,8 @@ export const agentRunTable = pgTable(
     risk_level: varchar("risk_level"),
     risk_score: numeric("risk_score"),
     portfolio_snapshot: jsonb("portfolio_snapshot"),
+    /** Decisions blocked by the policy mirror this run: [{ decision, errors }]. */
+    rejected: jsonb("rejected"),
   },
   (t) => ({
     userStartedIdx: index("agent_run_user_started_idx").on(
