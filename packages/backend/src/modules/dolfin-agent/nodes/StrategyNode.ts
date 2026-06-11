@@ -1,4 +1,4 @@
-import type { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import type { AgentLlm } from "../llm.js";
 import type { OnchainConfig } from "../config/onchain-config.js";
 import { deriveAaveDecisions } from "../strategy/aave-rules.js";
 import { deriveAiDecisions } from "../strategy/ai-strategy.js";
@@ -9,7 +9,7 @@ import type { AdvisorState } from "../state.js";
 export class StrategyNode {
   constructor(
     private readonly cfg: OnchainConfig,
-    private readonly model?: ChatGoogleGenerativeAI,
+    private readonly model?: AgentLlm,
   ) {}
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {

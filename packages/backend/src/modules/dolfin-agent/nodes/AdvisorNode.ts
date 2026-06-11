@@ -1,4 +1,4 @@
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { createLlm, type AgentLlm } from "../llm.js";
 import type { AdvisorState } from "../state.js";
 
 const SYSTEM_PROMPT =
@@ -13,21 +13,18 @@ const SYSTEM_PROMPT =
 // Explain-only sink: narrates portfolio, risk, market and the rule-engine decisions into
 // human-readable advice. It does not author actions or execute anything.
 export class AdvisorNode {
-  private model?: ChatGoogleGenerativeAI;
+  private model?: AgentLlm;
 
-  constructor(model?: ChatGoogleGenerativeAI) {
+  constructor(model?: AgentLlm) {
     this.model = model;
   }
 
-  // Lazy-init the LLM client. The constructor throws when GOOGLE_API_KEY is missing, so
+  // Lazy-init the LLM client. The constructor throws when OPENROUTER_API_KEY is missing, so
   // deferring it to here (inside execute's try/catch) keeps a config issue from killing
   // the pipeline before the run is persisted.
-  private getModel(): ChatGoogleGenerativeAI {
+  private getModel(): AgentLlm {
     if (!this.model) {
-      this.model = new ChatGoogleGenerativeAI({
-        model: "gemini-2.0-flash-lite",
-        apiKey: process.env.GOOGLE_API_KEY,
-      });
+      this.model = createLlm();
     }
     return this.model;
   }

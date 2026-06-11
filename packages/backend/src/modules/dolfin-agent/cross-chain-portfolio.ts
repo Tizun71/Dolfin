@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { createLlm } from "./llm.js";
 import { ChainId } from "../../configs/chain.js";
 import { PortfolioEngine, type WalletPortfolio } from "../portfolio-engine/PortfolioEngine.js";
 import { loadEquityRegistry } from "../portfolio-engine/equity-registry.js";
@@ -67,10 +67,7 @@ async function deriveAllocationAdvice(p: CrossChainPortfolio): Promise<string> {
     `Total $${p.totalValueUsd.toFixed(2)}: ${p.allocation.stablePct}% DeFi stable/yield, ` +
     `${p.allocation.equityPct}% tokenized equity.`;
   try {
-    const llm = new ChatGoogleGenerativeAI({
-      model: "gemini-2.0-flash-lite",
-      apiKey: process.env.GOOGLE_API_KEY,
-    });
+    const llm = createLlm();
     const res = await llm.invoke([
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: summary },

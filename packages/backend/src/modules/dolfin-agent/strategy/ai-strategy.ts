@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { actionBit, type ActionType, type TradeDecision } from "@dolfin/onchain";
+import { createLlm, type AgentLlm } from "../llm.js";
 import type { OnchainConfig } from "../config/onchain-config.js";
 import type { AdvisorState } from "../state.js";
 import { makeAaveDecision, resolveAction, resolveToken, type AaveActionName } from "./decision-factory.js";
@@ -70,12 +70,10 @@ export async function deriveAiDecisions(
   state: AdvisorState,
   cfg: OnchainConfig,
   ruleDecisions: TradeDecision[],
-  model?: ChatGoogleGenerativeAI,
+  model?: AgentLlm,
 ): Promise<TradeDecision[]> {
   try {
-    const llm =
-      model ??
-      new ChatGoogleGenerativeAI({ model: "gemini-2.0-flash-lite", apiKey: process.env.GOOGLE_API_KEY });
+    const llm = model ?? createLlm();
     const structured = llm.withStructuredOutput(AiDecisionSchema);
     const out = await structured.invoke([
       { role: "system", content: SYSTEM_PROMPT },
