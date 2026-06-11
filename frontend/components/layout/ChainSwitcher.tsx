@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, AlertTriangle, Loader2 } from "lucide-react";
+import { useWallets } from "@privy-io/react-auth";
+import { CHAIN_ID } from "@/constants/dolfin";
+import { getActiveWallet } from "@/lib/dolfin-wallet";
 
-// Active network indicator — app runs on Arbitrum Sepolia only (single supported chain for now).
+// Network selector — reflects the connected wallet's chain and lets the user switch it.
 const ARB_ICON = "https://token-icons.llamao.fi/icons/tokens/gecko/arbitrum?w=100&h=100";
 
 function ArbitrumIcon({ size = 16 }: { size?: number }) {
@@ -19,12 +22,25 @@ function ArbitrumIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-const CHAINS = [{ id: 421614, name: "Arbitrum Sepolia", testnet: true }];
+const CHAINS = [{ id: CHAIN_ID, name: "Arbitrum Sepolia", testnet: true }];
+
+// Parse Privy's CAIP-2 chainId ("eip155:421614") to a number.
+function parseChainId(caip?: string): number | null {
+  if (!caip) return null;
+  const n = Number(caip.split(":")[1]);
+  return Number.isNaN(n) ? null : n;
+}
 
 export default function ChainSwitcher() {
+  const { wallets } = useWallets();
   const [open, setOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const [error, setError] = useState("");
   const ref = useRef<HTMLDivElement>(null);
-  const activeId = 421614;
+
+  const wallet = getActiveWallet(wallets);
+  const walletChainId = parseChainId(wallet?.chainId);
+  const isWrong = wallet != null && walletChainId !== CHAIN_ID;
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -34,21 +50,40 @@ export default function ChainSwitcher() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  const handleSwitch = async (chainId: number) => {
+    if (!wallet) {
+      setError("Connect a wallet first.");
+      return;
+    }
+    setSwitching(true);
+    setError("");
+    try {
+      await wallet.switchChain(chainId);
+      setOpen(false);
+    } catch {
+      setError("Switch rejected. Approve in your wallet.");
+    } finally {
+      setSwitching(false);
+    }
+  };
+
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`group flex items-center gap-2.5 cursor-pointer border px-4 py-2 text-xs text-white uppercase tracking-[2px] transition-all duration-300 ${
-          open
-            ? "border-[#f97316]/60 bg-white/5"
-            : "border-white/15 hover:border-white/40 hover:bg-white/5"
+        className={`group flex items-center gap-2.5 cursor-pointer border px-4 py-2 text-xs uppercase tracking-[2px] transition-all duration-300 ${
+          isWrong
+            ? "border-red-500/60 bg-red-500/5 text-red-400"
+            : open
+              ? "border-[#f97316]/60 bg-white/5 text-white"
+              : "border-white/15 hover:border-white/40 hover:bg-white/5 text-white"
         }`}
       >
-        <ArbitrumIcon size={16} />
-        <span>ARB Sepolia</span>
+        {isWrong ? <AlertTriangle size={14} /> : <ArbitrumIcon size={16} />}
+        <span>{isWrong ? "Wrong Network" : "ARB Sepolia"}</span>
         <ChevronDown
           size={13}
-          className={`text-[#888] transition-transform duration-300 group-hover:text-white ${open ? "rotate-180" : ""}`}
+          className={`transition-transform duration-300 ${open ? "rotate-180" : ""} ${isWrong ? "text-red-400" : "text-[#888] group-hover:text-white"}`}
         />
       </button>
 
@@ -57,21 +92,33 @@ export default function ChainSwitcher() {
           <p className="text-[#666] text-[10px] font-mono uppercase tracking-[2px] px-3 py-2">
             Select Network
           </p>
-          {CHAINS.map((c) => (
-            <button
-              key={c.id}
-              className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/5"
-            >
-              <span className="flex items-center gap-2.5">
-                <ArbitrumIcon size={16} />
-                <span className="text-xs text-white uppercase tracking-[1px]">{c.name}</span>
-                {c.testnet && (
-                  <span className="text-[9px] font-mono text-[#666] border border-[#333] px-1 py-px">Testnet</span>
-                )}
-              </span>
-              {c.id === activeId && <Check size={14} className="text-[#f97316]" />}
-            </button>
-          ))}
+          {CHAINS.map((c) => {
+            const active = walletChainId === c.id;
+            return (
+              <button
+                key={c.id}
+                disabled={switching}
+                onClick={() => handleSwitch(c.id)}
+                className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="flex items-center gap-2.5">
+                  <ArbitrumIcon size={16} />
+                  <span className="text-xs text-white uppercase tracking-[1px]">{c.name}</span>
+                  {c.testnet && (
+                    <span className="text-[9px] font-mono text-[#666] border border-[#333] px-1 py-px">Testnet</span>
+                  )}
+                </span>
+                {switching ? (
+                  <Loader2 size={14} className="text-[#f97316] animate-spin" />
+                ) : active ? (
+                  <Check size={14} className="text-[#f97316]" />
+                ) : null}
+              </button>
+            );
+          })}
+          {error && (
+            <p className="text-red-400 text-[10px] font-mono px-3 py-2">{error}</p>
+          )}
         </div>
       )}
     </div>

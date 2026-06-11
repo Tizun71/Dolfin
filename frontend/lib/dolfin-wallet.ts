@@ -43,9 +43,23 @@ export function getActiveWallet(wallets: ConnectedWallet[]): ConnectedWallet | n
   return wallets.find((w) => w.walletClientType !== "privy") ?? wallets[0];
 }
 
+// Auto-switch the wallet to the target chain. switchChain may resolve before the provider
+// actually flips (or silently no-op), so poll wallet.chainId until it matches or times out.
 export async function ensureNetwork(wallet: ConnectedWallet): Promise<void> {
-  if (wallet.chainId === `eip155:${CHAIN_ID}`) return;
+  const target = `eip155:${CHAIN_ID}`;
+  if (wallet.chainId === target) return;
+
   await wallet.switchChain(CHAIN_ID);
+
+  // re-verify: provider may lag the switchChain resolve
+  for (let i = 0; i < 10 && wallet.chainId !== target; i++) {
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  if (wallet.chainId !== target) {
+    throw new Error(
+      `Wallet on wrong network. Switch to Arbitrum Sepolia (${CHAIN_ID}).`,
+    );
+  }
 }
 
 // Build a walletClient bound to the active wallet's injected provider + the owner address.
