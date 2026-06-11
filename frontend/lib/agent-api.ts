@@ -95,16 +95,97 @@ export async function deleteAgentConfig(owner: Address, account: Address): Promi
   throw new Error(`delete agent config failed (${res.status}): ${text}`);
 }
 
-export async function runAgent(owner: Address, account: Address): Promise<unknown> {
+// Lending position mirrored from backend PortfolioSnapshot.lending.
+export interface LendingView {
+  collateralUsd: number;
+  debtUsd: number;
+  healthFactor: number;
+}
+
+// A strategy decision blocked by the client-side policy mirror (and the on-chain
+// PolicyManager). `errors` are the human-readable reasons it was rejected.
+export interface RejectedDecisionView {
+  decision: { actionType: number; amount: string; tokenIn: string; reason?: string };
+  errors: string[];
+}
+
+// Live state returned by POST /run (richer than the persisted session row — it
+// carries `rejected`, which the DB history does not store).
+export interface RunState {
+  advice?: string;
+  portfolio?: { lending?: LendingView };
+  rejected?: RejectedDecisionView[];
+  validDecisions?: { actionType: number; amount: string; reason?: string }[];
+  transactions?: string[];
+}
+
+export interface RunResponse {
+  runId: string;
+  wallet: string;
+  state: RunState;
+}
+
+export async function runAgent(owner: Address, account: Address): Promise<RunResponse> {
   const res = await fetch(`${configPath(owner, account)}/run`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({}),
   });
-  return expectOk(res, "run agent");
+  return (await expectOk(res, "run agent")) as RunResponse;
 }
 
 export async function getLatestSession(owner: Address, account: Address): Promise<unknown> {
   const res = await fetch(`${configPath(owner, account)}/sessions/latest`);
   return expectOk(res, "get latest session");
+}
+
+// One row in the paginated session list (mirrors the backend sessions list serializer).
+export interface SessionListItem {
+  id: string;
+  status: string;
+  startedAt: string;
+  finishedAt: string | null;
+  advice: string | null;
+  riskLevel: string | null;
+  riskScore: string | null;
+  actionCount: number;
+  rejectedCount: number;
+}
+
+export interface SessionList {
+  page: { pageIndex: number; pageSize: number };
+  items: SessionListItem[];
+}
+
+export async function getSessions(
+  owner: Address,
+  account: Address,
+  pageSize = 50,
+): Promise<SessionList> {
+  const res = await fetch(`${configPath(owner, account)}/sessions?pageSize=${pageSize}`);
+  return (await expectOk(res, "get sessions")) as SessionList;
+}
+
+// --- Cross-chain portfolio (read-only): DeFi (Arb) + tokenized equity (Robinhood) ---
+
+interface ChainPortfolio {
+  totalValueUsd: number;
+  assets: { symbol: string; valueUsd: number }[];
+  lending?: LendingView;
+}
+
+export interface CrossChainPortfolio {
+  defi: { chainId: number; portfolio: ChainPortfolio };
+  equity: { chainId: number; portfolio: ChainPortfolio };
+  totalValueUsd: number;
+  allocation: { stablePct: number; equityPct: number };
+  advice?: string;
+}
+
+export async function getCrossChainPortfolio(
+  owner: Address,
+  account: Address,
+): Promise<CrossChainPortfolio> {
+  const res = await fetch(`${configPath(owner, account)}/portfolio/cross-chain`);
+  return (await expectOk(res, "get cross-chain portfolio")) as CrossChainPortfolio;
 }

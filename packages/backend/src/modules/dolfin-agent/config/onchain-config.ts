@@ -20,7 +20,10 @@ export interface TokenInfo {
   symbol: string;
   address: Address;
   decimals: number;
+  /** Static fallback price; overridden at runtime by `chainlinkFeed` when set. */
   priceUsd: number;
+  /** Optional Chainlink USD price feed (Arb Sepolia). Omit for stablecoins pinned to $1. */
+  chainlinkFeed?: Address;
 }
 
 /** Tokens the agent may act on, keyed by symbol. Aave Arb Sepolia supports USDC + WETH. */

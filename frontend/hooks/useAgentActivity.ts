@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { type Address } from "viem";
-import { getLatestSession, runAgent } from "@/lib/agent-api";
+import { getLatestSession, runAgent, type LendingView, type RunState } from "@/lib/agent-api";
 import { toast } from "sonner";
 
 // Shapes mirror the backend serializers (dolfin-agent/index.ts: serializeRun / serializeAction).
@@ -28,6 +28,8 @@ export interface AgentRun {
   advice: string | null;
   riskLevel: string | null;
   riskScore: string | null;
+  // Persisted snapshot; carries the Aave lending position (health factor).
+  portfolioSnapshot?: { lending?: LendingView } | null;
 }
 
 interface LatestSession {
@@ -41,6 +43,8 @@ export function useAgentActivity(owner: Address | null, account: Address | null)
   const [data, setData] = useState<LatestSession | null>(null);
   const [loading, setLoading] = useState(false);
   const [running, setRunning] = useState(false);
+  // Live state from the last POST /run. Holds `rejected`, which the DB history omits.
+  const [runState, setRunState] = useState<RunState | null>(null);
 
   const load = useCallback(async () => {
     if (!owner || !account) return;
@@ -62,7 +66,8 @@ export function useAgentActivity(owner: Address | null, account: Address | null)
     if (!owner || !account) return;
     setRunning(true);
     try {
-      await runAgent(owner, account);
+      const res = await runAgent(owner, account);
+      setRunState(res.state);
       toast.success("Agent run complete.");
       await load();
     } catch (e: unknown) {
@@ -72,5 +77,5 @@ export function useAgentActivity(owner: Address | null, account: Address | null)
     }
   };
 
-  return { data, loading, running, run, refresh: load };
+  return { data, loading, running, run, refresh: load, runState };
 }

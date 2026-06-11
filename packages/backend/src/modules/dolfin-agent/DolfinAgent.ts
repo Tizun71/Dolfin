@@ -13,6 +13,7 @@ import { PlannerNode } from "./nodes/PlannerNode.js";
 import { ExecutorNode } from "./nodes/ExecutorNode.js";
 import { ReceiptNode } from "./nodes/ReceiptNode.js";
 import { AdvisorNode } from "./nodes/AdvisorNode.js";
+import { withStepLogging } from "../../utils/logger.js";
 
 export interface DolfinAgentDeps {
   portfolioEngine: IPortfolioEngine;
@@ -47,15 +48,15 @@ export class DolfinAgent {
 
     // Node names must differ from state channel names (portfolio/risk/market are channels).
     this.graph = new StateGraph(AdvisorAnnotation)
-      .addNode("fetchPortfolio", portfolio.execute)
-      .addNode("assessRisk", risk.execute)
-      .addNode("fetchMarket", market.execute)
-      .addNode("strategy", strategy.execute)
-      .addNode("validation", validation.execute)
-      .addNode("planner", planner.execute)
-      .addNode("executor", executor.execute)
-      .addNode("receipt", receipt.execute)
-      .addNode("advisor", advisor.execute)
+      .addNode("fetchPortfolio", withStepLogging("Portfolio", portfolio.execute))
+      .addNode("assessRisk", withStepLogging("Risk", risk.execute))
+      .addNode("fetchMarket", withStepLogging("Market", market.execute))
+      .addNode("strategy", withStepLogging("Strategy", strategy.execute))
+      .addNode("validation", withStepLogging("Validation", validation.execute))
+      .addNode("planner", withStepLogging("Planner", planner.execute))
+      .addNode("executor", withStepLogging("Executor", executor.execute))
+      .addNode("receipt", withStepLogging("Receipt", receipt.execute))
+      .addNode("advisor", withStepLogging("Advisor", advisor.execute))
       .addEdge(START, "fetchPortfolio")
       .addEdge("fetchPortfolio", "assessRisk")
       .addEdge("assessRisk", "fetchMarket")

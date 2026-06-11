@@ -10,6 +10,7 @@ import { type TransferMode } from "@/hooks/useAccountTransfer";
 import AccountStatusCard from "./components/AccountStatusCard";
 import SessionPanel from "./components/SessionPanel";
 import AgentActivityPanel from "./components/AgentActivityPanel";
+import CrossChainPanel from "./components/CrossChainPanel";
 import CreateSessionForm from "./components/CreateSessionForm";
 import TransferDrawer from "./components/TransferDrawer";
 import Modal from "./components/Modal";
@@ -86,6 +87,8 @@ export default function AccountDetailView({ address }: { address: Address }) {
             ))}
             {/* What the backend AI agent is actually doing for this account. */}
             <AgentActivityPanel owner={owner} account={address} />
+            {/* Read-only DeFi + tokenized-equity allocation across chains. */}
+            <CrossChainPanel owner={owner} account={address} />
           </>
         ) : (
           <div className="card-3d p-12 text-center">

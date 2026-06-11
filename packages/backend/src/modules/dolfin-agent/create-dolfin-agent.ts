@@ -92,7 +92,11 @@ export async function createDolfinAgentForUser(args: {
     policyOverrides: normalizePolicyOverrides(row.policy),
   });
 
-  const portfolioEngine = new PortfolioEngine(ChainId.ARBITRUM_SEPOLIA, Object.values(onchain.tokens));
+  const portfolioEngine = new PortfolioEngine(
+    ChainId.ARBITRUM_SEPOLIA,
+    Object.values(onchain.tokens),
+    onchain.aave.pool,
+  );
   const riskEngine = new RiskEngineImplement([new LendingRiskAnalyzer()]);
   const discoveryEngine = new DiscoveryEngine();
   const agent = new DolfinAgent({ portfolioEngine, riskEngine, discoveryEngine, onchain });

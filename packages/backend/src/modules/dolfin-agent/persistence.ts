@@ -158,6 +158,17 @@ export async function finalizeRunRecord(
 ): Promise<void> {
   const status = error ? "failed" : "succeeded";
   const errMsg = error instanceof Error ? error.message : error ? String(error) : null;
+  // Persist rejected decisions (amount bigint → string) so the history/dashboard can
+  // count guardrail blocks, not just the live /run response.
+  const rejected = (result.rejected ?? []).map((r) => ({
+    decision: {
+      actionType: r.decision.actionType,
+      amount: r.decision.amount.toString(),
+      tokenIn: r.decision.tokenIn,
+      reason: r.decision.reason ?? null,
+    },
+    errors: r.errors,
+  }));
   await db
     .update(agentRunTable)
     .set({
@@ -168,6 +179,7 @@ export async function finalizeRunRecord(
       risk_level: result.risk?.level ?? null,
       risk_score: result.risk?.score != null ? String(result.risk.score) : null,
       portfolio_snapshot: result.portfolio ?? null,
+      rejected,
     })
     .where(eq(agentRunTable.id, runId));
 }

@@ -5,6 +5,7 @@
     "dev": "tsx --env-file .env --watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "test": "vitest run",
     "agent:run": "tsx --env-file .env src/modules/dolfin-agent/run-agent.ts",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate"
@@ -13,18 +14,15 @@
     "@aave-dao/aave-address-book": "^4.49.10",
     "@aave/client": "^0.9.3",
     "@aave/graphql": "^0.11.1",
-    "@ai-sdk/google": "^3.0.72",
     "@dolfin/onchain": "workspace:*",
     "@duneanalytics/client-sdk": "^0.4.0",
-    "@gmx-io/sdk": "1.5.0-alpha-17",
     "@hono/node-server": "^1.19.14",
     "@hono/zod-validator": "^0.8.0",
     "@langchain/core": "^1.1.48",
+    "@langchain/google-genai": "^2.1.31",
     "@langchain/langgraph": "^1.3.2",
     "@logtape/hono": "^2.0.5",
     "@logtape/logtape": "^2.0.5",
-    "@privy-io/node": "^0.16.0",
-    "ai": "^6.0.168",
     "cron": "^4.4.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
@@ -32,6 +30,7 @@
     "langchain": "^1.4.2",
     "pg": "^8.20.0",
     "viem": "^2.48.11",
+    "winston": "^3.17.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -39,6 +38,7 @@
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.8"
   }
 }

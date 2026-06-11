@@ -8,6 +8,8 @@ import { agentActionTable, agentConfigTable, agentRunTable, userTable } from "..
 import { agentManager } from "./agent-manager.js";
 import { AgentConfigNotFoundError } from "./create-dolfin-agent.js";
 import { encryptSessionKey } from "./session-key-crypto.js";
+import { readCrossChainPortfolio } from "./cross-chain-portfolio.js";
+import type { Address } from "viem";
 
 const logger = getLogger(["dolfin", "agent-api"]);
 
@@ -167,6 +169,25 @@ agentModule.delete(
   },
 );
 
+// --- Cross-chain portfolio (read-only) ---
+
+// Aggregates DeFi (Arb Sepolia) + tokenized equity (Robinhood Chain) for the same
+// smart-account address. Pure read + allocation advice; no session key, no execution.
+agentModule.get(
+  "/:userId/:smartAccount/portfolio/cross-chain",
+  zValidator("param", paramsSchema),
+  async (c) => {
+    const { smartAccount } = c.req.valid("param");
+    try {
+      const view = await readCrossChainPortfolio(smartAccount as Address);
+      return c.json(view);
+    } catch (e) {
+      logger.error("cross-chain portfolio failed: {error}", { error: e });
+      return c.json({ error: e instanceof Error ? e.message : "cross-chain read failed" }, 500);
+    }
+  },
+);
+
 // --- Run endpoints ---
 
 agentModule.post(
@@ -231,6 +252,7 @@ agentModule.get(
         riskLevel: agentRunTable.risk_level,
         riskScore: agentRunTable.risk_score,
         actionCount: sql<number>`(SELECT COUNT(*) FROM ${agentActionTable} WHERE ${agentActionTable.run_id} = ${agentRunTable.id})`,
+        rejectedCount: sql<number>`COALESCE(jsonb_array_length(${agentRunTable.rejected}), 0)`,
       })
       .from(agentRunTable)
       .where(and(eq(agentRunTable.user_id, userId), eq(agentRunTable.smart_account, smartAccount)))
@@ -249,6 +271,7 @@ agentModule.get(
         riskLevel: r.riskLevel,
         riskScore: r.riskScore,
         actionCount: Number(r.actionCount),
+        rejectedCount: Number(r.rejectedCount),
       })),
     });
   },
@@ -294,6 +317,7 @@ function serializeRun(row: RunRow) {
     riskLevel: row.risk_level,
     riskScore: row.risk_score,
     portfolioSnapshot: row.portfolio_snapshot,
+    rejected: row.rejected ?? [],
   };
 }
 
@@ -325,6 +349,12 @@ function serializeState(state: import("./state.js").AdvisorState) {
     validDecisions: state.validDecisions?.map((d) => ({
       ...d,
       amount: d.amount.toString(),
+    })),
+    // Decisions dropped by the client-side policy mirror, with the reasons why.
+    // Surfaced so the UI can show "executed vs rejected (+ reason)" side by side.
+    rejected: state.rejected?.map((r) => ({
+      decision: { ...r.decision, amount: r.decision.amount.toString() },
+      errors: r.errors,
     })),
     userOpHashes: state.userOpHashes ?? [],
     transactions: state.transactions ?? [],
