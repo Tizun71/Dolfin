@@ -7,6 +7,7 @@ import { useTokenBalances } from "@/hooks/useTokenBalances";
 import { useOnchainPortfolio } from "@/hooks/useOnchainPortfolio";
 import { type StoredAccount } from "@/lib/account-store";
 import { TOKEN_LOGOS, PROTOCOLS } from "@/constants/dolfin";
+import Skeleton from "@/components/ui/Skeleton";
 
 const AAVE_LOGO = PROTOCOLS.find((p) => p.key === "aave")?.logo;
 
@@ -58,17 +59,25 @@ export default function SubAccountCard({
       <div className="flex items-end justify-between mb-6">
         <div>
           <p className="text-[#666] text-xs font-mono uppercase tracking-[1px]">Value</p>
-          <p className="text-2xl text-white mt-1 tracking-[0.5px]">{loading ? "…" : usd(data.totalValueUsd)}</p>
+          {loading ? (
+            <Skeleton className="w-24 h-7 mt-1.5" />
+          ) : (
+            <p className="text-2xl text-white mt-1 tracking-[0.5px]">{usd(data.totalValueUsd)}</p>
+          )}
         </div>
         <div className="text-right">
           <p className="text-[#666] text-xs font-mono uppercase tracking-[1px]">Health</p>
-          <p
-            className={`text-2xl mt-1 tracking-[0.5px] ${
-              hf !== null && hf < 1.5 ? "text-[#f87171]" : "text-white"
-            }`}
-          >
-            {hf === null ? "—" : hf >= 999 ? "∞" : hf.toFixed(2)}
-          </p>
+          {loading ? (
+            <Skeleton className="w-12 h-7 mt-1.5 ml-auto" />
+          ) : (
+            <p
+              className={`text-2xl mt-1 tracking-[0.5px] ${
+                hf !== null && hf < 1.5 ? "text-[#f87171]" : "text-white"
+              }`}
+            >
+              {hf === null ? "—" : hf >= 999 ? "∞" : hf.toFixed(2)}
+            </p>
+          )}
         </div>
       </div>
 
@@ -76,6 +85,9 @@ export default function SubAccountCard({
         <div>
           <p className="text-[#555] text-[10px] font-mono uppercase tracking-[1.5px] mb-2">Wallet</p>
           <div className="flex flex-wrap gap-2">
+            {balLoading && !balances.length
+              ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="w-20 h-7 rounded-full" />)
+              : null}
             {balances.map(({ token, balance }) => (
               <span
                 key={token.symbol}
@@ -95,7 +107,9 @@ export default function SubAccountCard({
         <div>
           <p className="text-[#555] text-[10px] font-mono uppercase tracking-[1.5px] mb-2">DeFi Positions</p>
           <div className="flex flex-wrap gap-2">
-            {data.aavePositionUsd > 0 ? (
+            {loading ? (
+              <Skeleton className="w-28 h-7 rounded-full" />
+            ) : data.aavePositionUsd > 0 ? (
               <span className="flex items-center gap-1.5 rounded-full bg-[#0c0c0c] border border-[#1a1a1a] px-2.5 py-1 text-xs font-mono text-[#aaa]">
                 {AAVE_LOGO && (
                   // eslint-disable-next-line @next/next/no-img-element

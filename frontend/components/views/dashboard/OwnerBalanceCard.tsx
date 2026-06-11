@@ -3,6 +3,7 @@
 import { formatUnits, type Address } from "viem";
 import { useTokenBalances } from "@/hooks/useTokenBalances";
 import { TOKEN_LOGOS } from "@/constants/dolfin";
+import Skeleton from "@/components/ui/Skeleton";
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const fmt = (v: bigint, decimals: number) =>
@@ -21,6 +22,18 @@ export default function OwnerBalanceCard({ owner }: { owner: Address | null }) {
 
       {!owner ? (
         <p className="text-[#444] text-xs font-mono uppercase tracking-[2px] py-4">Connect a wallet</p>
+      ) : loading && !balances.length ? (
+        <div className="grid grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="w-7 h-7 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="w-10 h-3" />
+                <Skeleton className="w-16 h-5" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-3 gap-6">
           {balances.map(({ token, balance }) => (

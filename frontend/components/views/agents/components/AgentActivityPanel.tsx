@@ -3,6 +3,29 @@
 import { type Address } from "viem";
 import { useAgentActivity, type AgentRun } from "@/hooks/useAgentActivity";
 import { type RejectedDecisionView } from "@/lib/agent-api";
+import Skeleton from "@/components/ui/Skeleton";
+
+function ActivitySkeleton() {
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
+        <Skeleton className="w-2 h-2 rounded-full" />
+        <Skeleton className="w-20 h-3" />
+        <Skeleton className="w-32 h-3" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="w-16 h-3" />
+        <Skeleton className="w-full h-4" />
+        <Skeleton className="w-4/5 h-4" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="w-20 h-3" />
+        <Skeleton className="w-full h-9 rounded" />
+        <Skeleton className="w-full h-9 rounded" />
+      </div>
+    </div>
+  );
+}
 
 const BTN = "px-5 py-2.5 text-xs uppercase tracking-[2px] font-mono border transition disabled:opacity-50";
 const TX_BASE = "https://sepolia.arbiscan.io/tx/";
@@ -106,11 +129,11 @@ export default function AgentActivityPanel({
         </div>
       </div>
 
-      {!latest ? (
+      {loading && !latest ? (
+        <ActivitySkeleton />
+      ) : !latest ? (
         <div className="py-10 text-center">
-          <p className="text-[#444] text-xs font-mono uppercase tracking-[3px]">
-            {loading ? "Loading…" : "No agent runs yet"}
-          </p>
+          <p className="text-[#444] text-xs font-mono uppercase tracking-[3px]">No agent runs yet</p>
           <p className="text-[#333] text-sm font-mono mt-3">
             Run the agent or wait for the scheduled tick.
           </p>

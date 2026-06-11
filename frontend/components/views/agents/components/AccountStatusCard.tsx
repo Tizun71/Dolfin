@@ -4,6 +4,7 @@ import { formatUnits, type Address } from "viem";
 import { TOKEN_LOGOS } from "@/constants/dolfin";
 import { useTokenBalances } from "@/hooks/useTokenBalances";
 import { useAccountPause } from "@/hooks/useAccountPause";
+import Skeleton from "@/components/ui/Skeleton";
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -39,7 +40,17 @@ function BalancePanel({
         Balance
       </p>
       {loading && !balances.length ? (
-        <p className="text-[#444] text-xs font-mono">Loading…</p>
+        <div className="space-y-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-6 h-6 rounded-full" />
+                <Skeleton className="w-12 h-4" />
+              </div>
+              <Skeleton className="w-20 h-4" />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="space-y-4">
           {balances.map(({ token, balance }) => {
