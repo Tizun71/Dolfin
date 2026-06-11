@@ -1,10 +1,8 @@
-// Dolfin Execution Relayer (reference)
-//
-// Flow:  AI decision -> buildAdapterCall -> build UserOperation
-//                    -> sign with the SESSION KEY -> Bundler -> EntryPoint -> SmartAccount -> adapter/protocol
-//
-// The relayer holds only the *session key* (scoped, revocable, expiring) — never the owner key.
-// Even if fully compromised, the on-chain PolicyManager caps the blast radius to the signed policy.
+// Dolfin execution relayer.
+// Flow: adapter call -> build UserOperation -> sign with the session key -> bundler ->
+// EntryPoint -> smart account -> adapter/protocol.
+// The relayer holds only the session key (scoped, revocable, expiring), never the owner key,
+// so a full compromise is still capped by the on-chain PolicyManager.
 
 import { createPublicClient, http, encodeFunctionData, concat, type Account, type Address } from "viem";
 import type { AdapterCall, PackedUserOperation } from "./types.js";
@@ -93,7 +91,7 @@ export class ExecutionRelayer {
     })) as bigint;
 
     const fees = await this.pub.estimateFeesPerGas();
-    // Arbitrum's fee estimate often returns a 0 priority fee, which bundlers reject — floor it.
+    // Arbitrum often returns a 0 priority fee, which bundlers reject, so floor it.
     const minPriority = 1_000_000_000n; // 1 gwei
     const maxPriorityFeePerGas = (fees.maxPriorityFeePerGas ?? 0n) > minPriority ? fees.maxPriorityFeePerGas! : minPriority;
     const maxFeePerGas = (fees.maxFeePerGas ?? 0n) > maxPriorityFeePerGas ? fees.maxFeePerGas! : maxPriorityFeePerGas * 2n;
@@ -112,13 +110,12 @@ export class ExecutionRelayer {
       signature: concat([SIG_MODE_SESSION, `0x${"00".repeat(65)}`]),
     };
 
-    // Gas sizing strategy: prioritise reliable inclusion over cost.
-    //
-    // - callGasLimit / preVerificationGas: pad generously. Over-provisioning here only costs more
-    //   (refunded if unused) and prevents the most common failure — execution out-of-gas reverts.
-    // - verificationGasLimit: the ONE field where padding backfires. Alchemy/Rundler enforces
-    //   efficiency = actualGasUsed / limit >= 0.4, so a high limit is REJECTED, not just expensive.
-    //   Session-key validation uses ~40-60k, so cap it tight to keep efficiency >= 0.4.
+    // Gas sizing favours reliable inclusion over cost.
+    // callGasLimit / preVerificationGas: padded generously; over-provisioning is refunded if
+    //   unused and avoids out-of-gas reverts.
+    // verificationGasLimit: padding backfires here. Alchemy/Rundler require
+    //   efficiency = actualGasUsed / limit >= 0.4, so a high limit is rejected. Session-key
+    //   validation uses ~40-60k, so cap it tight.
     const VERIFICATION_GAS_CAP = 90_000n;
     const est = await this.estimateGas(userOp);
     const verificationGasLimit =
@@ -128,7 +125,7 @@ export class ExecutionRelayer {
     userOp.accountGasLimits = pack(verificationGasLimit, callGasLimit);
     userOp.preVerificationGas = est.preVerificationGas * 2n;
 
-    // EntryPoint computes the canonical hash (binds chainId + entrypoint → replay-safe).
+    // EntryPoint computes the canonical hash, binding chainId + entrypoint for replay safety.
     const userOpHash = (await this.pub.readContract({
       address: this.cfg.entryPoint,
       abi: ENTRYPOINT_ABI,
@@ -225,10 +222,8 @@ function unpack(b32: `0x${string}`): [bigint, bigint] {
 
 const hex = (v: bigint): `0x${string}` => `0x${v.toString(16)}`;
 
-/**
- * Convert the on-chain PACKED UserOperation into the UNPACKED JSON-RPC shape the bundler
- * expects (EntryPoint v0.7/v0.8). Packed fields are split; empty factory/paymaster omitted.
- */
+// Convert the packed UserOperation into the unpacked JSON-RPC shape the bundler expects
+// (EntryPoint v0.7/v0.8). Packed fields are split; empty factory/paymaster omitted.
 function serializeUserOp(op: PackedUserOperation) {
   const [verificationGasLimit, callGasLimit] = unpack(op.accountGasLimits);
   const [maxPriorityFeePerGas, maxFeePerGas] = unpack(op.gasFees);

@@ -92,7 +92,7 @@ export function useDolfinAccount(onComplete: () => void) {
         return;
       }
 
-      // Gửi authorization lên backend, agent wallet sẽ relay transaction
+      // Send the authorization to the backend; the agent wallet relays the transaction
       const response = await fetch("/api/dolfin/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

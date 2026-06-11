@@ -2,10 +2,8 @@ import { checkAgainstPolicy } from "@dolfin/onchain";
 import type { OnchainConfig } from "../config/onchain-config.js";
 import type { AdvisorState, RejectedDecision } from "../state.js";
 
-/**
- * Client-side policy filter. Reuses the same mirror the on-chain PolicyManager enforces,
- * dropping invalid decisions before they cost gas. The chain remains authoritative.
- */
+// Client-side policy filter. Drops invalid decisions before they cost gas; the
+// on-chain PolicyManager stays authoritative.
 export class ValidationNode {
   constructor(private readonly cfg: OnchainConfig) {}
 
@@ -24,7 +22,6 @@ export class ValidationNode {
     return { validDecisions, rejected };
   };
 
-  /** USD price per token address (checkAgainstPolicy keys on decision.tokenIn). */
   private buildPrices(): Record<string, number> {
     const prices: Record<string, number> = {};
     for (const t of Object.values(this.cfg.tokens)) prices[t.address] = t.priceUsd;

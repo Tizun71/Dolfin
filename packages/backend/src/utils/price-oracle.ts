@@ -1,6 +1,6 @@
 import type { Address, PublicClient } from "viem";
 
-/** Minimal Chainlink AggregatorV3 ABI: latest price + its decimals. */
+// Minimal Chainlink AggregatorV3 ABI: latest price + its decimals.
 const aggregatorV3Abi = [
   {
     type: "function",
@@ -24,10 +24,8 @@ const aggregatorV3Abi = [
   },
 ] as const;
 
-/**
- * Read a USD price from a Chainlink price feed. Returns null on any failure so
- * callers can fall back to a static price instead of failing the pipeline.
- */
+// Read a USD price from a Chainlink feed. Returns null on any failure so callers can fall
+// back to a static price instead of failing the pipeline.
 export async function fetchChainlinkPriceUsd(
   client: Pick<PublicClient, "readContract">,
   feed: Address,

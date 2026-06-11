@@ -7,13 +7,13 @@ import "./interfaces/IPolicyManager.sol";
 /**
  * @title PolicyManager
  * @notice The Dolfin policy engine. Holds the spending/risk policy each user grants to each
- *         AI session key and enforces it on every action (swap / lend / borrow / perp).
+ *         AI session key and enforces it on every action (swap, lend, borrow, perp).
  *
  * Trust model:
- *  - Policy is keyed by (account, sessionKey). Only the `account` itself can write its own
- *    policy. The AI agent and relayer have no privileged role here.
- *  - A GUARDIAN_ROLE can globally pause the engine (kill-switch) and maintain the reference
- *    price feed, but can NOT move funds or edit user policies.
+ *  - Policy is keyed by (account, sessionKey). Only the account itself can write its own policy;
+ *    the agent and relayer have no privileged role here.
+ *  - GUARDIAN_ROLE can globally pause the engine and maintain the reference price feed, but
+ *    cannot move funds or edit user policies.
  */
 contract PolicyManager is AccessControl, IPolicyManager {
     bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN_ROLE");
@@ -44,7 +44,7 @@ contract PolicyManager is AccessControl, IPolicyManager {
     }
 
     // ---------------------------------------------------------------------
-    // User (account) configuration — msg.sender is the smart account itself
+    // User (account) configuration: msg.sender is the smart account itself
     // ---------------------------------------------------------------------
 
     function setPolicy(address sessionKey, Policy calldata p) external {
@@ -82,7 +82,7 @@ contract PolicyManager is AccessControl, IPolicyManager {
     }
 
     // ---------------------------------------------------------------------
-    // Enforcement — called by the account during execution
+    // Enforcement: called by the account during execution
     // ---------------------------------------------------------------------
 
     /// @inheritdoc IPolicyManager

@@ -10,11 +10,8 @@ const SYSTEM_PROMPT =
   "Actions: <what was executed / rejected, with sizes>\n" +
   "Why: <one-sentence rationale tied to the numbers>";
 
-/**
- * Explain-only sink: narrates portfolio + risk + market + the rule-engine's decisions
- * into human-readable advice. It NEVER authors actions — those come from the Strategy node.
- * Transaction encoding/execution is handled by downstream Planner/Executor nodes.
- */
+// Explain-only sink: narrates portfolio, risk, market and the rule-engine decisions into
+// human-readable advice. It does not author actions or execute anything.
 export class AdvisorNode {
   private model?: ChatGoogleGenerativeAI;
 
@@ -22,11 +19,9 @@ export class AdvisorNode {
     this.model = model;
   }
 
-  /**
-   * Lazy-init the LLM client. Constructing ChatGoogleGenerativeAI throws when
-   * GOOGLE_API_KEY is missing — doing it here (inside execute's try/catch) keeps
-   * a config issue from killing the whole pipeline before the run is persisted.
-   */
+  // Lazy-init the LLM client. The constructor throws when GOOGLE_API_KEY is missing, so
+  // deferring it to here (inside execute's try/catch) keeps a config issue from killing
+  // the pipeline before the run is persisted.
   private getModel(): ChatGoogleGenerativeAI {
     if (!this.model) {
       this.model = new ChatGoogleGenerativeAI({
@@ -45,13 +40,13 @@ export class AdvisorNode {
       ]);
       return { advice: String(response.content) };
     } catch (err) {
-      // Narration is non-critical and runs AFTER execution — never fail the pipeline on it.
+      // Narration runs after execution and is non-critical, so never fail the pipeline on it.
       const reason = err instanceof Error ? err.message : String(err);
       return { advice: `${this.fallbackAdvice(state)}\n\n(LLM narration unavailable: ${reason})` };
     }
   };
 
-  /** Deterministic summary when the LLM is unavailable. */
+  // Deterministic summary when the LLM is unavailable.
   private fallbackAdvice(state: AdvisorState): string {
     const done = (state.validDecisions ?? []).map((d) => d.reason ?? d.actionType).join("; ") || "no actions";
     const dropped = (state.rejected ?? []).length;
@@ -77,7 +72,7 @@ export class AdvisorNode {
   }
 }
 
-/** TradeDecision.amount is a bigint; make it JSON-serializable for the prompt. */
+// TradeDecision.amount is a bigint; make it JSON-serializable for the prompt.
 function bigintReplacer(_key: string, value: unknown): unknown {
   return typeof value === "bigint" ? value.toString() : value;
 }

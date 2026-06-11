@@ -55,11 +55,8 @@ async function loadAgentConfigRow(userId: string, smartAccount: string): Promise
   };
 }
 
-/**
- * The DB stores `allowedActions` as `address -> string` (JSON has no bigint), but
- * `buildUserPolicy` ORs the mask as a bigint. Coerce the masks back to bigint here so
- * the on-chain action whitelist is correct. Malformed values throw (caught by the cron).
- */
+// The DB stores allowedActions masks as strings (JSON has no bigint); coerce them back
+// to bigint so the on-chain action whitelist is correct. Malformed values throw.
 function normalizePolicyOverrides(policy: PolicyOverrides): PolicyOverrides {
   if (!policy.allowedActions) return policy;
   const allowedActions = Object.fromEntries(
@@ -68,18 +65,15 @@ function normalizePolicyOverrides(policy: PolicyOverrides): PolicyOverrides {
   return { ...policy, allowedActions };
 }
 
-/**
- * Build a `DolfinAgent` for a single (userId, smartAccount) by loading the
- * per-user config from the database. Throws `AgentConfigNotFoundError` if no
- * row exists; callers (cron, API) should handle that by skipping.
- */
+// Build a DolfinAgent for one (userId, smartAccount) from its DB config. Throws
+// AgentConfigNotFoundError if no row exists; callers skip on that.
 export async function createDolfinAgentForUser(args: {
   userId: string;
   smartAccount: string;
 }): Promise<{ agent: DolfinAgent; onchain: OnchainConfig; tokens: Record<string, TokenInfo> }> {
   const row = await loadAgentConfigRow(args.userId, args.smartAccount);
-  // No env SESSION_KEY fallback: a config without its own session key is not runnable.
-  // Using a shared key here would execute on the wrong account. Fail loud so the cron skips it.
+  // No env SESSION_KEY fallback: a shared key would execute on the wrong account, so a
+  // config without its own session key is not runnable. Fail loud so the cron skips it.
   if (!row.session_key) {
     throw new Error(
       `agent has no session key, not runnable (user=${args.userId} smartAccount=${args.smartAccount})`,

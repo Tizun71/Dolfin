@@ -28,7 +28,6 @@ export interface PersistedAction {
   details: Record<string, unknown>;
 }
 
-/** Human-friendly name for a protocol address. Falls back to the raw address. */
 function protocolNameFor(address: string, cfg: OnchainConfig): string {
   if (address.toLowerCase() === cfg.aave.pool.toLowerCase()) return "AAVE";
   if (address.toLowerCase() === ADDRESSES.aavePool.toLowerCase()) return "AAVE";
@@ -60,14 +59,12 @@ function findTokenInfo(addr: Address, cfg: OnchainConfig): TokenInfo | undefined
   return Object.values(cfg.tokens).find((t) => t.address.toLowerCase() === lower);
 }
 
-/** Format a bigint raw token amount using its known decimals. */
 function formatAmount(amount: bigint, token: TokenInfo | undefined): string {
   if (!token) return amount.toString();
-  const formatted = formatUnits(amount, token.decimals);
-  return formatted;
+  return formatUnits(amount, token.decimals);
 }
 
-/** Produce a human label like "Supply 100 USDC to AAVE". */
+// e.g. "Supply 100 USDC to AAVE".
 export function labelAction(decision: TradeDecision, cfg: OnchainConfig): string {
   const verb = ACTION_VERB[decision.actionType] ?? "Act";
   const token = findTokenInfo(decision.tokenIn, cfg);
@@ -83,13 +80,8 @@ function amountUsd(amount: bigint, token: TokenInfo | undefined): number | null 
   return human * token.priceUsd;
 }
 
-/**
- * Build the list of action records persisted against a run. Zips
- * `validDecisions` with the matching `userOpHashes` and `transactions` (all
- * parallel arrays in graph state). If a decision has no hash (validation
- * passed but executor skipped), it is still recorded as a logged-but-not-submitted
- * action with `transactionHash = null`.
- */
+// Zip validDecisions with the parallel userOpHashes and transactions arrays. A decision
+// with no hash is still recorded with transactionHash = null.
 export function buildActionRecords(
   runId: string,
   state: AdvisorState,
@@ -158,8 +150,8 @@ export async function finalizeRunRecord(
 ): Promise<void> {
   const status = error ? "failed" : "succeeded";
   const errMsg = error instanceof Error ? error.message : error ? String(error) : null;
-  // Persist rejected decisions (amount bigint → string) so the history/dashboard can
-  // count guardrail blocks, not just the live /run response.
+  // Persist rejected decisions (amount bigint to string) so the dashboard can count
+  // guardrail blocks, not just the live /run response.
   const rejected = (result.rejected ?? []).map((r) => ({
     decision: {
       actionType: r.decision.actionType,

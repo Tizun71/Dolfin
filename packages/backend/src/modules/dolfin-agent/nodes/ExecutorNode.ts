@@ -1,11 +1,8 @@
 import type { OnchainConfig } from "../config/onchain-config.js";
 import type { AdvisorState } from "../state.js";
 
-/**
- * Submits encoded calls to the Alchemy bundler via the session-key relayer (autonomous full).
- * Idempotent: skips if this run already produced userOpHashes, to avoid double-submission on
- * graph retries. Safety is bounded entirely by the on-chain PolicyManager.
- */
+// Submits encoded calls to the bundler via the session-key relayer. Idempotent: skips if
+// this run already produced userOpHashes, to avoid double-submission on graph retries.
 export class ExecutorNode {
   constructor(private readonly cfg: OnchainConfig) {}
 

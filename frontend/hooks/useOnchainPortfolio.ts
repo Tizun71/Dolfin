@@ -25,7 +25,7 @@ export function useOnchainPortfolio(account: Address | null) {
     setLoading(true);
     readOnchainPortfolio(account)
       .then((p) => !cancelled && setData(p))
-      .catch(() => {}) // read failure — keep prior data
+      .catch(() => {}) // read failure: keep prior data
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;

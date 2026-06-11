@@ -1,5 +1,5 @@
 // Shared types for the Dolfin off-chain stack (AI agent + execution relayer).
-// Mirror the on-chain policy for client-side pre-filtering ONLY — the chain is authoritative.
+// These mirror the on-chain policy for client-side pre-filtering only; the chain is authoritative.
 
 export type Address = `0x${string}`;
 

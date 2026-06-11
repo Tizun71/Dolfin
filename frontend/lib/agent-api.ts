@@ -26,9 +26,9 @@ async function expectOk(res: Response, action: string): Promise<unknown> {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// Retry transient failures (network down, 5xx). 4xx are caller/validation errors — fail fast,
-// retrying won't help. The on-chain tx already committed by the time we sync, so a flaky
-// backend must not silently leave the agent unconfigured.
+// Retry transient failures (network down, 5xx). 4xx are caller/validation errors, so fail
+// fast. The on-chain tx already committed by the time we sync, so a flaky backend must not
+// silently leave the agent unconfigured.
 async function putWithRetry(url: string, body: string, attempts = 3): Promise<void> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
@@ -39,7 +39,7 @@ async function putWithRetry(url: string, body: string, attempts = 3): Promise<vo
         body,
       });
       if (res.ok) return;
-      // Client error → no point retrying.
+      // Client error: no point retrying.
       if (res.status >= 400 && res.status < 500) {
         const text = await res.text().catch(() => "");
         throw new Error(`sync agent config failed (${res.status}): ${text}`);
@@ -53,8 +53,8 @@ async function putWithRetry(url: string, body: string, attempts = 3): Promise<vo
   throw lastErr instanceof Error ? lastErr : new Error("sync agent config failed");
 }
 
-// Partial config update. Pass only what changed. `sessionKey` is a 0x 32-byte private key
-// (or null to clear). NEVER log this object — it carries the private key.
+// Partial config update. Pass only what changed. sessionKey is a 0x 32-byte private key
+// (or null to clear). Never log this object: it carries the private key.
 export interface AgentConfigPatch {
   enabled?: boolean;
   sessionKey?: `0x${string}` | null;
@@ -75,7 +75,7 @@ export interface AgentConfigView {
   policy: unknown;
 }
 
-// Read current backend config. Returns null when none exists (404) — used by reconciliation
+// Read current backend config. Returns null when none exists (404); reconciliation uses this
 // to detect divergence (e.g. on-chain grant succeeded but a prior sync never landed).
 export async function getAgentConfig(
   owner: Address,
@@ -86,7 +86,7 @@ export async function getAgentConfig(
   return (await expectOk(res, "get agent config")) as AgentConfigView;
 }
 
-// Delete the backend agent config (row + cached instance). 404 is treated as success — the
+// Delete the backend agent config (row + cached instance). 404 counts as success since the
 // goal (no config) is already met. Other failures throw so the caller can surface them.
 export async function deleteAgentConfig(owner: Address, account: Address): Promise<void> {
   const res = await fetch(`${configPath(owner, account)}/config`, { method: "DELETE" });
@@ -109,8 +109,8 @@ export interface RejectedDecisionView {
   errors: string[];
 }
 
-// Live state returned by POST /run (richer than the persisted session row — it
-// carries `rejected`, which the DB history does not store).
+// Live state returned by POST /run, richer than the persisted session row: it carries
+// `rejected`, which the DB history does not store.
 export interface RunState {
   advice?: string;
   portfolio?: { lending?: LendingView };

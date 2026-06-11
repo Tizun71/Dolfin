@@ -37,7 +37,7 @@ export default function DashboardView() {
         </button>
       </div>
 
-      {/* Owner wallet balances — read straight from chain. */}
+      {/* Owner wallet balances, read straight from chain. */}
       <div className="mb-12">
         <OwnerBalanceCard owner={owner} />
       </div>

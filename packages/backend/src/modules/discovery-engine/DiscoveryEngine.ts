@@ -9,11 +9,8 @@ const DUNE_PERFORMANCE_TIERS = ["small", "medium", "large"] as const;
 
 type DuneRow = Record<string, unknown>;
 
-/**
- * Aggregates market signals (yields, funding rates, prices, alerts) into a
- * single MarketContext. Sources are wired in incrementally; until a source is
- * connected its channel stays empty rather than fabricated.
- */
+// Aggregates market signals (yields, funding rates, prices, alerts) into one MarketContext.
+// An unconnected source leaves its channel empty rather than fabricated.
 export class DiscoveryEngine implements IDiscoveryEnigne {
   private readonly duneClient: DuneClient | null;
 

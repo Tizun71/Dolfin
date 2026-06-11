@@ -52,7 +52,7 @@ export function useAgentActivity(owner: Address | null, account: Address | null)
     try {
       setData((await getLatestSession(owner, account)) as LatestSession);
     } catch {
-      // backend unreachable — leave previous data, surface nothing (panel shows empty state)
+      // backend unreachable: leave previous data, surface nothing (panel shows empty state)
     } finally {
       setLoading(false);
     }

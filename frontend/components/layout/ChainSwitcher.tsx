@@ -6,7 +6,7 @@ import { useWallets } from "@privy-io/react-auth";
 import { CHAIN_ID } from "@/constants/dolfin";
 import { getActiveWallet } from "@/lib/dolfin-wallet";
 
-// Network selector — reflects the connected wallet's chain and lets the user switch it.
+// Network selector: reflects the connected wallet's chain and lets the user switch it.
 const ARB_ICON = "https://token-icons.llamao.fi/icons/tokens/gecko/arbitrum?w=100&h=100";
 
 function ArbitrumIcon({ size = 16 }: { size?: number }) {

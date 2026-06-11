@@ -2,9 +2,7 @@ import type { IPortfolioEngine } from "../../portfolio-engine/PortfolioEngine.in
 import type { Address } from "viem";
 import type { AdvisorState, PortfolioSnapshot } from "../state.js";
 
-/**
- * Pulls the wallet's on-chain positions and normalizes them into a PortfolioSnapshot.
- */
+// Pulls the wallet's on-chain positions into a PortfolioSnapshot.
 export class PortfolioNode {
   constructor(private readonly portfolioEngine: IPortfolioEngine) {}
 

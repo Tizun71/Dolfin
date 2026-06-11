@@ -22,16 +22,10 @@ export interface DolfinAgentDeps {
   onchain: OnchainConfig;
 }
 
-/**
- * Orchestrates the advisor pipeline as a LangGraph state machine:
- *
- *   START -> portfolio -> risk -> market -> strategy -> validation
- *         -> (has valid decisions?) -> planner -> executor -> receipt -> advisor -> END
- *         -> (none)                 ----------------------------------> advisor -> END
- *
- * Strategy/Validation/Planner/Executor are pure code; the AI (advisor) only explains the
- * outcome. Execution is autonomous and bounded by the on-chain PolicyManager.
- */
+// Advisor pipeline as a LangGraph state machine:
+//   START -> portfolio -> risk -> market -> strategy -> validation
+//         -> has valid decisions? -> planner -> executor -> receipt -> advisor -> END
+//         -> none ----------------------------------------> advisor -> END
 export class DolfinAgent {
   private readonly graph;
 
@@ -73,13 +67,11 @@ export class DolfinAgent {
       .compile();
   }
 
-  /** Run the full advisory pipeline for a wallet and return the final state. */
   async run(wallet: string): Promise<AdvisorState> {
     return this.graph.invoke({ wallet });
   }
 }
 
-/** Route after validation: execute only when there is something within policy to do. */
 function hasValidDecisions(state: AdvisorState): "planner" | "advisor" {
   return (state.validDecisions?.length ?? 0) > 0 ? "planner" : "advisor";
 }

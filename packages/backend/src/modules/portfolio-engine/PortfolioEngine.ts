@@ -86,11 +86,8 @@ export class PortfolioEngine implements IPortfolioEngine {
     return { totalValueUsd, assets, lending };
   }
 
-  /**
-   * Read the wallet's Aave account-level position via Pool.getUserAccountData.
-   * Returns undefined when no pool is configured. Health factor is capped at
-   * HEALTH_FACTOR_NO_DEBT when there is no debt (contract returns uint256 max).
-   */
+  // Read the wallet's Aave position via Pool.getUserAccountData. Undefined when no pool is
+  // set. Health factor is capped at HEALTH_FACTOR_NO_DEBT when there is no debt.
   async getAavePosition(walletAddress: Address): Promise<LendingPosition | undefined> {
     if (!this.aavePool) return undefined;
     const [totalCollateralBase, totalDebtBase, , , , healthFactor] =

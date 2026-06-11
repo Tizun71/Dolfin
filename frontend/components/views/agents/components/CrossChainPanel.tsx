@@ -46,7 +46,7 @@ export default function CrossChainPanel({
     try {
       setData(await getCrossChainPortfolio(owner, account));
     } catch {
-      // backend unreachable — keep prior data, panel shows empty state
+      // backend unreachable: keep prior data, panel shows empty state
     } finally {
       setLoading(false);
     }

@@ -298,7 +298,7 @@ agentModule.get(
   },
 );
 
-// --- Serializers (BigInt → string for JSON) ---
+// --- Serializers (BigInt to string for JSON) ---
 
 type RunRow = typeof agentRunTable.$inferSelect;
 type ActionRow = typeof agentActionTable.$inferSelect;

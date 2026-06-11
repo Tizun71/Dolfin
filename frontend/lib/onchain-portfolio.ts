@@ -20,7 +20,7 @@ const HEALTH_FACTOR_NO_DEBT = 999;
 
 const ROBINHOOD_CHAIN_ID = 46630;
 
-// Robinhood Chain testnet (Arbitrum Orbit L2) — not bundled in viem/chains.
+// Robinhood Chain testnet (Arbitrum Orbit L2), not bundled in viem/chains.
 const robinhoodTestnet = defineChain({
   id: ROBINHOOD_CHAIN_ID,
   name: "Robinhood Chain Testnet",
@@ -148,15 +148,13 @@ async function valueTokens(client: PublicClient, wallet: Address, tokens: Portfo
 }
 
 interface AaveAccount {
-  /** Net position value (supplied collateral − debt) in USD. */
+  // Net position value (supplied collateral minus debt) in USD.
   positionUsd: number;
   healthFactor: number | null;
 }
 
-/**
- * Aave account-level data via Pool.getUserAccountData: net position value
- * (collateral − debt) and health factor. Position 0 / HF null if the read fails.
- */
+// Aave account-level data via Pool.getUserAccountData: net position value (collateral minus
+// debt) and health factor. Position 0 / HF null if the read fails.
 async function readAaveAccount(wallet: Address): Promise<AaveAccount> {
   try {
     const [totalCollateralBase, totalDebtBase, , , , healthFactor] = (await arbClient.readContract({
@@ -189,17 +187,14 @@ const round1 = (n: number) => Math.round(n * 10) / 10;
 
 export interface OnchainPortfolio {
   totalValueUsd: number;
-  /** Net Aave position value (supplied collateral − debt) in USD, included in total. */
+  // Net Aave position value (supplied collateral minus debt) in USD, included in total.
   aavePositionUsd: number;
   healthFactor: number | null;
   allocation: { stablePct: number; equityPct: number };
 }
 
-/**
- * Read the dashboard's headline metrics straight from chain:
- * total value (wallet DeFi stables + tokenized equity + net Aave position) and
- * Aave health factor.
- */
+// Read the dashboard's headline metrics straight from chain: total value (wallet DeFi stables
+// + tokenized equity + net Aave position) and Aave health factor.
 export async function readOnchainPortfolio(wallet: Address): Promise<OnchainPortfolio> {
   const equityTokens = loadEquityTokens();
   const [tokenUsd, nativeUsd, equityUsd, aave] = await Promise.all([

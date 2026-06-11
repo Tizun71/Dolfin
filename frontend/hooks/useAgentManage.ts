@@ -103,7 +103,7 @@ export function useAgentManage(
     (async () => {
       try {
         const stored = getSession(owner, account, sessionKey);
-        if (!stored) return; // no local key (e.g. different browser) — nothing to heal from
+        if (!stored) return; // no local key (e.g. different browser), nothing to heal from
         const cfg = await getAgentConfig(owner, account);
         if (cancelled) return;
         if (!cfg || !cfg.hasSessionKey) {

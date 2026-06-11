@@ -1,4 +1,4 @@
-// Dolfin ERC-4337 stack — Arbitrum Sepolia (chain 421614).
+// Dolfin ERC-4337 stack on Arbitrum Sepolia (chain 421614).
 // Addresses from packages/smart_contract/ignition/deployments/chain-421614/deployed_addresses.json
 // Aave addresses from @aave-dao/aave-address-book (AaveV3ArbitrumSepolia).
 import { type Address } from "viem";

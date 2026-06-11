@@ -7,12 +7,8 @@ import { logStep } from "../utils/logger.js";
 
 const CRON = process.env.DOLFIN_AGENT_CRON ?? "0 * * * *";
 
-/**
- * Run every enabled Dolfin agent on a schedule. Cadence is controlled by
- * DOLFIN_AGENT_CRON (default: hourly). Failures on one agent do not stop
- * the loop — each is wrapped in its own try/catch so a bad config can't
- * starve the others.
- */
+// Run every enabled agent on a schedule (cadence from DOLFIN_AGENT_CRON, default hourly).
+// Each run is wrapped in its own try/catch so one bad config can't starve the others.
 export const runDolfinAgents = new CronJob(CRON, async () => {
   logStep("TICK", `Cron tick start (schedule=${CRON})`);
   const rows = await db
@@ -24,7 +20,7 @@ export const runDolfinAgents = new CronJob(CRON, async () => {
     .where(eq(agentConfigTable.enabled, true));
 
   if (rows.length === 0) {
-    logStep("IDLE", "No enabled agents — nothing to run this tick");
+    logStep("IDLE", "No enabled agents, nothing to run this tick");
   }
 
   for (const row of rows) {
@@ -40,7 +36,6 @@ export const runDolfinAgents = new CronJob(CRON, async () => {
   logStep("TICK", `Cron tick done count=${rows.length} nextRun=${next}`);
 });
 
-/** Log the schedule + first run time once the job is started. */
 export function logDolfinAgentsSchedule(): void {
   const next = runDolfinAgents.nextDate()?.toISO() ?? "unknown";
   logStep("CRON", `Dolfin agents scheduled (schedule=${CRON}) nextRun=${next}`);

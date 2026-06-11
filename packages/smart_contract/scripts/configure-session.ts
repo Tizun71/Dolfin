@@ -35,7 +35,7 @@ const USDC = AaveV3ArbitrumSepolia.ASSETS.USDC.UNDERLYING as Address;
 // SUPPLY|WITHDRAW|BORROW|REPAY = bits 1..4 = (1<<1)|(1<<2)|(1<<3)|(1<<4)
 const AAVE_ACTION_MASK = (1n << 1n) | (1n << 2n) | (1n << 3n) | (1n << 4n); // = 30
 
-// --- demo policy (USD → scaled 1e18, matching PolicyManager.valueUsd) ---
+// --- demo policy (USD scaled to 1e18, matching PolicyManager.valueUsd) ---
 const usd = (v: string | number) => parseUnits(String(v), 18);
 const expiry = BigInt(Math.floor(Date.now() / 1000) + Number(process.env.POLICY_EXPIRY_DAYS ?? 7) * 86_400);
 const policy = {
@@ -62,7 +62,7 @@ async function main() {
   const factory = getContract({ address: factoryAddr, abi: abiOf("DolfinAccountFactory"), client: { public: publicClient, wallet: walletClient } });
   const policyManager = getContract({ address: policyManagerAddr, abi: abiOf("PolicyManager"), client: { public: publicClient, wallet: walletClient } });
 
-  // 1. smart account (idempotent — createAccount is a no-op if already deployed)
+  // 1. smart account (idempotent: createAccount is a no-op if already deployed)
   const account = (await factory.read.getAddress([owner.address, salt])) as Address;
   const code = await publicClient.getCode({ address: account });
   if (!code || code === "0x") {
@@ -112,13 +112,13 @@ function readDeployedAddresses(): Record<string, string> {
   try {
     return JSON.parse(readFileSync(path, "utf8"));
   } catch {
-    throw new Error(`no deployment found at ${path} — run the DolfinStack deploy first`);
+    throw new Error(`no deployment found at ${path}, run the DolfinStack deploy first`);
   }
 }
 
 function pick(addrs: Record<string, string>, contract: string): Address {
   const key = Object.keys(addrs).find((k) => k.endsWith(`#${contract}`));
-  if (!key) throw new Error(`${contract} not in deployed_addresses.json — redeploy DolfinStack`);
+  if (!key) throw new Error(`${contract} not in deployed_addresses.json, redeploy DolfinStack`);
   return addrs[key] as Address;
 }
 
