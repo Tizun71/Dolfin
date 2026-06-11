@@ -55,8 +55,8 @@ export default function TrustSection() {
               }`}
               style={{ transitionDelay: isVisible ? `${index * 80}ms` : "0ms" }}
             >
-              <p className="text-base text-[#888] uppercase tracking-wider mb-3">{stat.label}</p>
-              <p className="text-4xl font-semibold text-yellow-300">
+              <p className="text-base text-[#888] uppercase tracking-tight font-mono font-semibold mb-3">{stat.label}</p>
+              <p className="text-4xl font-mono font-semibold text-yellow-300">
                 <AnimatedNumber value={stat.value} />
               </p>
             </div>

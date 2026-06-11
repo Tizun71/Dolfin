@@ -31,13 +31,13 @@ export default function HowItWorksSection() {
       >
         <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <div className="mb-16">
-            <p className="text-yellow-300 text-sm font-mono uppercase tracking-[5px] mb-6 text-center">
+            <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-6 text-center">
               Getting Started
             </p>
-            <h2 className="text-4xl md:text-5xl font-light uppercase tracking-[0.08em] text-white text-center mb-4 leading-tight">
+            <h2 className="text-4xl md:text-5xl font-mono font-semibold uppercase tracking-tight text-white text-center mb-4 leading-tight">
               How It Works
             </h2>
-            <p className="text-yellow-100/70 text-base md:text-lg font-light uppercase tracking-[0.03em] text-center max-w-2xl mx-auto leading-relaxed">
+            <p className="text-yellow-100/70 text-base md:text-lg font-mono font-semibold uppercase tracking-tight text-center max-w-2xl mx-auto leading-relaxed">
               4 steps. Connect wallet. Deploy agent. Fund it. Let ARIMA handle the rest.
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function HowItWorksSection() {
                           {item.number}
                         </span>
                       </div>
-                      <h3 className="text-lg font-mono uppercase tracking-[2px] text-white group-hover:text-yellow-300 transition-all duration-300 group-hover:neon-glow">
+                      <h3 className="text-lg font-mono font-semibold uppercase tracking-tight text-white group-hover:text-yellow-300 transition-all duration-300 group-hover:neon-glow">
                         {item.title}
                       </h3>
                       <p className="text-sm font-light leading-relaxed text-[#aaa] group-hover:text-yellow-100/80 transition-colors duration-300">

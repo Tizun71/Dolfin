@@ -26,7 +26,7 @@ export default function BenefitsSection() {
             >
               <Check className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-white">{item.title}</h3>
+                <h3 className="text-sm font-mono font-semibold uppercase tracking-tight text-white">{item.title}</h3>
                 <p className="text-xs text-[#888]">{item.description}</p>
               </div>
             </div>

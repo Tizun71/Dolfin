@@ -12,15 +12,15 @@ export const NAV_ITEMS = [
     external: false,
   },
   {
-    label: "How it Works",
+    label: "How It Works",
     href: "#how-it-works",
     section: "how-it-works",
     external: false,
   },
   {
     label: "Support",
-    href: "#resources",
-    section: "resources",
+    href: "#support",
+    section: "support",
     external: false,
   },
 ] as const;

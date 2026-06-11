@@ -15,18 +15,18 @@ export default function SupportSection() {
 
   return (
     <section
-      id="resources"
+      id="support"
       ref={sectionRef}
       className="relative z-10 px-6 py-24 bg-[#0f0f0f] border-y border-yellow-500/5"
     >
       <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-yellow-300 text-sm font-mono uppercase tracking-[5px] mb-6 text-center">
+        <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-6 text-center">
           Open Source & Network
         </p>
-        <h2 className="text-4xl md:text-5xl font-light uppercase tracking-[0.08em] text-white text-center mb-4 leading-tight">
+        <h2 className="text-4xl md:text-5xl font-mono font-semibold uppercase tracking-tight text-white text-center mb-4 leading-tight">
           Built in the Open
         </h2>
-        <p className="text-yellow-100/70 text-base md:text-lg font-light uppercase tracking-[0.03em] text-center max-w-2xl mx-auto mb-16 leading-relaxed">
+        <p className="text-yellow-100/70 text-base md:text-lg font-mono font-semibold uppercase tracking-tight text-center max-w-2xl mx-auto mb-16 leading-relaxed">
           Open-source code. Arbitrum network. No black boxes. Verify everything.
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function SupportSection() {
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`group relative flex flex-col items-center gap-6 overflow-hidden rounded-xl border border-[#1a1a1a] px-8 py-10 transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"} hover:bg-[#0a0a0a] hover:border-yellow-500/30`}
+              className={`group relative flex flex-col items-center gap-6 overflow-hidden rounded-xl border border-[#2a2a2a] px-8 py-10 transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"} hover:bg-[#0a0a0a] hover:border-yellow-500/30`}
               style={{ transitionDelay: cardDelay }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -55,10 +55,10 @@ export default function SupportSection() {
                 />
               </div>
               <div className="relative z-10 text-center">
-                <h3 className="mb-2 text-xl font-mono uppercase tracking-[3px] text-white group-hover:text-yellow-400 transition-colors duration-300">
+                <h3 className="mb-2 text-xl font-mono font-semibold uppercase tracking-tight text-white group-hover:text-yellow-400 transition-colors duration-300">
                   {item.name}
                 </h3>
-                <p className="text-base font-mono leading-relaxed text-[#777] group-hover:text-[#999] transition-colors duration-300">
+                <p className="text-lg leading-relaxed text-[#777] group-hover:text-[#999] transition-colors duration-300">
                   {item.description}
                 </p>
               </div>

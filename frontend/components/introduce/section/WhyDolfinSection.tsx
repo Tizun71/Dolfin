@@ -27,13 +27,13 @@ export default function WhyDolfinSection() {
         <div
           className={`transition-all duration-700 text-center mb-16 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <p className="text-yellow-300 text-sm font-mono uppercase tracking-[5px] mb-6">
+          <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-6">
             The Dolfin Advantage
           </p>
-          <h2 className="text-4xl md:text-5xl font-light uppercase tracking-[0.08em] text-white mb-4 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-mono font-semibold uppercase tracking-tight text-white mb-4 leading-tight">
             Why Dolfin?
           </h2>
-          <p className="text-yellow-100/70 text-base md:text-lg font-light uppercase tracking-[0.03em] max-w-2xl mx-auto leading-relaxed">
+          <p className="text-yellow-100/70 text-base md:text-lg font-mono font-semibold uppercase tracking-tight max-w-2xl mx-auto leading-relaxed">
             Smart market predictions. Automated arbitrage. No capital risk.
             Non-custodial.
           </p>
@@ -60,7 +60,7 @@ export default function WhyDolfinSection() {
                       {index + 1}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold uppercase tracking-wider text-white mb-3 group-hover:text-yellow-300 transition-colors duration-300 relative z-10">
+                  <h3 className="text-lg font-mono font-semibold uppercase tracking-tight text-white mb-3 group-hover:text-yellow-300 transition-colors duration-300 relative z-10">
                     {item.title}
                   </h3>
                   <p className="text-sm leading-relaxed text-[#999] group-hover:text-[#bbb] transition-colors duration-300 grow relative z-10">

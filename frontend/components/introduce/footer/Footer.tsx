@@ -14,7 +14,7 @@ export default function Footer() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3 group">
                 <LogoDolfin size={40} />
-                <h3 className="text-brand-gradient text-3xl font-bold uppercase tracking-[0.25em]">
+                <h3 className="text-brand-gradient text-3xl font-mono font-semibold uppercase tracking-tight">
                   Dolfin
                 </h3>
               </div>
@@ -50,7 +50,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-mono uppercase tracking-[3px] text-yellow-300 mb-5">
+            <h4 className="text-sm font-mono font-semibold uppercase tracking-tight text-yellow-300 mb-5">
               Product
             </h4>
             <ul className="flex flex-col gap-3">
@@ -68,7 +68,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-mono uppercase tracking-[3px] text-yellow-300 mb-5">
+            <h4 className="text-sm font-mono font-semibold uppercase tracking-tight text-yellow-300 mb-5">
               Resources
             </h4>
             <ul className="flex flex-col gap-3">
@@ -91,7 +91,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-mono uppercase tracking-[3px] text-yellow-300 mb-5">
+            <h4 className="text-sm font-mono font-semibold uppercase tracking-tight text-yellow-300 mb-5">
               Company
             </h4>
             <ul className="flex flex-col gap-3">
@@ -113,14 +113,14 @@ export default function Footer() {
       <div className="border-t border-[#1a1a1a]">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-[#aaa] tracking-[0.15em] font-mono">
+            <span className="text-sm text-[#aaa] tracking-tight font-mono font-semibold uppercase">
               © 2026 Dolfin Protocol. All rights reserved.
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
-            <span className="text-sm text-[#aaa] font-mono uppercase tracking-[2px]">
+            <span className="text-sm text-[#aaa] font-mono font-semibold uppercase tracking-tight">
               All Systems Operational
             </span>
           </div>
