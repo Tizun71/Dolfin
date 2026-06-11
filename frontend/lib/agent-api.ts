@@ -166,6 +166,17 @@ export async function getSessions(
   return (await expectOk(res, "get sessions")) as SessionList;
 }
 
+// Full detail for one run: the run row (incl. persisted `rejected`) plus its action rows.
+// Mirrors the /sessions/latest shape.
+export async function getSession(
+  owner: Address,
+  account: Address,
+  runId: string,
+): Promise<unknown> {
+  const res = await fetch(`${configPath(owner, account)}/sessions/${runId}`);
+  return expectOk(res, "get session");
+}
+
 // --- Cross-chain portfolio (read-only): DeFi (Arb) + tokenized equity (Robinhood) ---
 
 interface ChainPortfolio {

@@ -10,7 +10,7 @@ import { type TransferMode } from "@/hooks/useAccountTransfer";
 import AccountStatusCard from "./components/AccountStatusCard";
 import SessionPanel from "./components/SessionPanel";
 import AgentActivityPanel from "./components/AgentActivityPanel";
-import CrossChainPanel from "./components/CrossChainPanel";
+import AgentRunHistory from "./components/AgentRunHistory";
 import CreateSessionForm from "./components/CreateSessionForm";
 import TransferDrawer from "./components/TransferDrawer";
 import Modal from "./components/Modal";
@@ -73,29 +73,28 @@ export default function AccountDetailView({ address }: { address: Address }) {
           Agents ({sessions.length})
         </h2>
         {sessions.length ? (
-          <>
-            {sessions.map((s, i) => (
-              <SessionPanel
-                key={s.key}
-                index={i}
-                owner={owner}
-                account={address}
-                sessionKey={s.key}
-                settings={s.settings}
-                onSessionKeyChange={reload}
-              />
-            ))}
-            {/* What the backend AI agent is actually doing for this account. */}
-            <AgentActivityPanel owner={owner} account={address} />
-            {/* Read-only DeFi + tokenized-equity allocation across chains. */}
-            <CrossChainPanel owner={owner} account={address} />
-          </>
+          sessions.map((s, i) => (
+            <SessionPanel
+              key={s.key}
+              index={i}
+              owner={owner}
+              account={address}
+              sessionKey={s.key}
+              settings={s.settings}
+              onSessionKeyChange={reload}
+            />
+          ))
         ) : (
           <div className="card-3d p-12 text-center">
             <p className="text-[#444] text-xs font-mono uppercase tracking-[3px]">No agents yet</p>
             <p className="text-[#333] text-sm font-mono mt-3">Create an agent to delegate scoped trading</p>
           </div>
         )}
+
+        {/* Backend AI agent history. Sourced from the DB (not localStorage), so it persists
+            across reloads and shows even when the local session list is empty. */}
+        <AgentActivityPanel owner={owner} account={address} />
+        <AgentRunHistory owner={owner} account={address} />
       </div>
 
       <TransferDrawer

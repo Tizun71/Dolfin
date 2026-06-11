@@ -148,13 +148,16 @@ async function valueTokens(client: PublicClient, wallet: Address, tokens: Portfo
 }
 
 interface AaveAccount {
-  // Net position value (supplied collateral minus debt) in USD.
+  // Supplied collateral and outstanding debt in USD.
+  collateralUsd: number;
+  debtUsd: number;
+  // Net position value (collateral minus debt) in USD.
   positionUsd: number;
   healthFactor: number | null;
 }
 
-// Aave account-level data via Pool.getUserAccountData: net position value (collateral minus
-// debt) and health factor. Position 0 / HF null if the read fails.
+// Aave account-level data via Pool.getUserAccountData: supplied collateral, debt, net position
+// value and health factor. All zero / HF null if the read fails.
 async function readAaveAccount(wallet: Address): Promise<AaveAccount> {
   try {
     const [totalCollateralBase, totalDebtBase, , , , healthFactor] = (await arbClient.readContract({
@@ -166,11 +169,13 @@ async function readAaveAccount(wallet: Address): Promise<AaveAccount> {
     const collateralUsd = Number(formatUnits(totalCollateralBase, AAVE_BASE_DECIMALS));
     const debtUsd = Number(formatUnits(totalDebtBase, AAVE_BASE_DECIMALS));
     return {
+      collateralUsd,
+      debtUsd,
       positionUsd: collateralUsd - debtUsd,
       healthFactor: totalDebtBase === BigInt(0) ? HEALTH_FACTOR_NO_DEBT : Number(formatUnits(healthFactor, 18)),
     };
   } catch {
-    return { positionUsd: 0, healthFactor: null };
+    return { collateralUsd: 0, debtUsd: 0, positionUsd: 0, healthFactor: null };
   }
 }
 
@@ -189,6 +194,9 @@ export interface OnchainPortfolio {
   totalValueUsd: number;
   // Net Aave position value (supplied collateral minus debt) in USD, included in total.
   aavePositionUsd: number;
+  // Supplied collateral (lent) and outstanding debt (borrowed) in USD.
+  aaveCollateralUsd: number;
+  aaveDebtUsd: number;
   healthFactor: number | null;
   allocation: { stablePct: number; equityPct: number };
 }
@@ -208,6 +216,8 @@ export async function readOnchainPortfolio(wallet: Address): Promise<OnchainPort
   return {
     totalValueUsd,
     aavePositionUsd: aave.positionUsd,
+    aaveCollateralUsd: aave.collateralUsd,
+    aaveDebtUsd: aave.debtUsd,
     healthFactor: aave.healthFactor,
     allocation: {
       stablePct: totalValueUsd > 0 ? round1((defiUsd / totalValueUsd) * 100) : 0,

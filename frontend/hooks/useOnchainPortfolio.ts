@@ -7,6 +7,8 @@ import { readOnchainPortfolio, type OnchainPortfolio } from "@/lib/onchain-portf
 const EMPTY: OnchainPortfolio = {
   totalValueUsd: 0,
   aavePositionUsd: 0,
+  aaveCollateralUsd: 0,
+  aaveDebtUsd: 0,
   healthFactor: null,
   allocation: { stablePct: 0, equityPct: 0 },
 };

@@ -7,7 +7,6 @@ import { useAccounts } from "@/hooks/useAccounts";
 import OwnerBalanceCard from "./OwnerBalanceCard";
 import SubAccountCard from "./SubAccountCard";
 import AgentActivityPanel from "@/components/views/agents/components/AgentActivityPanel";
-import CrossChainPanel from "@/components/views/agents/components/CrossChainPanel";
 
 export default function DashboardView() {
   const { owner, accounts, loading, createAccount } = useAccounts();
@@ -76,7 +75,6 @@ export default function DashboardView() {
       {accounts.length > 0 && (
         <div className="space-y-8">
           <AgentActivityPanel owner={owner} account={selected} />
-          <CrossChainPanel owner={owner} account={selected} />
         </div>
       )}
     </div>

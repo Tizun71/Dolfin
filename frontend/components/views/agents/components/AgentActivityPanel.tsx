@@ -108,7 +108,9 @@ export default function AgentActivityPanel({
   const { data, loading, running, run, refresh, runState } = useAgentActivity(owner, account);
   const latest = data?.run ?? null;
   const actions = data?.actions ?? [];
-  const rejected = runState?.rejected ?? [];
+  // Prefer the fresh live run; fall back to the persisted run so "Blocked by Policy"
+  // survives a page reload (runState is in-memory and resets to null on reload).
+  const rejected = runState?.rejected ?? latest?.rejected ?? [];
 
   return (
     <div className="card-3d p-6">

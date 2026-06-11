@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { type Address } from "viem";
-import { getLatestSession, runAgent, type LendingView, type RunState } from "@/lib/agent-api";
+import {
+  getLatestSession,
+  runAgent,
+  type LendingView,
+  type RejectedDecisionView,
+  type RunState,
+} from "@/lib/agent-api";
 import { toast } from "sonner";
 
 // Shapes mirror the backend serializers (dolfin-agent/index.ts: serializeRun / serializeAction).
@@ -30,6 +36,9 @@ export interface AgentRun {
   riskScore: string | null;
   // Persisted snapshot; carries the Aave lending position (health factor).
   portfolioSnapshot?: { lending?: LendingView } | null;
+  // Guardrail-blocked decisions, persisted in agent_run.rejected. Survives reload,
+  // unlike the live runState which is lost when the page reloads.
+  rejected?: RejectedDecisionView[];
 }
 
 interface LatestSession {
@@ -46,20 +55,26 @@ export function useAgentActivity(owner: Address | null, account: Address | null)
   // Live state from the last POST /run. Holds `rejected`, which the DB history omits.
   const [runState, setRunState] = useState<RunState | null>(null);
 
-  const load = useCallback(async () => {
-    if (!owner || !account) return;
-    setLoading(true);
-    try {
-      setData((await getLatestSession(owner, account)) as LatestSession);
-    } catch {
-      // backend unreachable: leave previous data, surface nothing (panel shows empty state)
-    } finally {
-      setLoading(false);
-    }
-  }, [owner, account]);
+  const load = useCallback(
+    async (silent = false) => {
+      if (!owner || !account) return;
+      if (!silent) setLoading(true);
+      try {
+        setData((await getLatestSession(owner, account)) as LatestSession);
+      } catch {
+        // backend unreachable: leave previous data, surface nothing (panel shows empty state)
+      } finally {
+        if (!silent) setLoading(false);
+      }
+    },
+    [owner, account],
+  );
 
+  // Initial load, then poll the backend every minute to pick up new cron-driven runs.
   useEffect(() => {
     load();
+    const id = setInterval(() => load(true), 60_000);
+    return () => clearInterval(id);
   }, [load]);
 
   const run = async () => {
@@ -77,5 +92,5 @@ export function useAgentActivity(owner: Address | null, account: Address | null)
     }
   };
 
-  return { data, loading, running, run, refresh: load, runState };
+  return { data, loading, running, run, refresh: () => load(), runState };
 }
