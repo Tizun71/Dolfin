@@ -51,7 +51,7 @@ export default function WhyDolfinSection() {
                 style={{ transitionDelay: delay }}
               >
                 <div className="flex flex-col h-full p-8 border border-yellow-500/30 bg-linear-to-br from-[#0f0f0f] to-[#0a0a0a] hover:border-yellow-500/60 hover:shadow-[0_0_20px_rgba(250,204,21,0.15)] hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent opacity-0 -translate-x-full group-hover:translate-x-full group-hover:opacity-100 transition-all duration-1000 pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-yellow-500/20 to-transparent opacity-0 -translate-x-full group-hover:translate-x-full group-hover:opacity-100 transition-all duration-1000 pointer-events-none" />
                   <div className="flex items-center justify-between mb-6 relative z-10">
                     <div className="flex h-12 w-12 items-center justify-center bg-yellow-500/20 group-hover:bg-yellow-500/40 transition-colors duration-300">
                       <IconComponent className="h-6 w-6 text-yellow-400" />

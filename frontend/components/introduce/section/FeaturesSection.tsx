@@ -1,12 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { useSectionAnimation } from "./hooks/useSectionAnimation";
 
 export default function FeaturesSection() {
+  const { isVisible, sectionRef } = useSectionAnimation();
+
   return (
-    <section id="features" className="py-[120px] bg-[#131313]">
+    <section id="features" ref={sectionRef} className="py-[120px] bg-[#131313]">
       <div className="max-w-[1280px] mx-auto px-5">
-        <div className="text-center mb-24">
+        <div className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <p className="font-mono text-sm uppercase tracking-[0.4em] text-[#ffd700] mb-4">
             CORE CAPABILITIES
           </p>
@@ -19,7 +22,7 @@ export default function FeaturesSection() {
         </div>
 
         <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-7 cyber-notch glass-card p-10 flex flex-col justify-end min-h-[400px] relative overflow-hidden group">
+          <div className={`col-span-12 lg:col-span-7 cyber-notch glass-card p-10 flex flex-col justify-end min-h-[400px] relative overflow-hidden group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "100ms" : "0ms" }}>
             <Image
               className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale group-hover:scale-105 transition-transform duration-700"
               alt="Mechanical watch movement representing precision and automation"
@@ -39,7 +42,7 @@ export default function FeaturesSection() {
           </div>
 
           <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
-            <div className="cyber-notch glass-card p-8 flex-1 group">
+            <div className={`cyber-notch glass-card p-8 flex-1 group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}>
               <h3 className="text-2xl uppercase mb-3 font-semibold tracking-wider">
                 Flash Loan Execution
               </h3>
@@ -49,7 +52,7 @@ export default function FeaturesSection() {
               </p>
             </div>
 
-            <div className="cyber-notch glass-card p-8 flex-1 group">
+            <div className={`cyber-notch glass-card p-8 flex-1 group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}>
               <h3 className="text-2xl uppercase mb-3 font-semibold tracking-wider">
                 Real-Time Dashboard
               </h3>
