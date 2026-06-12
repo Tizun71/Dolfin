@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./frontend/public/dolfin-logo.png" alt="Dolfin Logo" width="180"/>
+<img src="./frontend/public/dolfin-logo-no-bg.png" alt="Dolfin Logo" width="180"/>
 
 # Dolfin
 
