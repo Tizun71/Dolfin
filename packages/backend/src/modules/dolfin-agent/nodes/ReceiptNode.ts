@@ -1,11 +1,8 @@
 import type { OnchainConfig } from "../config/onchain-config.js";
 import type { AdvisorState } from "../state.js";
 
-/**
- * Waits for each submitted UserOperation to be mined and confirms it did not revert.
- * Throws on revert so the run surfaces the on-chain failure instead of reporting success.
- * Captures the on-chain transaction hash for each op so the manager can persist it.
- */
+// Waits for each UserOperation to be mined and captures its tx hash. Throws on revert so
+// the run surfaces the on-chain failure instead of reporting success.
 export class ReceiptNode {
   constructor(private readonly cfg: OnchainConfig) {}
 

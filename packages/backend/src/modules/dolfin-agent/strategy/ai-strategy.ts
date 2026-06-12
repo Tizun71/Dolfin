@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { actionBit, type ActionType, type TradeDecision } from "@dolfin/onchain";
+import { createLlm, type AgentLlm } from "../llm.js";
 import type { OnchainConfig } from "../config/onchain-config.js";
 import type { AdvisorState } from "../state.js";
 import { makeAaveDecision, resolveAction, resolveToken, type AaveActionName } from "./decision-factory.js";
 
-/** The only thing the LLM gets to choose; protocol/adapter/amount-encoding stay in code. */
+// The LLM picks only action, token and size; protocol/adapter/encoding stay in code.
 const AiDecisionSchema = z.object({
   actions: z
     .array(
@@ -25,14 +25,12 @@ const SYSTEM_PROMPT =
   "Do not duplicate actions the rule engine already took. Use only allowed actions and tokens. " +
   "Each action's amountUsd must not exceed maxTradePerTxUsd. If nothing is worth doing, return an empty list.";
 
-/** Mask -> human action names, for the prompt's allow-list. */
 function allowedActionNames(cfg: OnchainConfig): AaveActionName[] {
   const mask = cfg.userPolicy.allowedActions[cfg.aave.pool] ?? 0n;
   const all: AaveActionName[] = ["SUPPLY", "WITHDRAW", "BORROW", "REPAY"];
   return all.filter((name) => (mask & actionBit(resolveAction(name) as ActionType)) !== 0n);
 }
 
-/** Symbols the policy whitelists (registry tokens whose address is in allowedTokens). */
 function allowedTokenSymbols(cfg: OnchainConfig): string[] {
   const allowed = new Set(cfg.userPolicy.allowedTokens.map((a) => a.toLowerCase()));
   return Object.values(cfg.tokens)
@@ -48,7 +46,7 @@ function buildPrompt(state: AdvisorState, cfg: OnchainConfig, ruleDecisions: Tra
     `Portfolio: ${JSON.stringify(state.portfolio ?? {})}`,
     `Risk: ${JSON.stringify(state.risk ?? {})}`,
     "",
-    "POLICY LIMITS (hard caps — stay within these):",
+    "POLICY LIMITS (hard caps, stay within these):",
     `- allowed actions: ${allowedActionNames(cfg).join(", ") || "none"}`,
     `- allowed tokens: ${allowedTokenSymbols(cfg).join(", ") || "none"}`,
     `- maxTradePerTxUsd: ${p.maxTradePerTxUsd}`,
@@ -61,26 +59,21 @@ function buildPrompt(state: AdvisorState, cfg: OnchainConfig, ruleDecisions: Tra
   ].join("\n");
 }
 
-/** Drop AI proposals that collide with a rule decision on (actionType, tokenIn). Rules win. */
+// Rules win over AI proposals that collide on (actionType, tokenIn).
 function isDuplicate(d: TradeDecision, ruleDecisions: TradeDecision[]): boolean {
   return ruleDecisions.some((r) => r.actionType === d.actionType && r.tokenIn === d.tokenIn);
 }
 
-/**
- * LLM-authored Aave decisions, bounded by construction: the model only picks action/token/size,
- * we build the on-chain shape, and the ValidationNode + on-chain PolicyManager re-check everything.
- * Any failure (bad key, bad JSON, timeout) yields [] so the rule engine still drives the pipeline.
- */
+// LLM-authored decisions, re-checked by ValidationNode and the on-chain PolicyManager.
+// Any failure returns [] so the rule engine still drives the pipeline.
 export async function deriveAiDecisions(
   state: AdvisorState,
   cfg: OnchainConfig,
   ruleDecisions: TradeDecision[],
-  model?: ChatGoogleGenerativeAI,
+  model?: AgentLlm,
 ): Promise<TradeDecision[]> {
   try {
-    const llm =
-      model ??
-      new ChatGoogleGenerativeAI({ model: "gemini-2.0-flash-lite", apiKey: process.env.GOOGLE_API_KEY });
+    const llm = model ?? createLlm();
     const structured = llm.withStructuredOutput(AiDecisionSchema);
     const out = await structured.invoke([
       { role: "system", content: SYSTEM_PROMPT },
@@ -91,7 +84,7 @@ export async function deriveAiDecisions(
     for (const a of out.actions) {
       const actionType = resolveAction(a.action);
       const token = resolveToken(a.token, cfg);
-      // Skip anything the model hallucinated outside the registry; cap size at the per-tx limit.
+      // Skip tokens outside the registry; cap size at the per-tx limit.
       if (actionType === undefined || !token || a.amountUsd <= 0) continue;
       const amountUsd = Math.min(a.amountUsd, cfg.userPolicy.maxTradePerTxUsd);
       const d = makeAaveDecision(actionType, token, amountUsd, cfg, `[AI] ${a.reason}`);

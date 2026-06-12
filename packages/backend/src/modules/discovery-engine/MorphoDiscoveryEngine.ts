@@ -8,7 +8,7 @@ import type {
   ProtocolMetric,
 } from "./types.js";
 
-// ─── GraphQL Response Types ─────────────────────────────────────────────────────
+// GraphQL response types
 
 interface MorphoAsset {
   symbol: string;
@@ -52,7 +52,7 @@ interface MorphoVault {
   warnings?: { type: string; level: "YELLOW" | "RED" }[];
 }
 
-// ─── GraphQL Queries ────────────────────────────────────────────────────────────
+// GraphQL queries
 
 const MARKETS_QUERY = `
   query GetMarketsContext {
@@ -142,7 +142,7 @@ const ASSETS_QUERY = `
   }
 `;
 
-// ─── API Client ─────────────────────────────────────────────────────────────────
+// API client
 
 const MORPHO_API_URL = "https://api.morpho.org/graphql";
 
@@ -168,27 +168,18 @@ async function morphoQuery<T>(query: string): Promise<T> {
   return json.data as T;
 }
 
-// ─── Transformers ───────────────────────────────────────────────────────────────
+// Transformers
 
-/**
- * Map warning level from Morpho API → MarketAlert severity
- */
 function mapWarningLevel(level: "YELLOW" | "RED"): MarketAlert["severity"] {
   return level === "RED" ? "HIGH" : "MEDIUM";
 }
 
-/**
- * Compute a simple risk score (0–10) from market utilization.
- * High utilization → higher risk of liquidity issues.
- */
+// Risk score 0-10 from market utilization; higher utilization means higher liquidity risk.
 function utilToRiskScore(utilization: number): number {
-  // utilization is 0–1 from the API
+  // utilization is 0-1 from the API
   return Math.min(10, Math.round(utilization * 10 * 10) / 10);
 }
 
-/**
- * Build YieldOpportunity[] from markets (supply APY) and vaults (net APY).
- */
 function buildYields(markets: MorphoMarket[], vaults: MorphoVault[]): YieldOpportunity[] {
   const yields: YieldOpportunity[] = [];
 
@@ -226,9 +217,7 @@ function buildYields(markets: MorphoMarket[], vaults: MorphoVault[]): YieldOppor
   return Array.from(seen.values()).sort((a, b) => b.apy - a.apy);
 }
 
-/**
- * Build FundingRate[] from markets (borrow APY = cost of borrowing = funding rate).
- */
+// Borrow APY is the cost of borrowing, treated here as the funding rate.
 function buildFundingRates(markets: MorphoMarket[]): FundingRate[] {
   return markets
     .filter((m) => m.state.borrowApy > 0)
@@ -242,12 +231,7 @@ function buildFundingRates(markets: MorphoMarket[]): FundingRate[] {
     .sort((a, b) => b.rate - a.rate);
 }
 
-/**
- * Build TokenPrice[] from assets with price data.
- * NOTE: Morpho API does not provide 24h price change natively,
- * so change24h is set to 0. You can enrich this from CoinGecko
- * or another price feed if needed.
- */
+// Morpho API has no 24h price change, so change24h stays 0; enrich from another feed if needed.
 function buildTokenPrices(markets: MorphoMarket[]): TokenPrice[] {
   const priceMap = new Map<string, number>();
 
@@ -264,15 +248,11 @@ function buildTokenPrices(markets: MorphoMarket[]): TokenPrice[] {
   return Array.from(priceMap.entries()).map(([symbol, price]) => ({
     symbol,
     price,
-    change24h: 0, // Morpho API does not expose 24h change — enrich externally if needed
+    change24h: 0, // Morpho API has no 24h change; enrich externally if needed
   }));
 }
 
-/**
- * Build ProtocolMetric[] aggregated per chain/protocol from markets.
- *
- * Risk score: average utilization across markets, scaled 0–10.
- */
+// Per-protocol metrics. Risk score is average market utilization scaled 0-10.
 function buildProtocolMetrics(markets: MorphoMarket[], vaults: MorphoVault[]): ProtocolMetric[] {
   // Aggregate totals across all Morpho Blue markets
   let totalTvlMarkets = 0;
@@ -310,9 +290,6 @@ function buildProtocolMetrics(markets: MorphoMarket[], vaults: MorphoVault[]): P
   return [blueMetric, vaultMetric];
 }
 
-/**
- * Build MarketAlert[] from market and vault warnings.
- */
 function buildAlerts(markets: MorphoMarket[], vaults: MorphoVault[]): MarketAlert[] {
   const alerts: MarketAlert[] = [];
 
@@ -352,21 +329,8 @@ function buildAlerts(markets: MorphoMarket[], vaults: MorphoVault[]): MarketAler
   return alerts.sort((a, b) => order[a.severity] - order[b.severity]);
 }
 
-// ─── Main Fetcher ───────────────────────────────────────────────────────────────
-
-/**
- * Fetches all required data from Morpho API and returns a populated MarketContext.
- *
- * @example
- * ```ts
- * import { fetchMorphoMarketContext } from "./morpho-market-context";
- *
- * const ctx = await fetchMorphoMarketContext();
- * console.log(ctx.yields[0]); // { protocol: "Morpho Blue", asset: "USDC", apy: 4.23 }
- * ```
- */
+// Fetches all data from the Morpho API into a MarketContext.
 export async function fetchMorphoMarketContext(): Promise<MarketContext> {
-  // Run market + vault queries in parallel for efficiency
   const [marketsData, vaultsData] = await Promise.all([
     morphoQuery<{ markets: { items: MorphoMarket[] } }>(MARKETS_QUERY),
     morphoQuery<{ vaultV2s: { items: MorphoVault[] } }>(VAULTS_QUERY),

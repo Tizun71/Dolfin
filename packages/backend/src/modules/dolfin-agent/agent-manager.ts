@@ -25,21 +25,15 @@ interface CachedAgent {
   onchain: Awaited<ReturnType<typeof createDolfinAgentForUser>>["onchain"];
 }
 
-/**
- * Process-wide singleton that owns one `DolfinAgent` instance per
- * `userId:smartAccount` pair. Cache invalidation is intentionally manual via
- * `remove()`; configs are immutable per session and rebuilding on every run
- * would recreate the relayer (network clients) on every tick.
- */
+// One DolfinAgent instance per userId:smartAccount. Cache invalidation is manual via
+// remove() so we don't recreate the relayer clients on every tick.
 class AgentManager {
   private instances = new Map<string, CachedAgent>();
 
-  /** Stable cache key for the agent map. */
   private key(userId: string, smartAccount: string): string {
     return `${userId}:${smartAccount.toLowerCase()}`;
   }
 
-  /** Returns a cached agent, building it from DB-backed config on first access. */
   async getOrCreate(userId: string, smartAccount: string): Promise<CachedAgent> {
     const k = this.key(userId, smartAccount);
     const cached = this.instances.get(k);
@@ -61,12 +55,8 @@ class AgentManager {
     this.instances.delete(this.key(userId, smartAccount));
   }
 
-  /**
-   * Run the full agent pipeline for one (user, smart account), persisting
-   * a run record and one action row per submitted transaction. Throws on
-   * unrecoverable errors; the run record is updated with `status = failed`
-   * and the error message before the throw.
-   */
+  // Run the full pipeline for one (user, smart account), persisting a run record and
+  // one action row per submitted tx. On failure the run is marked failed, then rethrows.
   async run(userId: string, smartAccount: string, wallet: string): Promise<RunOutcome> {
     const startedAt = new Date();
     const { agent, onchain } = await this.getOrCreate(userId, smartAccount);

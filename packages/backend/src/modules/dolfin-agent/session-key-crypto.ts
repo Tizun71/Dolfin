@@ -1,13 +1,9 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 
-/**
- * Encrypt the per-user session private key at rest. The key is a real signing key;
- * a plaintext DB column is a direct compromise of every agent account. AES-256-GCM
- * with a key derived from SESSION_KEY_ENC_SECRET.
- *
- * Stored format: `enc:v1:<iv_b64>:<tag_b64>:<ciphertext_b64>`. The prefix lets
- * `decryptSessionKey` stay backward-compatible with any legacy plaintext rows.
- */
+// Encrypt the per-user session private key at rest with AES-256-GCM, key derived from
+// SESSION_KEY_ENC_SECRET. A plaintext column would compromise every agent account.
+// Stored format: enc:v1:<iv_b64>:<tag_b64>:<ciphertext_b64>; the prefix keeps
+// decryptSessionKey compatible with legacy plaintext rows.
 
 const PREFIX = "enc:v1:";
 
@@ -20,7 +16,6 @@ function encKey(): Buffer {
   return createHash("sha256").update(secret, "utf8").digest();
 }
 
-/** Encrypt a session key for storage. Returns the prefixed envelope string. */
 export function encryptSessionKey(plaintext: string): string {
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", encKey(), iv);
@@ -29,10 +24,7 @@ export function encryptSessionKey(plaintext: string): string {
   return `${PREFIX}${iv.toString("base64")}:${tag.toString("base64")}:${ct.toString("base64")}`;
 }
 
-/**
- * Decrypt a stored session key. Rows written before encryption (no prefix) are
- * returned as-is so existing configs keep working until rotated.
- */
+// Decrypt a stored session key. Legacy unprefixed rows are returned as-is until rotated.
 export function decryptSessionKey(stored: string): string {
   if (!stored.startsWith(PREFIX)) return stored; // legacy plaintext
   const [ivB64, tagB64, ctB64] = stored.slice(PREFIX.length).split(":");

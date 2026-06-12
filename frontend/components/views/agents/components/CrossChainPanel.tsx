@@ -3,8 +3,30 @@
 import { useCallback, useEffect, useState } from "react";
 import { type Address } from "viem";
 import { getCrossChainPortfolio, type CrossChainPortfolio } from "@/lib/agent-api";
+import Skeleton from "@/components/ui/Skeleton";
 
 const usd = (n: number) => `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+
+function CrossChainSkeleton() {
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Skeleton className="w-32 h-3" />
+          <Skeleton className="w-24 h-6" />
+          <Skeleton className="w-10 h-3" />
+        </div>
+        <div className="space-y-2">
+          <Skeleton className="w-32 h-3" />
+          <Skeleton className="w-24 h-6" />
+          <Skeleton className="w-10 h-3" />
+        </div>
+      </div>
+      <Skeleton className="w-full h-2 rounded" />
+      <Skeleton className="w-28 h-3" />
+    </div>
+  );
+}
 
 // Read-only cross-chain view: DeFi stable/yield (Arbitrum) vs tokenized equity
 // (Robinhood Chain), with an advice-only allocation suggestion. No bridging, no execution.
@@ -24,7 +46,7 @@ export default function CrossChainPanel({
     try {
       setData(await getCrossChainPortfolio(owner, account));
     } catch {
-      // backend unreachable — keep prior data, panel shows empty state
+      // backend unreachable: keep prior data, panel shows empty state
     } finally {
       setLoading(false);
     }
@@ -50,9 +72,11 @@ export default function CrossChainPanel({
         </button>
       </div>
 
-      {!data ? (
+      {loading && !data ? (
+        <CrossChainSkeleton />
+      ) : !data ? (
         <p className="text-[#444] text-xs font-mono uppercase tracking-[3px] py-8 text-center">
-          {loading ? "Loading…" : "No cross-chain data"}
+          No cross-chain data
         </p>
       ) : (
         <div className="space-y-5">

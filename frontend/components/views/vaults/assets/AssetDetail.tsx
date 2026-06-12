@@ -212,7 +212,7 @@ export default function AssetDetail({ assetKey = "eth" }: AssetDetailProps) {
             <span className="text-[#333] text-xs font-mono">Mon 11</span>
           </div>
 
-          {/* Collateral: CHỈ HIỂN THỊ NẾU ASSET ĐÓ CÓ DỮ LIỆU THẾ CHẤP (Max LTV > 0%) */}
+          {/* Collateral: only shown when the asset has collateral data (Max LTV > 0%) */}
           {data.collateral && data.collateral[0]?.value !== "0%" && (
             <div className="border-t border-[#1a1a1a] pt-6 mt-8">
               <div className="flex items-center justify-between mb-4">

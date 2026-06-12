@@ -1,4 +1,4 @@
-// Minimal ABI fragments — only the functions the frontend calls.
+// Minimal ABI fragments: only the functions the frontend calls.
 // Source: packages/smart_contract/artifacts/contracts/dolfin/*.
 
 export const FACTORY_ABI = [
@@ -168,7 +168,7 @@ export const POLICY_MANAGER_ABI = [
     stateMutability: "view",
     type: "function",
   },
-  // Removal setters — namespaced by msg.sender (the smart account), so call via account.executeBatch.
+  // Removal setters: namespaced by msg.sender (the smart account), so call via account.executeBatch.
   {
     inputs: [
       { name: "sessionKey", type: "address" },

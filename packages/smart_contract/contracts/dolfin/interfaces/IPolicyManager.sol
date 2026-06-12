@@ -14,15 +14,15 @@ interface IPolicyManager {
         SWAP, // 0  spot swap (Uniswap...)
         SUPPLY, // 1  lend / deposit collateral (Aave...)
         WITHDRAW, // 2  withdraw supplied funds
-        BORROW, // 3  borrow against collateral (adds debt → exposure)
+        BORROW, // 3  borrow against collateral (adds debt and exposure)
         REPAY, // 4  repay debt
         OPEN_PERP, // 5  open leveraged position (GMX...)
         CLOSE_PERP // 6  close leveraged position
     }
 
     /// @notice Action intent forwarded by a DolfinSmartAccount for validation.
-    /// @dev USD notional is computed *inside* the PolicyManager from a trusted price
-    ///      registry — never supplied by the AI/relayer — so limits cannot be bypassed.
+    /// @dev USD notional is computed inside the PolicyManager from a trusted price registry,
+    ///      never supplied by the AI/relayer, so limits cannot be bypassed.
     struct TradeContext {
         address sessionKey; // session key that authorized this action (set by the account, not the adapter)
         address protocol; // protocol the action targets (must be whitelisted for this action type)

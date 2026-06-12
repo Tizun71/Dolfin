@@ -2,10 +2,8 @@ import type { Address } from "viem";
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { ActionType, actionBit, ExecutionRelayer, type UserPolicy } from "@dolfin/onchain";
 
-/**
- * DolfinStack deployment on Arbitrum Sepolia (non-secret; safe to commit).
- * Secrets (RPC/bundler URL, session key) come from env — see loadOnchainConfig.
- */
+// DolfinStack deployment on Arbitrum Sepolia (non-secret). Secrets (RPC/bundler URL,
+// session key) come from env, see loadOnchainConfig.
 export const ADDRESSES = {
   account: "0xF1D11915cb461C9B2d375a69C0A969b78cFA9808",
   aaveAdapter: "0x36e0D11A242C2c580F354c57a4993b3c894e8270",
@@ -20,13 +18,13 @@ export interface TokenInfo {
   symbol: string;
   address: Address;
   decimals: number;
-  /** Static fallback price; overridden at runtime by `chainlinkFeed` when set. */
+  // Static fallback price, overridden by chainlinkFeed when set.
   priceUsd: number;
-  /** Optional Chainlink USD price feed (Arb Sepolia). Omit for stablecoins pinned to $1. */
+  // Optional Chainlink USD feed. Omit for stablecoins pinned to $1.
   chainlinkFeed?: Address;
 }
 
-/** Tokens the agent may act on, keyed by symbol. Aave Arb Sepolia supports USDC + WETH. */
+// Tokens the agent may act on, keyed by symbol.
 export const TOKEN_REGISTRY: Record<string, TokenInfo> = {
   USDC: { symbol: "USDC", address: ADDRESSES.usdc, decimals: 6, priceUsd: 1 },
 };
@@ -38,7 +36,7 @@ export interface OnchainConfig {
   aave: { pool: Address; adapter: Address };
 }
 
-/** Optional overrides for the on-chain policy mirror. Any field set replaces the env default. */
+// Optional overrides for the policy mirror. Any field set replaces the env default.
 export interface PolicyOverrides {
   maxTradePerTxUsd?: number;
   maxDailyVolumeUsd?: number;
@@ -83,10 +81,7 @@ function buildUserPolicy(args: {
   };
 }
 
-/**
- * Build an OnchainConfig from explicit arguments. Used by AgentManager once
- * it has loaded the per-user config from the database.
- */
+// Build an OnchainConfig from explicit args, after AgentManager loads the per-user config.
 export function loadOnchainConfigFor(args: {
   smartAccount: Address;
   sessionKey: `0x${string}`;
@@ -115,11 +110,8 @@ export function loadOnchainConfigFor(args: {
   };
 }
 
-/**
- * Backwards-compatible: build the dev/smoke config from env only, using
- * the hard-coded `ADDRESSES.account` and `SESSION_KEY`. This is what
- * `create-dolfin-agent.ts` and the CLI `run-agent.ts` rely on.
- */
+// Dev/smoke config from env only, using the hard-coded ADDRESSES.account and SESSION_KEY.
+// Used by the CLI run-agent.ts.
 export function loadOnchainConfig(): OnchainConfig {
   return loadOnchainConfigFor({
     smartAccount: ADDRESSES.account,

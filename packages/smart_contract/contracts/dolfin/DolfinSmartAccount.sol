@@ -14,25 +14,23 @@ import "./interfaces/ITradeAdapter.sol";
 
 /**
  * @title DolfinSmartAccount
- * @notice ERC-4337 (v0.8) smart account owned by a user, that can delegate constrained
- *         trading authority to AI "session keys" across many protocols via adapters.
+ * @notice ERC-4337 (v0.8) smart account owned by a user that delegates constrained trading
+ *         authority to AI session keys across protocols via adapters.
  *
- * Security model
- * --------------
- *  - The user (owner) has full control: arbitrary `execute`/`executeBatch`.
- *  - A session key (the AI agent's signer) can ONLY call `executeAction`, routed through an
- *    owner-whitelisted adapter, and every call is checked & recorded by the PolicyManager
- *    (token + (protocol,action) whitelist, per-tx + daily caps, exposure, leverage, expiry,
- *    pause, circuit breaker).
- *  - The session key is recovered in the validation phase and pinned in transient storage;
- *    `executeAction` reads it to know which policy to enforce and clears it after.
- *  - Adapters are stateless planners and never receive funds or delegatecall. The account
- *    itself grants the EXACT token approvals an adapter requests and resets them to 0 right
- *    after — never an unbounded approval.
+ * Security model:
+ *  - The owner has full control via arbitrary execute/executeBatch.
+ *  - A session key (the agent's signer) may only call executeAction through an owner-whitelisted
+ *    adapter, and every call is checked and recorded by the PolicyManager (token +
+ *    (protocol,action) whitelist, per-tx + daily caps, exposure, leverage, expiry, pause,
+ *    circuit breaker).
+ *  - The session key is recovered during validation and pinned in transient storage;
+ *    executeAction reads it to pick the policy and clears it after.
+ *  - Adapters are stateless planners that never receive funds or delegatecall. The account
+ *    grants the exact token approval an adapter requests and resets it to 0 after, never max.
  *
- * NOTE (bundling): session-key UserOperations MUST be submitted one-per-bundle (our relayer
- * guarantees this). EntryPoint runs all validations before all executions; with multiple
- * session ops in one bundle the transient signer would be overwritten. Owner ops are unaffected.
+ * Bundling: session-key UserOperations must be submitted one per bundle (the relayer guarantees
+ * this). EntryPoint runs all validations before all executions, so multiple session ops in one
+ * bundle would overwrite the transient signer. Owner ops are unaffected.
  */
 contract DolfinSmartAccount is SimpleAccount, EIP712, ReentrancyGuardTransient {
     using SafeERC20 for IERC20;
@@ -70,7 +68,7 @@ contract DolfinSmartAccount is SimpleAccount, EIP712, ReentrancyGuardTransient {
     error BadGrantSignature();
     error NothingToExecute();
 
-    /// @dev `name`/`version` for EIP-712 are bytecode constants → proxy-safe (OZ recomputes the domain per chain/address).
+    /// @dev EIP-712 name/version are bytecode constants, so proxy-safe (OZ recomputes the domain per chain/address).
     constructor(IEntryPoint anEntryPoint) SimpleAccount(anEntryPoint) EIP712("DolfinSmartAccount", "1") {}
 
     /// @notice Proxy initializer: set owner and the policy engine.

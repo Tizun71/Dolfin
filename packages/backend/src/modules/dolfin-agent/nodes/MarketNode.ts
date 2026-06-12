@@ -1,9 +1,7 @@
 import type { IDiscoveryEnigne } from "../../discovery-engine/DiscoveryEngine.interface.js";
 import type { AdvisorState } from "../state.js";
 
-/**
- * Collects current market context (yields, funding rates, prices, alerts).
- */
+// Collects current market context (yields, funding rates, prices, alerts).
 export class MarketNode {
   constructor(private readonly discoveryEngine: IDiscoveryEnigne) {}
 

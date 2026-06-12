@@ -7,11 +7,8 @@ enum ChainId {
     ROBINHOOD_TESTNET = 46630,
 }
 
-/**
- * Robinhood Chain testnet (Arbitrum Orbit L2, settles to Ethereum Sepolia).
- * Not bundled in viem/chains, so we define it. Public RPC is rate-limited; set
- * ROBINHOOD_RPC_URL (e.g. an Alchemy endpoint) for anything beyond light reads.
- */
+// Robinhood Chain testnet (Arbitrum Orbit L2, settles to Ethereum Sepolia). Not in
+// viem/chains. The public RPC is rate-limited; set ROBINHOOD_RPC_URL for heavier reads.
 const robinhoodTestnet = defineChain({
     id: ChainId.ROBINHOOD_TESTNET,
     name: "Robinhood Chain Testnet",

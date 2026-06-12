@@ -19,7 +19,6 @@
 # Environment files
 .env
 .env.*
-!.env.example
 
 # Hardhat coverage reports
 /coverage

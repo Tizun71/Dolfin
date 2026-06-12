@@ -38,12 +38,8 @@ export const poolHistoryTable = pgTable("pool_history", {
   created_at: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
-/**
- * One row per (userId, smartAccount) pair. Holds the per-user on-chain policy
- * mirror and the session key the agent uses to sign UserOperations.
- * `enabled = false` means the scheduler skips it; on-demand runs via the API
- * still work.
- */
+// One row per (userId, smartAccount): the per-user policy mirror plus the session key the
+// agent signs UserOperations with. enabled = false skips the scheduler; API runs still work.
 export const agentConfigTable = pgTable(
   "agent_config",
   {
@@ -53,9 +49,9 @@ export const agentConfigTable = pgTable(
       .references(() => userTable.id, { onDelete: "cascade" }),
     smart_account: varchar("smart_account").notNull(),
     enabled: boolean().notNull().default(false),
-    /** Per-user session key, encrypted at rest (AES-GCM envelope). Null = agent not runnable. */
+    // Session key encrypted at rest (AES-GCM envelope). Null means the agent is not runnable.
     session_key: text("session_key"),
-    /** Mirrors on-chain UserPolicy: maxTradePerTxUsd, maxDailyVolumeUsd, etc. */
+    // Mirrors on-chain UserPolicy: maxTradePerTxUsd, maxDailyVolumeUsd, etc.
     policy: jsonb().notNull(),
     created_at: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updated_at: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -68,7 +64,7 @@ export const agentConfigTable = pgTable(
   }),
 );
 
-/** One row per DolfinAgent.run() invocation. */
+// One row per DolfinAgent.run() invocation.
 export const agentRunTable = pgTable(
   "agent_run",
   {
@@ -86,7 +82,7 @@ export const agentRunTable = pgTable(
     risk_level: varchar("risk_level"),
     risk_score: numeric("risk_score"),
     portfolio_snapshot: jsonb("portfolio_snapshot"),
-    /** Decisions blocked by the policy mirror this run: [{ decision, errors }]. */
+    // Decisions blocked by the policy mirror this run: [{ decision, errors }].
     rejected: jsonb("rejected"),
   },
   (t) => ({
@@ -98,7 +94,7 @@ export const agentRunTable = pgTable(
   }),
 );
 
-/** One row per on-chain action actually submitted during a run. */
+// One row per on-chain action submitted during a run.
 export const agentActionTable = pgTable(
   "agent_action",
   {

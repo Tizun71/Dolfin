@@ -8,6 +8,7 @@ import UtilizationBar from "./UtilizationBar";
 import PermissionsBreakdown from "./PermissionsBreakdown";
 import Modal from "./Modal";
 import PolicyForm from "./PolicyForm";
+import Skeleton from "@/components/ui/Skeleton";
 
 const BTN = "px-5 py-2.5 text-xs uppercase tracking-[2px] font-mono border transition disabled:opacity-50";
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
@@ -102,18 +103,29 @@ export default function SessionPanel({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:divide-x divide-[#262626]">
-        <UtilizationBar label="Exposure" used={status?.exposure ?? BigInt(0)} cap={status?.maxExposure ?? BigInt(0)} />
-        <div className="sm:pl-6">
-          <UtilizationBar label="24h Volume" used={status?.dayVolume ?? BigInt(0)} cap={status?.maxDailyVolume ?? BigInt(0)} />
+      {loading && !status ? (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="w-20 h-3" />
+              <Skeleton className="w-full h-6" />
+            </div>
+          ))}
         </div>
-        <div className="sm:pl-6">
-          <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px] mb-2">Expiry</p>
-          <p className="text-lg font-normal text-white">
-            {status ? new Date(status.expiry * 1000).toLocaleDateString() : "—"}
-          </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:divide-x divide-[#262626]">
+          <UtilizationBar label="Exposure" used={status?.exposure ?? BigInt(0)} cap={status?.maxExposure ?? BigInt(0)} />
+          <div className="sm:pl-6">
+            <UtilizationBar label="24h Volume" used={status?.dayVolume ?? BigInt(0)} cap={status?.maxDailyVolume ?? BigInt(0)} />
+          </div>
+          <div className="sm:pl-6">
+            <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px] mb-2">Expiry</p>
+            <p className="text-lg font-normal text-white">
+              {status ? new Date(status.expiry * 1000).toLocaleDateString() : "—"}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mt-6 pt-4 border-t border-[#262626]">
         <button

@@ -1,19 +1,15 @@
-import type { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import type { AgentLlm } from "../llm.js";
 import type { OnchainConfig } from "../config/onchain-config.js";
 import { deriveAaveDecisions } from "../strategy/aave-rules.js";
 import { deriveAiDecisions } from "../strategy/ai-strategy.js";
 import type { AdvisorState } from "../state.js";
 
-/**
- * Strategy node. Rules run first (deterministic, priority-ordered); then the AI proposes
- * additional Aave actions on top. Both streams are re-checked by the ValidationNode against
- * the policy mirror, and the on-chain PolicyManager remains authoritative. AI failure is
- * non-fatal — the rule decisions still drive the pipeline.
- */
+// Rules run first, then the AI proposes extra actions on top. Both streams are
+// re-checked downstream; AI failure is non-fatal.
 export class StrategyNode {
   constructor(
     private readonly cfg: OnchainConfig,
-    private readonly model?: ChatGoogleGenerativeAI,
+    private readonly model?: AgentLlm,
   ) {}
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {
