@@ -17,7 +17,6 @@ export default function LandingPage() {
       <SectionDivider />
       <WhyDolfinSection />
       <SectionDivider />
-      <SectionDivider />
       <HowItWorksSection />
       <SectionDivider />
       <FeaturesSection />

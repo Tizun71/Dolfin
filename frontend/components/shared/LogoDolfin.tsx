@@ -9,7 +9,7 @@ export default function LogoDolfin({
 }) {
   return (
     <Image
-      src="/dolfin-logo.png"
+      src="/dolfin-logo-no-bg.png"
       alt="Dolfin"
       width={size}
       height={size}
