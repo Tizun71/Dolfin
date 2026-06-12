@@ -22,12 +22,12 @@ export default function WhySection() {
           <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
             Why Dolfin?
           </h2>
-          <p className="text-yellow-100/70 text-base md:text-lg font-mono font-semibold uppercase tracking-tight max-w-2xl mx-auto leading-relaxed">
+          <p className="text-yellow-100/70 text-base md:text-lg uppercase tracking-tight max-w-2xl mx-auto leading-relaxed">
             Smart market predictions. Automated arbitrage. No capital risk. Non-custodial.
           </p>
         </div>
 
-        {/* Scroll Stack Container */}
+        {/* Scroll Stack */}
         <div
           className={`transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -63,14 +63,14 @@ export default function WhySection() {
                   </span>
                   <Cpu className="w-5 h-5 text-yellow-500/80" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase">
+                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase font-mono">
                   AI-Powered Predictions
                 </h3>
-                <p className="font-sans text-xs sm:text-sm text-neutral-400 leading-relaxed mt-1">
+                <p className="text-base text-yellow-100/70 leading-relaxed mt-1">
                   Advanced machine learning analyzes orderbook data across DEXs to forecast price movements 1-2 blocks ahead, enabling secure automated execution.
                 </p>
               </div>
-              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-[10px]">
+              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-xs">
                 <span>Confidence: 94.2%</span>
                 <span className="text-yellow-500/80 font-semibold">Core</span>
               </div>
@@ -85,14 +85,14 @@ export default function WhySection() {
                   </span>
                   <Coins className="w-5 h-5 text-yellow-500/80" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase">
+                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase font-mono">
                   Flash Loans Without Capital
                 </h3>
-                <p className="font-sans text-xs sm:text-sm text-neutral-400 leading-relaxed mt-1">
+                <p className="text-base text-yellow-100/70 leading-relaxed mt-1">
                   Access uncollateralized credit pools across major lending protocols. Trade multi-asset arbitrage using flash contracts with zero upfront funds.
                 </p>
               </div>
-              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-[10px]">
+              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-xs">
                 <span>Max Leverage: $250K</span>
                 <span className="text-yellow-500/80 font-semibold">Risk-Isolated</span>
               </div>
@@ -107,14 +107,14 @@ export default function WhySection() {
                   </span>
                   <Zap className="w-5 h-5 text-yellow-500/80" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase">
+                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase font-mono">
                   Atomic Reverts & Safety
                 </h3>
-                <p className="font-sans text-xs sm:text-sm text-neutral-400 leading-relaxed mt-1">
+                <p className="text-base text-yellow-100/70 leading-relaxed mt-1">
                   If any arbitrage leg fails due to slippage or gas constraints, the entire transaction reverts atomically. Your assets are always secure.
                 </p>
               </div>
-              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-[10px]">
+              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-xs">
                 <span>Safety: 100% Secured</span>
                 <span className="text-green-400/80 font-semibold">Automated</span>
               </div>
@@ -129,14 +129,14 @@ export default function WhySection() {
                   </span>
                   <Layers className="w-5 h-5 text-yellow-500/80" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase">
+                <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight mt-2 uppercase font-mono">
                   Arbitrum Optimization
                 </h3>
-                <p className="font-sans text-xs sm:text-sm text-neutral-400 leading-relaxed mt-1">
+                <p className="text-base text-yellow-100/70 leading-relaxed mt-1">
                   Built natively for Arbitrum's ultra-low latency rollups. Transactions confirm in under 1 second with 98% lower gas fees than mainnet.
                 </p>
               </div>
-              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-[10px]">
+              <div className="flex items-center justify-between border-t border-yellow-500/20 pt-4 text-neutral-500 font-mono text-xs">
                 <span>Speed: &lt;1s Settlement</span>
                 <span className="text-yellow-500/80 font-semibold">L2 Native</span>
               </div>
