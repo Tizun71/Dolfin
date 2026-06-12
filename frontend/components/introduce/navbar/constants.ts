@@ -6,21 +6,15 @@ export const NAV_ITEMS = [
     external: false,
   },
   {
-    label: "Features",
-    href: "#features",
-    section: "features",
-    external: false,
-  },
-  {
     label: "How It Works",
     href: "#how",
     section: "how",
     external: false,
   },
   {
-    label: "Support",
-    href: "#resources",
-    section: "resources",
-    external: false,
+    label: "GitHub",
+    href: "https://github.com/Tizun71/Dolfin",
+    section: "",
+    external: true,
   },
 ] as const;

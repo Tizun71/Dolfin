@@ -16,9 +16,9 @@ export default function Hero() {
 
       <div className="absolute left-6 md:left-12 top-1/3 md:top-2/5 z-20 text-left" style={getStyle(100)}>
         <p className="text-yellow-400 text-xs md:text-sm font-mono font-semibold uppercase tracking-tight leading-relaxed opacity-80 hover:opacity-100 transition-opacity duration-300">
-          AI-Powered<br />
-          DeFi<br />
-          Intelligence
+          Policy-Governed<br />
+          AI<br />
+          Portfolio
         </p>
       </div>
 
@@ -38,22 +38,24 @@ export default function Hero() {
         <div className="w-20 h-px bg-yellow-500/40 mb-8" style={getStyle(400)} />
 
         <p className="text-yellow-200/80 text-base md:text-lg font-mono font-semibold uppercase tracking-tight max-w-2xl mb-12 leading-relaxed" style={getStyle(600)}>
-          AI-Powered Predictions. Automated Flash Loans. On Arbitrum.
+          Your Agent | Your Rules | Your Profit
         </p>
 
-        <button
-          onClick={async () => {
-            try {
-              await router.push("/dashboard");
-            } catch (error) {
-              console.error("Navigation failed:", error);
-            }
-          }}
-          style={getStyle(800)}
-          className="px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-mono font-semibold text-sm uppercase tracking-wide rounded-lg transition-all duration-300 hover:scale-105"
-        >
-          Get Started
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <button
+            onClick={async () => {
+              try {
+                await router.push("/dashboard");
+              } catch (error) {
+                console.error("Navigation failed:", error);
+              }
+            }}
+            style={getStyle(800)}
+            className="px-6 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition disabled:opacity-50"
+          >
+            Get Started
+          </button>
+        </div>
       </div>
     </main>
   );

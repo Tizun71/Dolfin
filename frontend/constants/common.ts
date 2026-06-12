@@ -26,42 +26,42 @@ export const SUPPORT_ITEMS = [
 export const FEATURES_ITEMS = [
   {
     icon: "bot",
-    title: "AI Market Prediction",
+    title: "AI Strategy Engine",
     description:
-      "ARIMA algorithm analyzes market patterns. Predicts opportunities. Executes automatically when conditions align.",
+      "A multi-step agent scans Aave yields and GMX funding rates, then plans allocations. It only acts when the strategy fits your goals.",
   },
   {
     icon: "zap",
-    title: "Flash Loan Execution",
+    title: "On-Chain Policy Control",
     description:
-      "Identify arbitrage. Execute instantly. No capital required. All automated within a single transaction.",
+      "Every swap, lend, borrow, and perp is checked against your on-chain policy: max trade size, daily loss, exposure, and leverage caps.",
   },
   {
     icon: "chart",
     title: "Real-Time Dashboard",
     description:
-      "Monitor predictions, trades, and your agent performance. See what ARIMA is analyzing. Always in control.",
+      "Watch what the agent discovers, the risk score behind each move, and your portfolio in real time. Always in control.",
   },
 ];
 
 export const VALUE_PROPOSITION_ITEMS = [
   {
     icon: "clock",
-    title: "ARIMA-Powered Predictions",
+    title: "AI Strategy Engine",
     description:
-      "Advanced time-series analysis predicts market trends in real-time. Your AI sees patterns before they happen.",
+      "An agent pipeline analyzes markets, scores risk, and plans moves across Aave and GMX. Strategy you can read, not a black box.",
   },
   {
     icon: "trending-up",
-    title: "Flash Loans Without Capital",
+    title: "You Set The Rules",
     description:
-      "Execute profitable arbitrage using automated flash loans. No collateral needed. Your capital stays safe.",
+      "Grant the AI a scoped session key bound to an on-chain policy. It can only trade within your limits. No limits, no action.",
   },
   {
     icon: "shield",
-    title: "Atomic Execution",
+    title: "Risk-Scored Execution",
     description:
-      "All trades happen in one transaction block. No slippage. No MEV exposure. Predictable and secure.",
+      "Health factor, leverage, and drawdown are scored LOW to CRITICAL before any action. Risky moves are blocked, not gambled.",
   },
 ];
 
@@ -75,23 +75,23 @@ export const HOW_IT_WORKS_ITEMS = [
   },
   {
     number: "02",
-    title: "Deploy Agent",
+    title: "Deploy & Set Policy",
     description:
-      "We create a secure smart account (ERC-4337) on Arbitrum. Your AI agent. Your complete control.",
+      "We deploy your ERC-4337 smart account on Arbitrum. You set the policy: max trade size, daily loss, exposure, and leverage caps.",
     icon: "cpu",
   },
   {
     number: "03",
     title: "Fund Your Agent",
     description:
-      "Transfer ETH or USDC to your agent account. Ready to trade.",
+      "Transfer tokens to your smart account. The agent trades from here, never from your wallet.",
     icon: "wallet",
   },
   {
     number: "04",
-    title: "AI Predicts & Executes",
+    title: "AI Plans & Executes",
     description:
-      "ARIMA analyzes markets. When opportunities match your risk level, it executes. Automatically.",
+      "The agent scans market, scores risk, and acts through a session key, only within the policy you set.",
     icon: "trending-up",
   },
 ];

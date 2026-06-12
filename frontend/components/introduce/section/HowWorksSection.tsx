@@ -1,353 +1,136 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  Briefcase,
-  Database,
-  Cpu,
-  Layers,
-  Terminal,
-  ChevronRight,
-} from "lucide-react";
+import { Wallet, Cpu, Database, Bot } from "lucide-react";
 import { HOW_IT_WORKS_ITEMS } from "@/constants/common";
-import { useSectionAnimation } from "./hooks/useSectionAnimation";
+import { useScrollSteps } from "./hooks/useScrollSteps";
 
 const STEPS = [
   {
     id: "CONNECT",
     title: "Connect Wallet",
-    subtitle: "AUTHENTICATION",
-    icon: <Briefcase className="w-5 h-5" />,
+    subtitle: "Authentication",
+    icon: Wallet,
     detail: HOW_IT_WORKS_ITEMS[0].description,
+    chips: ["Google / MetaMask", "Privy auth"],
   },
   {
     id: "DEPLOY",
-    title: "Deploy Agent",
-    subtitle: "SMART ACCOUNT",
-    icon: <Cpu className="w-5 h-5" />,
+    title: "Deploy & Set Policy",
+    subtitle: "Smart Account",
+    icon: Cpu,
     detail: HOW_IT_WORKS_ITEMS[1].description,
+    chips: ["ERC-4337", "PolicyManager", "Session key"],
   },
   {
     id: "FUND",
     title: "Fund Your Agent",
-    subtitle: "LIQUIDITY",
-    icon: <Database className="w-5 h-5" />,
+    subtitle: "Liquidity",
+    icon: Database,
     detail: HOW_IT_WORKS_ITEMS[2].description,
+    chips: ["ETH / USDC", "Smart account", "Non-custodial"],
   },
   {
-    id: "EXECUTE",
-    title: "AI Predicts & Executes",
-    subtitle: "AUTOMATION",
-    icon: <Layers className="w-5 h-5" />,
+    id: "AUTOMATE",
+    title: "AI Plans & Executes",
+    subtitle: "Agent Loop",
+    icon: Bot,
     detail: HOW_IT_WORKS_ITEMS[3].description,
+    chips: ["Scan market", "Risk score", "On-chain validate", "Execute"],
   },
 ];
 
-const LOG_CACHE: Record<number, string[]> = {
-  0: [
-    "[GATEWAY] Wallet connection established.",
-    "[AUTH] Signature verified successfully.",
-    "[SESSION] User authenticated and ready.",
-  ],
-  1: [
-    "[DEPLOY] Creating ERC-4337 Smart Account...",
-    "[CONTRACT] Agent smart contract deployed on Arbitrum.",
-    "[SECURITY] Security framework initialized.",
-  ],
-  2: [
-    "[FUNDING] ETH liquidity pool detected.",
-    "[BALANCE] Agent account funded and verified.",
-    "[READY] Trading capital secured.",
-  ],
-  3: [
-    "[ARIMA] Market analysis engine activated.",
-    "[PREDICTION] Real-time trend detection in progress.",
-    "[EXECUTION] Opportunity identified. Trade executed.",
-  ],
-};
-
-const STEP_DURATION = 2500; 
-const MAX_LOGS = 25; // Maximum number of log lines to keep 
-
 export default function HowItWorks() {
-  const { isVisible, sectionRef } = useSectionAnimation();
-  const [activeStep, setActiveStep] = useState(0);
-  const [logs, setLogs] = useState<string[]>([
-    "[SYSTEM] Initializing workflow automation...",
-  ]);
-  const animationRef = useRef<NodeJS.Timeout | null>(null);
-  const currentStepRef = useRef(0);
-  const isRunningRef = useRef(false);
-  const logsContainerRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll logs to bottom when new logs are added
-  useEffect(() => {
-    if (logsContainerRef.current) {
-      logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
-    }
-  }, [logs]);
-
-  useEffect(() => {
-    if (isVisible) {
-      if (!isRunningRef.current) {
-        isRunningRef.current = true;
-        startLoopingAnimation();
-      }
-    } else {
-      if (animationRef.current) {
-        clearTimeout(animationRef.current);
-        animationRef.current = null;
-      }
-      isRunningRef.current = false;
-    }
-
-    return () => {
-      if (animationRef.current) {
-        clearTimeout(animationRef.current);
-      }
-      isRunningRef.current = false;
-    };
-  }, [isVisible]);
-
-  const startLoopingAnimation = () => {
-    const runStep = () => {
-      if (!isRunningRef.current) return;
-
-      // Get current step value
-      const step = currentStepRef.current;
-
-      // Update active step UI FIRST
-      setActiveStep(step);
-    
-      // Update logs with CURRENT step
-      const stepLogs = LOG_CACHE[step] || [];
-      setLogs((prev) => {
-        const newLogs = [
-          ...prev,
-          `[PROGRESS] Step 0${step + 1} • ${STEPS[step].subtitle}...`,
-          ...stepLogs,
-        ];
-        // Keep only the last MAX_LOGS lines
-        return newLogs.slice(-MAX_LOGS);
-      });
-
-      // THEN move to next step for next iteration
-      currentStepRef.current = (step + 1) % STEPS.length;
-
-      animationRef.current = setTimeout(runStep, STEP_DURATION);
-    };
-
-    runStep();
-  };
+  const { containerRef, activeStep, progress } = useScrollSteps(STEPS.length);
+  const active = STEPS[activeStep];
+  const ActiveIcon = active.icon;
 
   return (
-    <section
-      id="how"
-      ref={sectionRef as React.RefObject<HTMLElement>}
-      className="relative z-10 py-24 bg-[#131313] text-white"
-    >
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <div
-          className={`text-center mb-12 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-4">
-            How It Works
-          </p>
-          <h2 className="text-4xl mb-4 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
-            Four-Step Workflow
-          </h2>
-          <p className="text-sm text-yellow-100/70 max-w-2xl mx-auto uppercase tracking-tight font-mono font-semibold leading-relaxed">
-            Watch the automated workflow in action as it cycles through each step.
-          </p>
-        </div>
+    <section id="how" className="relative z-10 bg-[#0d0d0d] text-white">
+      {/* Tall scroll track — one viewport of scroll per step */}
+      <div ref={containerRef} style={{ height: `${STEPS.length * 100}vh` }} className="relative">
+        {/* Pinned visual */}
+        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden px-6">
+          <div className="max-w-6xl mx-auto w-full">
+            {/* Header */}
+            <div className="mb-12 text-center">
+              <h2 className="text-4xl md:text-5xl uppercase tracking-tight font-mono font-semibold text-brand-gradient">
+                How It Works
+              </h2>
+            </div>
 
-        {/* Top Flow Bar */}
-        <div
-          className={`mb-8 border border-neutral-800 rounded-lg p-4 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-          style={{ transitionDelay: isVisible ? "100ms" : "0ms" }}
-        >
-          <div className="flex items-center justify-between gap-2">
-            {STEPS.map((step, idx) => {
-              const isActive = activeStep === idx;
-              return (
-                <div key={step.id} className="flex items-center flex-1">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              {/* Vertical stepper */}
+              <div className="lg:col-span-5">
+                <div className="relative flex flex-col gap-7">
+                  {/* Track */}
+                  <div className="absolute left-6 top-2 bottom-2 w-px bg-neutral-800" />
                   <div
-                    className={`flex flex-col items-center gap-1 p-3 rounded-lg border transition-all duration-500 flex-1 ${
-                      isActive
-                        ? "border-yellow-500/60 bg-neutral-900/60"
-                        : "border-neutral-800 bg-neutral-900/20"
-                    }`}
-                  >
-                    <div
-                      className={`p-2 rounded border transition-all duration-500 ${
-                        isActive
-                          ? "bg-yellow-500 text-black border-yellow-400"
-                          : "bg-neutral-800 text-neutral-400 border-neutral-700"
-                      }`}
-                    >
-                      {step.icon}
-                    </div>
-                    <span className="text-xs font-mono font-bold uppercase tracking-tight">
-                      {step.id}
-                    </span>
-                  </div>
-                  {idx < STEPS.length - 1 && (
-                    <ChevronRight className="w-4 h-4 text-neutral-700 mx-1 flex-shrink-0" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div
-          className={`grid grid-cols-1 lg:grid-cols-12 gap-4 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-          style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}
-        >
-          {/* Left: Steps List */}
-          <div className="lg:col-span-5 space-y-2">
-            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-yellow-300 mb-3">
-              Workflow Steps
-            </div>
-            {STEPS.map((step, idx) => {
-              const isActive = activeStep === idx;
-              return (
-                <div
-                  key={step.id}
-                  className={`p-3 rounded-lg border transition-all duration-500 ${
-                    isActive
-                      ? "border-yellow-500/40 bg-neutral-900/60 scale-105"
-                      : "border-neutral-800 bg-neutral-900/20"
-                  }`}
-                >
-                  <div className="flex gap-3 items-start">
-                    <div
-                      className={`p-2 rounded border flex-shrink-0 transition-all duration-500 ${
-                        isActive
-                          ? "bg-yellow-500 text-black border-yellow-400"
-                          : "bg-neutral-800 text-neutral-400 border-neutral-700"
-                      }`}
-                    >
-                      {step.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-xs font-mono font-semibold uppercase tracking-wider text-neutral-500">
-                          Step 0{idx + 1}
-                        </span>
-                        {isActive && (
-                          <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded font-mono font-bold animate-pulse">
-                            Active
-                          </span>
-                        )}
+                    className="absolute left-6 top-2 w-px bg-gradient-to-b from-yellow-500 to-yellow-400 shadow-[0_0_8px_rgba(251,191,36,0.5)] transition-all duration-300 ease-out"
+                    style={{ height: `calc(${progress * 100}% - 16px)` }}
+                  />
+                  {STEPS.map((step, idx) => {
+                    const Icon = step.icon;
+                    const isActive = activeStep === idx;
+                    const isDone = idx < activeStep;
+                    return (
+                      <div key={step.id} className="relative z-10 flex items-center gap-4">
+                        <div
+                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all duration-500 ${
+                            isActive
+                              ? "border-yellow-400 bg-yellow-500 text-black scale-110 shadow-[0_0_20px_rgba(251,191,36,0.5)]"
+                              : isDone
+                                ? "border-yellow-500/40 bg-yellow-500/15 text-yellow-400"
+                                : "border-neutral-700 bg-neutral-900 text-neutral-500"
+                          }`}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className={`font-mono text-xs font-bold uppercase tracking-tight transition-colors duration-500 ${isActive ? "text-yellow-400" : "text-neutral-500"}`}>
+                            Step 0{idx + 1}
+                          </div>
+                          <div className={`font-mono text-sm font-semibold uppercase tracking-tight transition-colors duration-500 ${isActive ? "text-white" : "text-neutral-500"}`}>
+                            {step.title}
+                          </div>
+                        </div>
                       </div>
-                      <h3
-                        className={`font-mono font-semibold text-sm uppercase tracking-tight transition-colors duration-500 ${
-                          isActive ? "text-white" : "text-neutral-400"
-                        }`}
-                      >
-                        {step.title}
-                      </h3>
-                      <p className="text-xs text-neutral-500 mt-1 font-mono uppercase tracking-tight">
-                        {step.subtitle}
-                      </p>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Active step panel */}
+              <div className="lg:col-span-7">
+                <div key={activeStep} className="animate-step-enter rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-[#121212] to-[#0a0a0a] p-8 relative overflow-hidden">
+                  <span className="pointer-events-none select-none absolute -top-8 left-3 font-mono font-bold leading-none text-[140px] text-white/[0.03]">
+                    0{activeStep + 1}
+                  </span>
+                  {/* Big background icon */}
+                  <ActiveIcon
+                    strokeWidth={1}
+                    className="pointer-events-none absolute -bottom-12 -right-10 h-80 w-80 text-yellow-500/[0.05]"
+                  />
+                  <div className="relative z-10">
+                    <div className="mb-5 flex items-center gap-4">
+                      <span className="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-yellow-400">
+                        {active.subtitle}
+                      </span>
+                    </div>
+                    <h3 className="mb-4 font-mono text-3xl font-semibold uppercase tracking-tight text-white">
+                      {active.title}
+                    </h3>
+                    <p className="mb-6 max-w-xl text-base leading-relaxed text-neutral-300">
+                      {active.detail}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {active.chips.map((chip) => (
+                        <span key={chip} className="rounded-full border border-neutral-700/60 bg-neutral-900/60 px-3 py-1 font-mono text-xs text-neutral-300">
+                          {chip}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Right: Console Section */}
-          <div className="lg:col-span-7 space-y-3">
-            {/* Step Detail */}
-            <div className="border border-neutral-800 rounded-lg p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-yellow-400">
-                    Step 0{activeStep + 1} •
-                  </span>
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider text-neutral-500 ml-1">
-                    {STEPS[activeStep].subtitle}
-                  </span>
-                </div>
-                <span className="text-base font-mono font-bold text-neutral-700">
-                  #{activeStep + 1}
-                </span>
-              </div>
-              <h4 className="font-mono font-semibold text-sm uppercase tracking-tight text-white mb-2">
-                {STEPS[activeStep].title}
-              </h4>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                {STEPS[activeStep].detail}
-              </p>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="border border-neutral-800 rounded-lg p-3">
-              <div className="flex justify-between items-center text-xs text-neutral-500 mb-2">
-                <span className="font-mono font-semibold uppercase tracking-tight">
-                  Cycle Progress
-                </span>
-                <span className="font-mono">
-                  Step {activeStep + 1} / {STEPS.length}
-                </span>
-              </div>
-              <div className="h-2 bg-neutral-800 rounded-sm overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 transition-all duration-500"
-                  style={{
-                    width: `${((activeStep + 1) / STEPS.length) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Console */}
-            <div className="border border-neutral-800 rounded-lg p-4 bg-black/30 h-[240px] flex flex-col">
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-neutral-800">
-                <Terminal className="w-3.5 h-3.5 text-yellow-500" />
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-yellow-300">
-                  Diagnostics
-                </span>
-              </div>
-
-              <div 
-                ref={logsContainerRef}
-                className="flex-1 overflow-y-auto space-y-1 text-xs font-mono pr-2 scrollbar-thin scrollbar-thumb-neutral-700 scroll-smooth"
-              >
-                {logs.map((log, idx) => {
-                  let logColor = "text-neutral-400";
-                  if (log.startsWith("[PROGRESS]"))
-                    logColor = "text-yellow-500 font-bold";
-                  else if (log.startsWith("[SYSTEM]"))
-                    logColor = "text-cyan-400";
-                  else if (
-                    log.includes("successfully") ||
-                    log.includes("verified") ||
-                    log.includes("secured")
-                  )
-                    logColor = "text-emerald-400";
-                  else if (
-                    log.includes("[ARIMA]") ||
-                    log.includes("[EXECUTION]")
-                  )
-                    logColor = "text-yellow-400 font-semibold";
-
-                  return (
-                    <div key={idx} className={logColor}>
-                      &gt; {log}
-                    </div>
-                  );
-                })}
               </div>
             </div>
           </div>

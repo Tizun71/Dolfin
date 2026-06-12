@@ -5,25 +5,23 @@ import {
   WhyDolfinSection, 
   FeaturesSection, 
   HowItWorksSection, 
-  BenefitsSection,
-  SupportSection 
+  CTASection
 } from "@/components/introduce";
 import SectionDivider from "@/components/shared/SectionDivider";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col relative">
       <Navbar />
       <Hero />
-      <BenefitsSection />
       <SectionDivider />
       <WhyDolfinSection />
       <SectionDivider />
-      <FeaturesSection />
       <SectionDivider />
       <HowItWorksSection />
       <SectionDivider />
-      <SupportSection />
+      <FeaturesSection />
+      <CTASection />
       <Footer />
     </div>
   );

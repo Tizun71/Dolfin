@@ -1,67 +1,99 @@
 "use client";
 
-import Image from "next/image";
+import { Check, X } from "lucide-react";
 import { useSectionAnimation } from "./hooks/useSectionAnimation";
+
+type Row = {
+  aspect: string;
+  typical: string;
+  dolfin: string;
+};
+
+const ROWS: Row[] = [
+  {
+    aspect: "Custody",
+    typical: "Bot holds your funds",
+    dolfin: "Non-custodial — scoped session key",
+  },
+  {
+    aspect: "Risk Limits",
+    typical: "None, or off-chain promises",
+    dolfin: "Enforced on-chain, every tx",
+  },
+  {
+    aspect: "Strategy",
+    typical: "Black box you can't inspect",
+    dolfin: "Readable agent pipeline",
+  },
+  {
+    aspect: "On Failure",
+    typical: "Your funds are exposed",
+    dolfin: "Reverts + guardian kill-switch",
+  },
+  {
+    aspect: "Your Capital",
+    typical: "Deposited to their platform",
+    dolfin: "Stays in your smart account",
+  },
+  {
+    aspect: "Protocols",
+    typical: "Closed or CEX-only",
+    dolfin: "Aave on Arbitrum",
+  },
+];
 
 export default function FeaturesSection() {
   const { isVisible, sectionRef } = useSectionAnimation();
+  const reveal = isVisible
+    ? "opacity-100 translate-y-0"
+    : "opacity-0 translate-y-8";
 
   return (
-    <section id="features" ref={sectionRef} className="py-24 bg-[#131313]">
-      <div className="max-w-6xl mx-auto px-6">
-      <div className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-4">
-            Core Capabilities
-          </p>
+    <section id="features" ref={sectionRef} className="py-24 bg-black">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className={`text-center mb-16 transition-all duration-700 ${reveal}`}>
           <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
-            Features That Empower
+            What makes us different
           </h2>
-          <p className="text-base text-yellow-100/70 max-w-2xl mx-auto uppercase tracking-tight font-mono font-semibold leading-relaxed">
-            ARIMA predictions. Flash loans. Atomic execution. Everything you need to trade smarter.
+          <p className="text-base text-neutral-300 max-w-2xl mx-auto leading-relaxed">
+            Most AI trading bots take custody and run a black box. Dolfin keeps you in control.
           </p>
         </div>
 
-        <div className="grid grid-cols-12 gap-6">
-          <div className={`col-span-12 lg:col-span-7 cyber-notch glass-card p-10 flex flex-col justify-end min-h-[400px] relative overflow-hidden group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "100ms" : "0ms" }}>
-            <Image
-              className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale group-hover:scale-105 transition-transform duration-700"
-              alt="Mechanical watch movement representing precision and automation"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5_x7j1uKqvL3Z3rBj9IxLHwuI_N_PHM-msY7wm1a0aSHuGghy7pNb4QSdogL7ShIzVdR9zZx4zNztswmhUKrq7tSp6oNvLTCCxyKBaDg88TSlM7_Nako5dJKoGnbO-sCyglaTjtknj-ZU6PtjxHcb6gPpSnegbpPiX2jL29ZKsAKACD4sccMSb16Loz37iH2Ogdtlotcdk-3KBoRTDlWe2MdDC_Cpkx3NiQ2We4ed4RT9LbORWN973PoLRFZCSRlHk0RvsMtFG2s"
-              fill
-              sizes="(max-width: 1024px) 100vw, 58vw"
-            />
-            <div className="relative z-10">
-              <h3 className="text-2xl uppercase mb-4 tracking-tight font-mono font-semibold text-white">
-                AI Market Prediction
-              </h3>
-              <p className="text-base text-yellow-100/70 max-w-md leading-relaxed">
-                ARIMA algorithm analyzes market patterns. Predicts opportunities.
-                Executes automatically when conditions align.
-              </p>
+        {/* Comparison */}
+        <div
+          className={`overflow-hidden rounded-2xl border border-neutral-800 transition-all duration-700 ${reveal}`}
+          style={{ transitionDelay: isVisible ? "100ms" : "0ms" }}
+        >
+          {/* Column headers */}
+          <div className="grid grid-cols-1 md:grid-cols-12 bg-neutral-900/40 border-b border-neutral-800">
+            <div className="hidden md:block md:col-span-3 px-6 py-4" />
+            <div className="md:col-span-4 px-6 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              Typical AI Bot
+            </div>
+            <div className="md:col-span-5 px-6 py-4 font-mono text-xs font-bold uppercase tracking-wider text-yellow-400 bg-yellow-500/[0.04] border-l border-yellow-500/30">
+              Dolfin
             </div>
           </div>
 
-          <div className="col-span-12 lg:col-span-5 flex flex-col gap-6">
-            <div className={`cyber-notch glass-card p-8 flex-1 group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}>
-              <h3 className="text-2xl uppercase mb-3 font-mono font-semibold tracking-tight text-white">
-                Flash Loan Execution
-              </h3>
-              <p className="text-base text-yellow-100/70 leading-relaxed">
-                Identify arbitrage. Execute instantly. No capital required.
-                All automated within a single transaction.
-              </p>
+          {ROWS.map((row) => (
+            <div
+              key={row.aspect}
+              className="grid grid-cols-1 md:grid-cols-12 border-b border-neutral-800 last:border-b-0 hover:bg-neutral-900/20 transition-colors duration-300"
+            >
+              <div className="md:col-span-3 px-6 pt-4 md:py-5 font-mono text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                {row.aspect}
+              </div>
+              <div className="md:col-span-4 px-6 py-3 md:py-5 flex items-start gap-2 text-sm text-neutral-500">
+                <X className="mt-0.5 h-4 w-4 shrink-0 text-neutral-600" />
+                <span>{row.typical}</span>
+              </div>
+              <div className="md:col-span-5 px-6 py-3 md:py-5 flex items-start gap-2 text-sm text-neutral-200 bg-yellow-500/[0.04] border-l border-yellow-500/30">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-yellow-400" />
+                <span>{row.dolfin}</span>
+              </div>
             </div>
-
-            <div className={`cyber-notch glass-card p-8 flex-1 group transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`} style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}>
-              <h3 className="text-2xl uppercase mb-3 font-mono font-semibold tracking-tight text-white">
-                Real-Time Dashboard
-              </h3>
-              <p className="text-base text-yellow-100/70 leading-relaxed">
-                Monitor predictions, trades, and your agent performance.
-                See what ARIMA is analyzing. Always in control.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

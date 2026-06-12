@@ -17,7 +17,7 @@ export default function SupportSection() {
     <section
       id="resources"
       ref={sectionRef}
-      className="relative z-10 px-6 py-24 bg-[#131313]"
+      className="relative z-10 px-6 py-24 bg-black"
     >
       <div
         className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
@@ -28,7 +28,7 @@ export default function SupportSection() {
         <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
           Built in the Open
         </h2>
-        <p className="text-base text-yellow-100/70 max-w-2xl mx-auto uppercase tracking-tight font-mono font-semibold leading-relaxed">
+        <p className="text-base text-neutral-300 max-w-2xl mx-auto leading-relaxed">
           Open-source code. Arbitrum network. No black boxes. Verify everything.
         </p>
       </div>

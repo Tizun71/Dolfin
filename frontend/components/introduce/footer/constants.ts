@@ -19,17 +19,12 @@ export const FOOTER_LINKS = {
 export const SOCIAL_LINKS = [
   {
     name: "GitHub",
-    href: "https://github.com/Tizun71/Dolfin",
+    href: "https://github.com/Tizun71",
     icon: "github",
   },
   {
-    name: "Discord",
-    href: "#",
-    icon: "discord",
-  },
-  {
     name: "Twitter",
-    href: "#",
+    href: "https://x.com/tizund3v",
     icon: "twitter",
   },
 ];

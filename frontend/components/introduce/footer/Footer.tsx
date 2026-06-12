@@ -9,20 +9,34 @@ export default function Footer() {
   return (
     <footer className="w-full border-t border-[#1a1a1a] bg-[#0e0e0e] relative z-20">
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          <div className="lg:col-span-2">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3 group">
-                <LogoDolfin size={40} />
-                <h3 className="text-brand-gradient text-3xl font-mono font-semibold uppercase tracking-tight">
-                  Dolfin
-                </h3>
-              </div>
-              <p className="text-base text-[#ddd] font-light leading-relaxed max-w-sm">
-                AI market predictions. Automated flash loans. Executed on Arbitrum. Non-custodial. Open-source.
-              </p>
-              
-              <div className="flex items-center gap-4 mt-2">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-10">
+          <div className="flex flex-col gap-4 max-w-md">
+            <div className="flex items-center gap-3 group">
+              <LogoDolfin size={40} />
+              <h3 className="text-brand-gradient text-3xl font-mono font-semibold uppercase tracking-tight">
+                Dolfin
+              </h3>
+            </div>
+            <div className="flex items-center gap-2 text-base text-[#ddd] font-light leading-relaxed">
+              <span>AI portfolio agent for</span>
+
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6mQ1pwxVT3lqCTZWhuUZzKTOqT0ZmYh2oeg&s"
+                alt="Arbitrum"
+                width={24}
+                height={24}
+                className="rounded-full"
+              />
+
+              <span className="font-medium text-white">Arbitrum</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 md:items-end">
+            <span className="text-xs font-mono font-semibold uppercase tracking-widest text-yellow-300">
+              Contact Us
+            </span>
+            <div className="flex items-center gap-4">
                 {SOCIAL_LINKS.map((social) => (
                   <Link
                     key={social.name}
@@ -34,13 +48,18 @@ export default function Footer() {
                   >
                     {social.icon === "github" && (
                       <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                       </svg>
                     )}
                     {social.icon === "discord" && <MessageCircle className="h-5 w-5" />}
+                    {social.icon === "telegram" && (
+                      <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                      </svg>
+                    )}
                     {social.icon === "twitter" && (
                       <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                       </svg>
                     )}
                   </Link>
@@ -48,82 +67,16 @@ export default function Footer() {
               </div>
             </div>
           </div>
-
-          <div>
-            <h4 className="text-sm font-mono font-semibold uppercase tracking-tight text-yellow-300 mb-5">
-              Product
-            </h4>
-            <ul className="flex flex-col gap-3">
-              {FOOTER_LINKS.product.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-[15px] text-[#ccc] hover:text-white transition-colors duration-200 font-light"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-mono font-semibold uppercase tracking-tight text-yellow-300 mb-5">
-              Resources
-            </h4>
-            <ul className="flex flex-col gap-3">
-              {FOOTER_LINKS.resources.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="text-[15px] text-[#ccc] hover:text-white transition-colors duration-200 font-light inline-flex items-center gap-1.5"
-                  >
-                    {link.name}
-                    {link.href.startsWith("http") && (
-                      <ExternalLink className="h-3.5 w-3.5 opacity-70" />
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-mono font-semibold uppercase tracking-tight text-yellow-300 mb-5">
-              Company
-            </h4>
-            <ul className="flex flex-col gap-3">
-              {FOOTER_LINKS.company.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-[15px] text-[#ccc] hover:text-white transition-colors duration-200 font-light"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
-      </div>
 
       <div className="border-t border-[#1a1a1a]">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <span className="text-sm text-[#aaa] tracking-tight font-mono font-semibold uppercase">
-              © 2026 Dolfin Protocol. All rights reserved.
+              © 2026 Dolfin Team
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
-            <span className="text-sm text-[#aaa] font-mono font-semibold uppercase tracking-tight">
-              All Systems Operational
-            </span>
-          </div>
         </div>
       </div>
     </footer>
