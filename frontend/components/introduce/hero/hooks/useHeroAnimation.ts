@@ -1,4 +1,4 @@
-import { useEffect, useState, CSSProperties } from "react";
+import { useEffect, useState, CSSProperties, useCallback } from "react";
 
 export function useHeroAnimation() {
   const [visible, setVisible] = useState(false);
@@ -8,11 +8,14 @@ export function useHeroAnimation() {
     return () => clearTimeout(timer);
   }, []);
 
-  const getStyle = (delay: number): CSSProperties => ({
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(24px)",
-    transition: `all 700ms ease-out ${delay}ms`,
-  });
+  const getStyle = useCallback(
+    (delay: number): CSSProperties => ({
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(24px)",
+      transition: `all 700ms ease-out ${delay}ms`,
+    }),
+    [visible],
+  );
 
   return { getStyle };
 }

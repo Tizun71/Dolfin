@@ -1,0 +1,79 @@
+"use client";
+
+import { SUPPORT_ITEMS } from "@/constants/common";
+import Link from "next/link";
+import Image from "next/image";
+import { useSectionAnimation } from "./hooks/useSectionAnimation";
+
+const getSupportDelays = (isVisible: boolean, index: number) => ({
+  cardDelay: isVisible ? `${200 + index * 150}ms` : "0ms",
+  logoDelay: isVisible ? `${400 + index * 150}ms` : "0ms",
+});
+
+export default function SupportSection() {
+  const { isVisible, sectionRef } = useSectionAnimation();
+
+  return (
+    <section
+      id="resources"
+      ref={sectionRef}
+      className="relative z-10 px-6 py-24 bg-black"
+    >
+      <div
+        className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+      >
+        <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-4">
+          Open Source & Network
+        </p>
+        <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
+          Built in the Open
+        </h2>
+        <p className="text-base text-neutral-300 max-w-2xl mx-auto leading-relaxed">
+          Open-source code. Arbitrum network. No black boxes. Verify everything.
+        </p>
+      </div>
+
+      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        {SUPPORT_ITEMS.map((item, index) => {
+          const { cardDelay, logoDelay } = getSupportDelays(isVisible, index);
+
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`group relative flex flex-col items-center gap-6 overflow-hidden rounded-xl border border-yellow-500/20 px-8 py-10 transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"} hover:bg-[#0a0a0a] hover:border-yellow-500/40`}
+              style={{ transitionDelay: cardDelay }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div
+                className={`relative flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-yellow-500/20 bg-neutral-950 transition-all duration-300 group-hover:border-yellow-500/50 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.15)] ${isVisible ? "scale-100" : "scale-0"}`}
+                style={{ transitionDelay: logoDelay }}
+              >
+                <Image
+                  src={item.logo}
+                  alt={`${item.name} logo`}
+                  width={48}
+                  height={48}
+                  className={`transition-opacity duration-300 opacity-80 group-hover:opacity-100 ${item.name === "GitHub" ? "invert" : ""}`}
+                />
+              </div>
+              <div className="relative z-10 text-center">
+                <h3 className="mb-2 text-lg font-mono font-semibold uppercase tracking-tight text-white group-hover:text-yellow-400 transition-colors duration-300">
+                  {item.name}
+                </h3>
+                <p className="text-sm text-neutral-400 font-mono leading-relaxed group-hover:text-neutral-300 transition-colors duration-300">
+                  {item.description}
+                </p>
+              </div>
+              <span className="text-sm font-mono text-neutral-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-yellow-400">
+                →
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
