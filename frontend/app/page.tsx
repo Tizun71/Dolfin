@@ -5,7 +5,6 @@ import {
   WhyDolfinSection, 
   FeaturesSection, 
   HowItWorksSection, 
-  TrustSection,
   BenefitsSection,
   SupportSection 
 } from "@/components/introduce";
@@ -17,8 +16,6 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <BenefitsSection />
-      <SectionDivider />
-      <TrustSection />
       <SectionDivider />
       <WhyDolfinSection />
       <SectionDivider />

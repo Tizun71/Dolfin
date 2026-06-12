@@ -2,43 +2,50 @@
 
 import { useEffect, useRef, useState } from "react";
 
-let sharedObserver: IntersectionObserver | null = null;
+const observerMap = new WeakMap<HTMLElement, (visible: boolean) => void>();
+
+function getSharedObserver() {
+  // Create a new observer for each component to avoid stale closures
+  return new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.target instanceof HTMLElement) {
+          const callback = observerMap.get(entry.target);
+          if (callback) {
+            callback(entry.isIntersecting);
+          }
+        }
+      });
+    },
+    {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
+    },
+  );
+}
+
+let globalObserver: IntersectionObserver | null = null;
 
 export function useSectionAnimation() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Create shared observer instance if it doesn't exist
-    if (!sharedObserver) {
-      sharedObserver = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.target instanceof HTMLElement) {
-            const isIntersecting = entry.isIntersecting;
-            (entry.target as any).__isVisible = isIntersecting;
-            // Trigger state update if this element has observers
-            if ((entry.target as any).__setIsVisible) {
-              (entry.target as any).__setIsVisible(isIntersecting);
-            }
-          }
-        },
-        {
-          threshold: 0.1,
-          rootMargin: "0px 0px -100px 0px",
-        },
-      );
+    // Initialize global observer once
+    if (!globalObserver) {
+      globalObserver = getSharedObserver();
     }
 
     if (sectionRef.current) {
-      // Attach state setter to element for callback
-      (sectionRef.current as any).__setIsVisible = setIsVisible;
-      sharedObserver.observe(sectionRef.current);
+      // Store the setState callback in the map
+      observerMap.set(sectionRef.current, setIsVisible);
+      globalObserver.observe(sectionRef.current);
     }
 
     return () => {
-      if (sectionRef.current) {
-        sharedObserver?.unobserve(sectionRef.current);
-        delete (sectionRef.current as any).__setIsVisible;
+      if (sectionRef.current && globalObserver) {
+        globalObserver.unobserve(sectionRef.current);
+        observerMap.delete(sectionRef.current);
       }
     };
   }, []);

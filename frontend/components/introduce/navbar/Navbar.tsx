@@ -28,7 +28,7 @@ export default function Navbar() {
           </span>
         </button>
 
-        <nav className="flex items-center gap-8">
+        <nav className="flex items-center gap-6">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.label}
@@ -45,10 +45,10 @@ export default function Navbar() {
               }}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
-              className="relative text-gray-400 text-sm font-mono font-semibold uppercase tracking-tight hover:text-white transition-colors duration-300 group"
+              className="relative text-gray-400 text-[13px] font-mono font-semibold uppercase tracking-tight hover:text-white transition-colors duration-300 group"
             >
               {item.label}
-              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-300 ease-in-out" />
+              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-yellow-400 to-yellow-500 group-hover:w-full transition-all duration-300 ease-in-out" />
             </Link>
           ))}
         </nav>

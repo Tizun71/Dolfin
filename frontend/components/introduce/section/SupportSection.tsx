@@ -15,18 +15,20 @@ export default function SupportSection() {
 
   return (
     <section
-      id="support"
+      id="resources"
       ref={sectionRef}
-      className="relative z-10 px-6 py-24 bg-[#131313] border-y border-yellow-500/5"
+      className="relative z-10 px-6 py-24 bg-[#131313]"
     >
-      <div className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-6 text-center">
+      <div
+        className={`text-center mb-24 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+      >
+        <p className="text-yellow-300 text-sm font-mono font-semibold uppercase tracking-tight mb-4">
           Open Source & Network
         </p>
-        <h2 className="text-4xl md:text-5xl font-mono font-semibold uppercase tracking-tight text-brand-gradient text-center mb-4 leading-tight">
+        <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">
           Built in the Open
         </h2>
-        <p className="text-yellow-100/70 text-base md:text-lg font-mono font-semibold uppercase tracking-tight text-center max-w-2xl mx-auto mb-16 leading-relaxed">
+        <p className="text-base text-yellow-100/70 max-w-2xl mx-auto uppercase tracking-tight font-mono font-semibold leading-relaxed">
           Open-source code. Arbitrum network. No black boxes. Verify everything.
         </p>
       </div>
@@ -41,30 +43,31 @@ export default function SupportSection() {
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`group relative flex flex-col items-center gap-6 overflow-hidden rounded-lg border border-yellow-500/20 px-8 py-10 transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"} hover:bg-[#0a0a0a] hover:border-yellow-500/40`}
+              className={`group relative flex flex-col items-center gap-6 overflow-hidden rounded-xl border border-yellow-500/20 px-8 py-10 transition-all duration-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"} hover:bg-[#0a0a0a] hover:border-yellow-500/40`}
               style={{ transitionDelay: cardDelay }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-              <div className={`relative flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg border border-yellow-500/20 bg-[#0d0d0d] transition-all duration-300 group-hover:border-yellow-500/50 group-hover:shadow-[0_0_20px_rgba(250,204,21,0.15)] ${isVisible ? "scale-100" : "scale-0"}`} style={{ transitionDelay: logoDelay }}>
+              <div
+                className={`relative flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-yellow-500/20 bg-neutral-950 transition-all duration-300 group-hover:border-yellow-500/50 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.15)] ${isVisible ? "scale-100" : "scale-0"}`}
+                style={{ transitionDelay: logoDelay }}
+              >
                 <Image
                   src={item.logo}
                   alt={`${item.name} logo`}
                   width={48}
                   height={48}
-                  loading="lazy"
-                  placeholder="empty"
                   className={`transition-opacity duration-300 opacity-80 group-hover:opacity-100 ${item.name === "GitHub" ? "invert" : ""}`}
                 />
               </div>
               <div className="relative z-10 text-center">
-                <h3 className="mb-2 text-xl font-mono font-semibold uppercase tracking-tight text-white group-hover:text-yellow-400 transition-colors duration-300">
+                <h3 className="mb-2 text-lg font-mono font-semibold uppercase tracking-tight text-white group-hover:text-yellow-400 transition-colors duration-300">
                   {item.name}
                 </h3>
-                <p className="text-lg leading-relaxed text-neutral-400 group-hover:text-neutral-200 transition-colors duration-300">
+                <p className="text-sm text-neutral-400 font-mono leading-relaxed group-hover:text-neutral-300 transition-colors duration-300">
                   {item.description}
                 </p>
               </div>
-              <span className="text-base font-mono text-neutral-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-yellow-400">
+              <span className="text-sm font-mono text-neutral-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-yellow-400">
                 →
               </span>
             </Link>

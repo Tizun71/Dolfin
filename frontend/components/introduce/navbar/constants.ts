@@ -13,14 +13,14 @@ export const NAV_ITEMS = [
   },
   {
     label: "How It Works",
-    href: "#how-it-works",
-    section: "how-it-works",
+    href: "#how",
+    section: "how",
     external: false,
   },
   {
     label: "Support",
-    href: "#support",
-    section: "support",
+    href: "#resources",
+    section: "resources",
     external: false,
   },
 ] as const;
