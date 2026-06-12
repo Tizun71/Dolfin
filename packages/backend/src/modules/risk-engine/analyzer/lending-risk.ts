@@ -1,5 +1,3 @@
-// analyzers/lending-risk.ts
-
 import type { IRiskAnalyzer } from "../RiskAnalyzer.interface.js";
 import { RiskLevel, type RiskContext, type RiskResult } from "../types.js";
 

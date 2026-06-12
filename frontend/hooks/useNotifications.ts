@@ -73,7 +73,7 @@ export function useNotifications() {
     if (stored) {
       setNotifications(JSON.parse(stored));
     } else {
-      // First time → load mock data
+      // First time: load mock data
       localStorage.setItem(STORAGE_KEY, JSON.stringify(mockNotifications));
       setNotifications(mockNotifications);
     }

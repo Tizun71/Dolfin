@@ -9,6 +9,8 @@ import { getAccount, type StoredAccount } from "@/lib/account-store";
 import { type TransferMode } from "@/hooks/useAccountTransfer";
 import AccountStatusCard from "./components/AccountStatusCard";
 import SessionPanel from "./components/SessionPanel";
+import AgentActivityPanel from "./components/AgentActivityPanel";
+import AgentRunHistory from "./components/AgentRunHistory";
 import CreateSessionForm from "./components/CreateSessionForm";
 import TransferDrawer from "./components/TransferDrawer";
 import Modal from "./components/Modal";
@@ -42,8 +44,8 @@ export default function AccountDetailView({ address }: { address: Address }) {
     <div className="text-white font-sans">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <Link href="/agents" className="text-[#666] hover:text-white text-xs font-mono uppercase tracking-[2px] transition">
-            ← Accounts
+          <Link href="/dashboard" className="text-[#666] hover:text-white text-xs font-mono uppercase tracking-[2px] transition">
+            ← Dashboard
           </Link>
           <h1 className="text-3xl font-normal uppercase tracking-[4px] text-white mt-4">
             {acct ? `Account #${acct.salt + 1}` : "Account"}
@@ -88,6 +90,11 @@ export default function AccountDetailView({ address }: { address: Address }) {
             <p className="text-[#333] text-sm font-mono mt-3">Create an agent to delegate scoped trading</p>
           </div>
         )}
+
+        {/* Backend AI agent history. Sourced from the DB (not localStorage), so it persists
+            across reloads and shows even when the local session list is empty. */}
+        <AgentActivityPanel owner={owner} account={address} />
+        <AgentRunHistory owner={owner} account={address} />
       </div>
 
       <TransferDrawer

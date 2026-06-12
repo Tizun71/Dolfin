@@ -1,15 +1,20 @@
+import type { AgentLlm } from "../llm.js";
 import type { OnchainConfig } from "../config/onchain-config.js";
 import { deriveAaveDecisions } from "../strategy/aave-rules.js";
+import { deriveAiDecisions } from "../strategy/ai-strategy.js";
 import type { AdvisorState } from "../state.js";
 
-/**
- * Rule engine node. Emits TradeDecisions from portfolio + risk + market.
- * Pure and deterministic — the AI never authors actions here.
- */
+// Rules run first, then the AI proposes extra actions on top. Both streams are
+// re-checked downstream; AI failure is non-fatal.
 export class StrategyNode {
-  constructor(private readonly cfg: OnchainConfig) {}
+  constructor(
+    private readonly cfg: OnchainConfig,
+    private readonly model?: AgentLlm,
+  ) {}
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {
-    return { decisions: deriveAaveDecisions(state, this.cfg) };
+    const ruleDecisions = deriveAaveDecisions(state, this.cfg);
+    const aiDecisions = await deriveAiDecisions(state, this.cfg, ruleDecisions, this.model);
+    return { decisions: [...ruleDecisions, ...aiDecisions] };
   };
 }

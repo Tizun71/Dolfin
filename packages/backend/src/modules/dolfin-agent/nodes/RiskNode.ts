@@ -2,9 +2,7 @@ import type { IRiskEngine } from "../../risk-engine/RiskEngine.interface.js";
 import type { RiskContext } from "../../risk-engine/types.js";
 import type { AdvisorState, RiskReport } from "../state.js";
 
-/**
- * Scores portfolio risk by feeding the snapshot into the risk engine analyzers.
- */
+// Scores portfolio risk by feeding the snapshot into the risk engine analyzers.
 export class RiskNode {
   constructor(private readonly riskEngine: IRiskEngine) {}
 

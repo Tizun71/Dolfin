@@ -1,34 +1,49 @@
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { createLlm, type AgentLlm } from "../llm.js";
 import type { AdvisorState } from "../state.js";
 
-/**
- * Explain-only sink: narrates portfolio + risk + market + the rule-engine's decisions
- * into human-readable advice. It NEVER authors actions — those come from the Strategy node.
- * Transaction encoding/execution is handled by downstream Planner/Executor nodes.
- */
+const SYSTEM_PROMPT =
+  "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
+  "actions that were already decided by the rule engine. Always cite concrete numbers from " +
+  "the data (health factor, debt USD, collateral USD, APY, trade sizes). Never invent positions " +
+  "or actions not present in the data. Answer in exactly three short labelled parts:\n" +
+  "Situation: <portfolio + risk in numbers>\n" +
+  "Actions: <what was executed / rejected, with sizes>\n" +
+  "Why: <one-sentence rationale tied to the numbers>";
+
+// Explain-only sink: narrates portfolio, risk, market and the rule-engine decisions into
+// human-readable advice. It does not author actions or execute anything.
 export class AdvisorNode {
-  constructor(private readonly model = google("gemini-2.0-flash")) {}
+  private model?: AgentLlm;
+
+  constructor(model?: AgentLlm) {
+    this.model = model;
+  }
+
+  // Lazy-init the LLM client. The constructor throws when OPENROUTER_API_KEY is missing, so
+  // deferring it to here (inside execute's try/catch) keeps a config issue from killing
+  // the pipeline before the run is persisted.
+  private getModel(): AgentLlm {
+    if (!this.model) {
+      this.model = createLlm();
+    }
+    return this.model;
+  }
 
   execute = async (state: AdvisorState): Promise<Partial<AdvisorState>> => {
     try {
-      const { text } = await generateText({
-        model: this.model,
-        system:
-          "You are Dolfin, a DeFi portfolio advisor. Explain the situation and the recommended " +
-          "actions that were already decided by the rule engine. Reference concrete numbers from " +
-          "the data. Never invent positions or actions that are not present in the provided data.",
-        prompt: this.buildPrompt(state),
-      });
-      return { advice: text };
+      const response = await this.getModel().invoke([
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: this.buildPrompt(state) },
+      ]);
+      return { advice: String(response.content) };
     } catch (err) {
-      // Narration is non-critical and runs AFTER execution — never fail the pipeline on it.
+      // Narration runs after execution and is non-critical, so never fail the pipeline on it.
       const reason = err instanceof Error ? err.message : String(err);
       return { advice: `${this.fallbackAdvice(state)}\n\n(LLM narration unavailable: ${reason})` };
     }
   };
 
-  /** Deterministic summary when the LLM is unavailable. */
+  // Deterministic summary when the LLM is unavailable.
   private fallbackAdvice(state: AdvisorState): string {
     const done = (state.validDecisions ?? []).map((d) => d.reason ?? d.actionType).join("; ") || "no actions";
     const dropped = (state.rejected ?? []).length;
@@ -36,20 +51,25 @@ export class AdvisorNode {
   }
 
   private buildPrompt(state: AdvisorState): string {
+    const lending = state.portfolio?.lending;
+    const lendingLine = lending
+      ? `Lending: healthFactor=${lending.healthFactor}, collateralUsd=${lending.collateralUsd}, debtUsd=${lending.debtUsd}`
+      : "Lending: no Aave position";
     return [
       `Wallet: ${state.wallet}`,
       `Portfolio: ${JSON.stringify(state.portfolio ?? {})}`,
+      lendingLine,
       `Risk: ${JSON.stringify(state.risk ?? {})}`,
       `Market: ${JSON.stringify(state.market ?? {})}`,
-      `Decided actions: ${JSON.stringify(state.validDecisions ?? [], bigintReplacer)}`,
-      `Rejected actions: ${JSON.stringify(state.rejected ?? [], bigintReplacer)}`,
+      `Executed actions: ${JSON.stringify(state.validDecisions ?? [], bigintReplacer)}`,
+      `Rejected actions (blocked by policy): ${JSON.stringify(state.rejected ?? [], bigintReplacer)}`,
       "",
-      "Explain the current risk level and why these actions are recommended.",
+      "Explain in the Situation/Actions/Why format. Cite the health factor and trade sizes explicitly.",
     ].join("\n");
   }
 }
 
-/** TradeDecision.amount is a bigint; make it JSON-serializable for the prompt. */
+// TradeDecision.amount is a bigint; make it JSON-serializable for the prompt.
 function bigintReplacer(_key: string, value: unknown): unknown {
   return typeof value === "bigint" ? value.toString() : value;
 }

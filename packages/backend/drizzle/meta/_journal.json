@@ -8,6 +8,20 @@
       "when": 1779095306252,
       "tag": "0000_yielding_naoko",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780308459888,
+      "tag": "0001_fancy_centennial",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780931628436,
+      "tag": "0002_watery_flatman",
+      "breakpoints": true
     }
   ]
 }

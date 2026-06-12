@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 
-// Connected-wallet chip → popover with full address, copy, logout.
+// Connected-wallet chip with a popover for full address, copy, logout.
 export default function WalletMenu() {
   const { logout, user } = usePrivy();
   const address = user?.wallet?.address ?? "";

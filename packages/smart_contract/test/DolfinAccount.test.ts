@@ -51,8 +51,8 @@ describe("DolfinAccount", () => {
       args: [callerAddress],
     });
 
-    // Owner gọi addToWhitelist trực tiếp (không qua executeDirect/execute)
-    // vì addToWhitelist giờ check executing = false
+    // Owner calls addToWhitelist directly (not via executeDirect/execute)
+    // since addToWhitelist now checks executing = false
     const hash = await ownerClient.writeContract({
       address: ownerClient.account.address,
       abi: dolfin.abi,
@@ -624,8 +624,8 @@ describe("DolfinAccount", () => {
         args: [[{ to: ownerClient.account.address, value: 0n, data: "0x" }]],
       });
 
-      // execute() không check executing nên inner call vẫn chạy được
-      // (msg.sender = address(this) khi self-call) → 2 events
+      // execute() does not check executing, so the inner call still runs
+      // (msg.sender = address(this) on self-call), giving 2 events
       const hash = await relayerClient.writeContract({
         address: ownerClient.account.address,
         abi: dolfin.abi,
@@ -642,8 +642,8 @@ describe("DolfinAccount", () => {
         toBlock: receipt.blockNumber,
       });
 
-      // Inner emit trước: data = "0x"
-      // Outer emit sau: data = reentrantData
+      // Inner emit first: data = "0x"
+      // Outer emit after: data = reentrantData
       assert.equal(logs.length, 2, "Expected 2 CallExecuted events");
       assert.equal(logs[0].args.data, "0x");
       assert.equal(logs[1].args.data, reentrantData);

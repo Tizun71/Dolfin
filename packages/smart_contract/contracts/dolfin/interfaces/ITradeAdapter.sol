@@ -12,7 +12,7 @@ import "./IPolicyManager.sol";
  *   - the token approvals the account must grant (exact amounts; reset to 0 afterwards),
  *   - the low-level calls the account must perform.
  *
- * The adapter NEVER holds funds and NEVER receives delegatecall — it only describes work.
+ * The adapter never holds funds and never receives delegatecall; it only describes work.
  * The account remains the executor and the trust boundary (adapters are owner-whitelisted).
  */
 interface ITradeAdapter {

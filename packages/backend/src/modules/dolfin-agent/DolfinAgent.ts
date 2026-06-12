@@ -13,6 +13,7 @@ import { PlannerNode } from "./nodes/PlannerNode.js";
 import { ExecutorNode } from "./nodes/ExecutorNode.js";
 import { ReceiptNode } from "./nodes/ReceiptNode.js";
 import { AdvisorNode } from "./nodes/AdvisorNode.js";
+import { withStepLogging } from "../../utils/logger.js";
 
 export interface DolfinAgentDeps {
   portfolioEngine: IPortfolioEngine;
@@ -21,16 +22,10 @@ export interface DolfinAgentDeps {
   onchain: OnchainConfig;
 }
 
-/**
- * Orchestrates the advisor pipeline as a LangGraph state machine:
- *
- *   START -> portfolio -> risk -> market -> strategy -> validation
- *         -> (has valid decisions?) -> planner -> executor -> receipt -> advisor -> END
- *         -> (none)                 ----------------------------------> advisor -> END
- *
- * Strategy/Validation/Planner/Executor are pure code; the AI (advisor) only explains the
- * outcome. Execution is autonomous and bounded by the on-chain PolicyManager.
- */
+// Advisor pipeline as a LangGraph state machine:
+//   START -> portfolio -> risk -> market -> strategy -> validation
+//         -> has valid decisions? -> planner -> executor -> receipt -> advisor -> END
+//         -> none ----------------------------------------> advisor -> END
 export class DolfinAgent {
   private readonly graph;
 
@@ -47,15 +42,15 @@ export class DolfinAgent {
 
     // Node names must differ from state channel names (portfolio/risk/market are channels).
     this.graph = new StateGraph(AdvisorAnnotation)
-      .addNode("fetchPortfolio", portfolio.execute)
-      .addNode("assessRisk", risk.execute)
-      .addNode("fetchMarket", market.execute)
-      .addNode("strategy", strategy.execute)
-      .addNode("validation", validation.execute)
-      .addNode("planner", planner.execute)
-      .addNode("executor", executor.execute)
-      .addNode("receipt", receipt.execute)
-      .addNode("advisor", advisor.execute)
+      .addNode("fetchPortfolio", withStepLogging("Portfolio", portfolio.execute))
+      .addNode("assessRisk", withStepLogging("Risk", risk.execute))
+      .addNode("fetchMarket", withStepLogging("Market", market.execute))
+      .addNode("strategy", withStepLogging("Strategy", strategy.execute))
+      .addNode("validation", withStepLogging("Validation", validation.execute))
+      .addNode("planner", withStepLogging("Planner", planner.execute))
+      .addNode("executor", withStepLogging("Executor", executor.execute))
+      .addNode("receipt", withStepLogging("Receipt", receipt.execute))
+      .addNode("advisor", withStepLogging("Advisor", advisor.execute))
       .addEdge(START, "fetchPortfolio")
       .addEdge("fetchPortfolio", "assessRisk")
       .addEdge("assessRisk", "fetchMarket")
@@ -72,13 +67,11 @@ export class DolfinAgent {
       .compile();
   }
 
-  /** Run the full advisory pipeline for a wallet and return the final state. */
   async run(wallet: string): Promise<AdvisorState> {
     return this.graph.invoke({ wallet });
   }
 }
 
-/** Route after validation: execute only when there is something within policy to do. */
 function hasValidDecisions(state: AdvisorState): "planner" | "advisor" {
   return (state.validDecisions?.length ?? 0) > 0 ? "planner" : "advisor";
 }

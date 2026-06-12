@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       yParity: authorization.yParity,
     };
 
-    // Estimate gas với authorizationList
+    // Estimate gas with the authorizationList
     const gasEstimate = await publicClient.estimateContractGas({
       address: userAddress,
       abi: DOLFIN_ABI,
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       abi: DOLFIN_ABI,
       functionName: "initialize",
       authorizationList: [rpcAuthorization],
-      // Thêm 50% buffer vì EIP-7702 delegation tốn thêm gas
+      // Add a 50% buffer since EIP-7702 delegation costs extra gas
       gas: (gasEstimate * BigInt(150)) / BigInt(100),
     });
 

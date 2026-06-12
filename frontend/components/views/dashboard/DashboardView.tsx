@@ -1,115 +1,82 @@
 "use client";
 
-import { useRunningStrategies } from "@/hooks/useRunningStrategies";
-import StrategyCard from "./components/StrategyCard";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type Address } from "viem";
+import { useAccounts } from "@/hooks/useAccounts";
+import OwnerBalanceCard from "./OwnerBalanceCard";
+import SubAccountCard from "./SubAccountCard";
+import AgentActivityPanel from "@/components/views/agents/components/AgentActivityPanel";
 
 export default function DashboardView() {
-  const { strategies } = useRunningStrategies();
+  const { owner, accounts, loading, createAccount } = useAccounts();
+  const [selected, setSelected] = useState<Address | null>(null);
+  const router = useRouter();
 
-  const totalAPY =
-    strategies.length > 0
-      ? (
-          strategies.reduce((sum, s) => sum + s.apy, 0) / strategies.length
-        ).toFixed(2)
-      : "0.00";
+  // Default to the first account once they load; keep the user's choice otherwise.
+  useEffect(() => {
+    if (!selected && accounts.length > 0) setSelected(accounts[0].address);
+  }, [accounts, selected]);
+
+  const onCreate = async () => {
+    const addr = await createAccount();
+    if (addr) router.push(`/agents/${addr}`);
+  };
 
   return (
     <div className="text-white font-sans">
-      <h1 className="text-3xl font-normal uppercase tracking-[4px] mb-12 text-white">
-        Dolfin A.I
-      </h1>
-
-      {/* Overview Cards */}
-      <div className="grid grid-cols-3 gap-8 mb-16">
-        <div className="card-3d p-8">
-          <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px]">
-            Active Strategies
-          </p>
-          <p className="text-4xl font-normal text-white mt-4 tracking-[1px]">
-            {strategies.length}
-          </p>
-          <p className="text-[#cccccc] text-sm mt-2 tracking-wide">
-            {strategies.length > 0 ? "Running" : "No active strategies"}
-          </p>
-        </div>
-
-        <div className="card-3d p-8">
-          <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px]">
-            Average APY
-          </p>
-          <p className="text-4xl font-normal text-white mt-4 tracking-[1px]">
-            {totalAPY}%
-          </p>
-        </div>
-
-        <div className="card-3d p-8">
-          <p className="text-[#666666] text-xs font-mono uppercase tracking-[2px]">
-            AI Rebalancing Status
-          </p>
-          <p className="text-2xl font-normal text-white mt-5 tracking-[2px] uppercase">
-            {strategies.length > 0 ? "Active" : "Idle"}
-          </p>
-          <p className="text-[#cccccc] text-sm mt-2 tracking-wide">
-            {strategies.length > 0
-              ? `${strategies.length} strategies running`
-              : "Run a strategy to start"}
-          </p>
-        </div>
+      <div className="flex items-end justify-between mb-12">
+        <h1 className="text-3xl font-normal uppercase tracking-[4px]"></h1>
+        <button
+          onClick={onCreate}
+          disabled={loading}
+          className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition"
+        >
+          {loading ? "Deploying…" : "+ New account"}
+        </button>
       </div>
 
-      {/* Strategy Grid */}
-      {strategies.length > 0 ? (
-        <div className="mb-16">
-          <h2 className="text-xs font-mono uppercase tracking-[3px] text-[#444] mb-6 border-b border-[#1a1a1a] pb-4">
-            Running Strategies
-          </h2>
-          <div className="grid grid-cols-3 gap-6">
-            {strategies.map((strategy) => (
-              <StrategyCard key={strategy.asset} strategy={strategy} />
-            ))}
-          </div>
-        </div>
-      ) : (
-        /* Empty State */
-        <div className="border border-[#1a1a1a] bg-[#050505] p-16 text-center mb-16">
-          <p className="text-[#444] text-xs font-mono uppercase tracking-[3px] mb-4">
-            No Active Strategies
-          </p>
-          <p className="text-[#333] text-sm font-mono">
-            Go to Vaults and run a strategy to get started
-          </p>
-        </div>
-      )}
+      {/* Owner wallet balances, read straight from chain. */}
+      <div className="mb-12">
+        <OwnerBalanceCard owner={owner} />
+      </div>
 
-      {/* AI Strategy Log */}
-      <div className="card-3d p-8">
-        <h2 className="text-sm font-normal text-[#cccccc] uppercase tracking-[3px] mb-8 border-b border-[#262626] pb-4">
-          AI Strategy Log
-        </h2>
-        {strategies.length > 0 ? (
-          <div className="space-y-8">
-            {strategies.map((strategy, i) => (
-              <div
-                key={strategy.asset}
-                className={`border-l pl-6 ${i === 0 ? "border-white" : "border-[#3a3a3a]"}`}
-              >
-                <p
-                  className={`text-[11px] font-mono uppercase tracking-[2px] ${i === 0 ? "text-white" : "text-[#666666]"}`}
-                >
-                  {strategy.asset.toUpperCase()}
-                </p>
-                <p
-                  className={`font-serif text-lg leading-relaxed mt-2 ${i === 0 ? "text-[#cccccc]" : "text-[#999999]"}`}
-                >
-                  {strategy.lastAction}
-                </p>
-              </div>
-            ))}
+      {/* Sub accounts (smart accounts) the user created. */}
+      <div className="mb-16">
+        <p className="text-[#666] text-xs font-mono uppercase tracking-[3px] mb-6">
+          Your Accounts · {accounts.length}
+        </p>
+        {accounts.length === 0 ? (
+          <div className="border border-[#1a1a1a] bg-[#050505] p-16 text-center">
+            <p className="text-[#444] text-xs font-mono uppercase tracking-[3px] mb-4">No accounts yet</p>
+            <button
+              onClick={onCreate}
+              disabled={loading}
+              className="px-8 py-3 text-xs uppercase tracking-[3px] font-mono btn-brand transition"
+            >
+              {loading ? "Deploying…" : "Create an account to get started →"}
+            </button>
           </div>
         ) : (
-          <p className="text-[#333] text-sm font-mono">No activity yet</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {accounts.map((a) => (
+              <SubAccountCard
+                key={a.address}
+                account={a}
+                selected={selected === a.address}
+                onSelect={() => setSelected(a.address)}
+              />
+            ))}
+          </div>
         )}
       </div>
+
+      {/* Live agent activity + cross-chain allocation for the selected account. */}
+      {accounts.length > 0 && (
+        <div className="space-y-8">
+          <AgentActivityPanel owner={owner} account={selected} />
+        </div>
+      )}
     </div>
   );
 }

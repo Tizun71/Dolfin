@@ -1,14 +1,8 @@
-// Dolfin AI Agent (reference)
-//
-//   input { marketData, portfolio, userPolicy } -> output TradeDecision
-//
-// HARD CONSTRAINTS (by construction, not by trust):
-//   - holds NO private keys (pure function; signing happens in the relayer with the session key)
-//   - touches NO funds (it only emits an intent)
-//   - cannot bypass policy: every decision is re-checked on-chain by PolicyManager
-//
-// A defensive client-side policy filter drops invalid intents before they cost gas.
-// The on-chain check remains authoritative.
+// Dolfin AI agent: { marketData, portfolio, userPolicy } -> TradeDecision.
+// Pure function: holds no keys, touches no funds, emits only an intent. Signing happens in
+// the relayer with the session key, and every decision is re-checked on-chain by PolicyManager.
+// The client-side policy filter below drops invalid intents before they cost gas, but the
+// on-chain check stays authoritative.
 
 import { ActionType, actionBit, type AgentInput, type TradeDecision, type UserPolicy } from "./types.js";
 

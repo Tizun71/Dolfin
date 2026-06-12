@@ -2,9 +2,9 @@
 //
 //   pnpm -C packages/smart_contract fund-account
 //
-// Sends ETH (gas, since the account pays its own UserOp fees — no paymaster) and transfers
-// USDC for the agent to supply. Get test USDC into the OWNER first via the Aave testnet
-// faucet (app.aave.com → Arbitrum Sepolia → Faucet), then run this to move it to the account.
+// Sends ETH (gas, since the account pays its own UserOp fees, no paymaster) and transfers
+// USDC for the agent to supply. Get test USDC into the owner first via the Aave testnet
+// faucet (app.aave.com, Arbitrum Sepolia, Faucet), then run this to move it to the account.
 //
 // Env (.env): PRIVATE_KEY (owner), ALCHEMY_RPC_URL. Amounts: FUND_ETH (def 0.01), FUND_USDC (def 100).
 
@@ -33,11 +33,11 @@ async function main() {
   const accEth = await pub.getBalance({ address: ACCOUNT });
   if (accEth < ethAmount) {
     const ownerEth = await pub.getBalance({ address: owner.address });
-    if (ownerEth < ethAmount) throw new Error(`owner ETH ${formatEther(ownerEth)} < ${formatEther(ethAmount)} — top up owner from an Arb Sepolia faucet`);
-    console.log(`sending ${formatEther(ethAmount)} ETH → account...`);
+    if (ownerEth < ethAmount) throw new Error(`owner ETH ${formatEther(ownerEth)} < ${formatEther(ethAmount)}, top up owner from an Arb Sepolia faucet`);
+    console.log(`sending ${formatEther(ethAmount)} ETH to account...`);
     await wait(await wallet.sendTransaction({ to: ACCOUNT, value: ethAmount }));
   } else {
-    console.log(`account already has ${formatEther(accEth)} ETH — skip`);
+    console.log(`account already has ${formatEther(accEth)} ETH, skip`);
   }
 
   // 2. USDC to supply
@@ -45,12 +45,12 @@ async function main() {
   if (accUsdc < usdcAmount) {
     const ownerUsdc = (await pub.readContract({ address: USDC, abi: erc20Abi, functionName: "balanceOf", args: [owner.address] })) as bigint;
     if (ownerUsdc < usdcAmount) {
-      throw new Error(`owner USDC ${formatUnits(ownerUsdc, 6)} < ${formatUnits(usdcAmount, 6)} — mint test USDC to the owner via the Aave faucet first`);
+      throw new Error(`owner USDC ${formatUnits(ownerUsdc, 6)} < ${formatUnits(usdcAmount, 6)}, mint test USDC to the owner via the Aave faucet first`);
     }
-    console.log(`transferring ${formatUnits(usdcAmount, 6)} USDC → account...`);
+    console.log(`transferring ${formatUnits(usdcAmount, 6)} USDC to account...`);
     await wait(await wallet.writeContract({ address: USDC, abi: erc20Abi, functionName: "transfer", args: [ACCOUNT, usdcAmount] }));
   } else {
-    console.log(`account already has ${formatUnits(accUsdc, 6)} USDC — skip`);
+    console.log(`account already has ${formatUnits(accUsdc, 6)} USDC, skip`);
   }
 
   const ethNow = await pub.getBalance({ address: ACCOUNT });

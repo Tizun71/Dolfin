@@ -18,7 +18,7 @@ export interface RiskReport {
   recommendations: string[];
 }
 
-/** A strategy-proposed decision that failed the client-side policy filter. */
+// A decision that failed the client-side policy filter.
 export interface RejectedDecision {
   decision: TradeDecision;
   errors: string[];
@@ -29,24 +29,24 @@ export interface AdvisorState {
   portfolio?: PortfolioSnapshot;
   risk?: RiskReport;
   market?: MarketContext;
-  /** Rule-engine output (Strategy node). The AI never authors these. */
+  // Strategy node output.
   decisions?: TradeDecision[];
-  /** Decisions that passed the client-side policy mirror (Validation node). */
+  // Decisions that passed the policy mirror (Validation node).
   validDecisions?: TradeDecision[];
-  /** Decisions dropped before gas, with reasons (Validation node). */
+  // Decisions dropped before gas, with reasons (Validation node).
   rejected?: RejectedDecision[];
-  /** Encoded adapter calls ready for executeAction (Planner node). */
+  // Encoded adapter calls (Planner node).
   calls?: AdapterCall[];
-  /** userOpHashes returned by the bundler (Executor node). */
+  // userOpHashes from the bundler (Executor node).
   userOpHashes?: string[];
-  /** Human-readable narration (Advisor / Claude node, explain-only). */
+  // Tx hashes mined per userOp (Receipt node, parallel to userOpHashes).
+  transactions?: `0x${string}`[];
+  // Narration (Advisor node, explain-only).
   advice?: string;
 }
 
-/**
- * LangGraph state schema. Each channel uses last-write-wins reducer (default).
- * Nodes return a Partial<AdvisorState>; LangGraph merges it into the running state.
- */
+// LangGraph schema. Channels use the default last-write-wins reducer; nodes return a
+// Partial<AdvisorState> that LangGraph merges into the running state.
 export const AdvisorAnnotation = Annotation.Root({
   wallet: Annotation<string>(),
   portfolio: Annotation<PortfolioSnapshot | undefined>(),
@@ -57,5 +57,6 @@ export const AdvisorAnnotation = Annotation.Root({
   rejected: Annotation<RejectedDecision[] | undefined>(),
   calls: Annotation<AdapterCall[] | undefined>(),
   userOpHashes: Annotation<string[] | undefined>(),
+  transactions: Annotation<`0x${string}`[] | undefined>(),
   advice: Annotation<string | undefined>(),
 });
