@@ -6,6 +6,7 @@ import { formatUnits, parseUnits, type Address } from "viem";
 import { TRANSFER_TOKENS, type TransferToken } from "@/constants/dolfin";
 import { buildWalletClient, errMsg, getActiveWallet } from "@/lib/dolfin-wallet";
 import { balanceOf, deposit, withdraw } from "@/lib/dolfin-actions";
+import { emitOnchainRefresh } from "@/lib/onchain-refresh";
 import { toast } from "sonner";
 
 export type TransferMode = "deposit" | "withdraw";
@@ -74,6 +75,7 @@ export function useAccountTransfer(
       const [no, na] = await Promise.all([balanceOf(token, o), balanceOf(token, account)]);
       setOwnerBal(no);
       setAcctBal(na);
+      emitOnchainRefresh(); // refresh the detail view's on-chain reads right away
       onDone();
     } catch (e: unknown) {
       console.error(`[DOLFIN] ${mode} failed:`, e);
