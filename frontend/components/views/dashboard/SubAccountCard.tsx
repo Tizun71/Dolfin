@@ -38,7 +38,7 @@ export default function SubAccountCard({
       role="button"
       tabIndex={0}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect()}
-      className={`card-3d p-6 text-left w-full cursor-pointer flex flex-col transition-all duration-300 ${
+      className={`card-3d p-6 text-left w-full cursor-pointer flex flex-col transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fb923c]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] ${
         aura
           ? "border-[#fb923c]/60 shadow-[0_0_40px_-8px_rgba(249,115,22,0.35)] -translate-y-0.5"
           : selected
@@ -62,7 +62,7 @@ export default function SubAccountCard({
           {loading ? (
             <Skeleton className="w-24 h-7 mt-1.5" />
           ) : (
-            <p className="text-2xl text-white mt-1 tracking-[0.5px]">{usd(data.totalValueUsd)}</p>
+            <p className="text-2xl text-white mt-1 tracking-[0.5px] tabular-nums">{usd(data.totalValueUsd)}</p>
           )}
         </div>
         <div className="text-right">
@@ -71,7 +71,7 @@ export default function SubAccountCard({
             <Skeleton className="w-12 h-7 mt-1.5 ml-auto" />
           ) : (
             <p
-              className={`text-2xl mt-1 tracking-[0.5px] ${
+              className={`text-2xl mt-1 tracking-[0.5px] tabular-nums ${
                 hf !== null && hf < 1.5 ? "text-[#f87171]" : "text-white"
               }`}
             >

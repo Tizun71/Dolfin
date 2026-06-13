@@ -11,7 +11,7 @@ import SectionDivider from "@/components/shared/SectionDivider";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col relative">
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col relative">
       <Navbar />
       <Hero />
       <SectionDivider />

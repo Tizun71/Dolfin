@@ -13,7 +13,7 @@ const ROWS: Row[] = [
   {
     aspect: "Custody",
     typical: "Bot holds your funds",
-    dolfin: "Non-custodial — scoped session key",
+    dolfin: "Non-custodial, scoped session key",
   },
   {
     aspect: "Risk Limits",
@@ -49,7 +49,7 @@ export default function FeaturesSection() {
     : "opacity-0 translate-y-8";
 
   return (
-    <section id="features" ref={sectionRef} className="py-24 bg-black">
+    <section id="features" ref={sectionRef} className="py-24 bg-[#0a0a0a]">
       <div className="max-w-5xl mx-auto px-6">
         <div className={`text-center mb-16 transition-all duration-700 ${reveal}`}>
           <h2 className="text-5xl mb-6 uppercase tracking-tight font-mono font-semibold text-brand-gradient">

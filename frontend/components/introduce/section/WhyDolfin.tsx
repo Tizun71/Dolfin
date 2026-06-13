@@ -82,11 +82,6 @@ function ModuleCard({ m }: { m: Module }) {
       {/* Hover radial glow */}
       <span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.08),transparent_60%)]" />
 
-      {/* Ghost index watermark */}
-      <span className="pointer-events-none select-none absolute -top-6 left-2 font-mono font-bold leading-none text-[120px] text-white/[0.03]">
-        {m.index}
-      </span>
-
       {/* Big background icon */}
       <Icon
         strokeWidth={1}
@@ -104,10 +99,10 @@ function ModuleCard({ m }: { m: Module }) {
 
       <div className="relative z-10 mt-4 flex items-center gap-2">
         <span
-  className={`relative font-mono text-xs font-black uppercase tracking-wider border-2 border-black px-3 py-1 bg-white transform -translate-x-1 -translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-0 hover:translate-y-0 hover:shadow-none ${ACCENT_BADGE[m.accent]}`}
->
-  {m.metaRight}
-</span>
+          className={`rounded-full border px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider ${ACCENT_BADGE[m.accent]}`}
+        >
+          {m.metaRight}
+        </span>
       </div>
     </ScrollStackItem>
   );

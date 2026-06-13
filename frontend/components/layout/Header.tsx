@@ -9,7 +9,7 @@ export default function Header() {
   const { login, authenticated } = usePrivy();
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-black border-b border-[#262626] flex items-center justify-between px-10 z-20 font-sans">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-[#1f1f1f] flex items-center justify-between px-10 z-20 font-sans">
       <Link href="/dashboard" className="group flex items-center gap-3">
         <LogoDolfin size={30} />
         <h2 className="text-brand-gradient text-xl font-normal uppercase tracking-[4px]">Dolfin</h2>

@@ -26,7 +26,14 @@ export default function DashboardView() {
   return (
     <div className="text-white font-sans">
       <div className="flex items-end justify-between mb-12">
-        <h1 className="text-3xl font-normal uppercase tracking-[4px]"></h1>
+        <div>
+          <h1 className="text-3xl font-semibold uppercase tracking-[4px] text-brand-gradient">
+            Dashboard
+          </h1>
+          <p className="text-[#666] text-xs font-mono uppercase tracking-[2px] mt-3">
+            Your smart accounts &amp; live agent activity
+          </p>
+        </div>
         <button
           onClick={onCreate}
           disabled={loading}
@@ -47,7 +54,7 @@ export default function DashboardView() {
           Your Accounts · {accounts.length}
         </p>
         {accounts.length === 0 ? (
-          <div className="border border-[#1a1a1a] bg-[#050505] p-16 text-center">
+          <div className="rounded-xl border border-[#1a1a1a] bg-[#0c0c0c] p-16 text-center">
             <p className="text-[#444] text-xs font-mono uppercase tracking-[3px] mb-4">No accounts yet</p>
             <button
               onClick={onCreate}

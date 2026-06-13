@@ -46,7 +46,7 @@ export default function HowItWorks() {
 
   return (
     <section id="how" className="relative z-10 bg-[#0d0d0d] text-white">
-      {/* Tall scroll track — one viewport of scroll per step */}
+      {/* Tall scroll track: one viewport of scroll per step */}
       <div ref={containerRef} style={{ height: `${STEPS.length * 100}vh` }} className="relative">
         {/* Pinned visual */}
         <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden px-6">
@@ -87,7 +87,7 @@ export default function HowItWorks() {
                         </div>
                         <div className="min-w-0">
                           <div className={`font-mono text-xs font-bold uppercase tracking-tight transition-colors duration-500 ${isActive ? "text-yellow-400" : "text-neutral-500"}`}>
-                            Step 0{idx + 1}
+                            {step.subtitle}
                           </div>
                           <div className={`font-mono text-sm font-semibold uppercase tracking-tight transition-colors duration-500 ${isActive ? "text-white" : "text-neutral-500"}`}>
                             {step.title}
@@ -102,9 +102,6 @@ export default function HowItWorks() {
               {/* Active step panel */}
               <div className="lg:col-span-7">
                 <div key={activeStep} className="animate-step-enter rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-[#121212] to-[#0a0a0a] p-8 relative overflow-hidden">
-                  <span className="pointer-events-none select-none absolute -top-8 left-3 font-mono font-bold leading-none text-[140px] text-white/[0.03]">
-                    0{activeStep + 1}
-                  </span>
                   {/* Big background icon */}
                   <ActiveIcon
                     strokeWidth={1}
