@@ -1,8 +1,9 @@
 "use client";
 
 import { formatUnits, type Address } from "viem";
-import { TRANSFER_TOKENS } from "@/constants/dolfin";
+import { TRANSFER_TOKENS, TOKEN_LOGOS } from "@/constants/dolfin";
 import { useAccountTransfer, type TransferMode } from "@/hooks/useAccountTransfer";
+import Skeleton from "@/components/ui/Skeleton";
 import Drawer from "./Drawer";
 
 const fmt = (v: bigint | null, decimals: number) =>
@@ -31,30 +32,45 @@ export default function TransferDrawer({
       {/* Token select */}
       <p className="text-[#888] text-xs font-mono uppercase tracking-[1.5px] mb-3 font-medium">Token</p>
       <div className="flex flex-wrap gap-2 mb-8">
-        {TRANSFER_TOKENS.map((tok) => (
-          <button
-            key={tok.symbol}
-            onClick={() => t.setToken(tok)}
-            className={`px-4 py-2 border text-xs font-mono uppercase tracking-[1px] transition ${
-              t.token.symbol === tok.symbol
-                ? "border-[#fb923c] bg-[#fb923c1a] text-[#fbbf24]"
-                : "border-[#222] text-[#666] hover:border-[#333]"
-            }`}
-          >
-            {tok.symbol}
-          </button>
-        ))}
+        {TRANSFER_TOKENS.map((tok) => {
+          const logo = TOKEN_LOGOS[tok.symbol];
+          return (
+            <button
+              key={tok.symbol}
+              onClick={() => t.setToken(tok)}
+              className={`flex items-center gap-2 px-4 py-2 border text-xs font-mono uppercase tracking-[1px] transition ${
+                t.token.symbol === tok.symbol
+                  ? "border-[#fb923c] bg-[#fb923c1a] text-[#fbbf24]"
+                  : "border-[#222] text-[#666] hover:border-[#333]"
+              }`}
+            >
+              {logo && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logo} alt={tok.symbol} className="w-4 h-4 rounded-full" />
+              )}
+              {tok.symbol}
+            </button>
+          );
+        })}
       </div>
 
       {/* Balances */}
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="border border-[#1a1a1a] bg-[#0a0a0a] p-4">
           <p className="text-[#666] text-xs font-mono uppercase tracking-[1px] mb-2">Owner</p>
-          <p className="text-[#f0f0f0] text-sm font-mono">{fmt(t.ownerBal, t.token.decimals)}</p>
+          {t.balLoading ? (
+            <Skeleton className="w-20 h-4" />
+          ) : (
+            <p className="text-[#f0f0f0] text-sm font-mono tabular-nums">{fmt(t.ownerBal, t.token.decimals)}</p>
+          )}
         </div>
         <div className="border border-[#1a1a1a] bg-[#0a0a0a] p-4">
           <p className="text-[#666] text-xs font-mono uppercase tracking-[1px] mb-2">Account</p>
-          <p className="text-[#f0f0f0] text-sm font-mono">{fmt(t.acctBal, t.token.decimals)}</p>
+          {t.balLoading ? (
+            <Skeleton className="w-20 h-4" />
+          ) : (
+            <p className="text-[#f0f0f0] text-sm font-mono tabular-nums">{fmt(t.acctBal, t.token.decimals)}</p>
+          )}
         </div>
       </div>
 

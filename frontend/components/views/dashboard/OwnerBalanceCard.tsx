@@ -43,7 +43,7 @@ export default function OwnerBalanceCard({ owner }: { owner: Address | null }) {
               )}
               <div>
                 <p className="text-[#666] text-xs font-mono uppercase tracking-[1px]">{token.symbol}</p>
-                <p className="text-lg text-white tracking-[0.5px]">
+                <p className="text-lg text-white tracking-[0.5px] tabular-nums">
                   {loading ? "…" : fmt(balance, token.decimals)}
                 </p>
               </div>

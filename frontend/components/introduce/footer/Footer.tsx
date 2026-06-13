@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FOOTER_LINKS, SOCIAL_LINKS } from "./constants";
-import { ExternalLink, MessageCircle } from "lucide-react";
+import { SOCIAL_LINKS, LEGAL_LINKS } from "./constants";
+import { MessageCircle } from "lucide-react";
 import LogoDolfin from "@/components/shared/LogoDolfin";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -17,19 +18,14 @@ export default function Footer() {
                 Dolfin
               </h3>
             </div>
-            <div className="flex items-center gap-2 text-base text-[#ddd] font-light leading-relaxed">
-              <span>AI portfolio agent for</span>
-
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6mQ1pwxVT3lqCTZWhuUZzKTOqT0ZmYh2oeg&s"
-                alt="Arbitrum"
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-
-              <span className="font-medium text-white">Arbitrum</span>
-            </div>
+            <p className="text-base text-[#ddd] leading-relaxed">
+              AI portfolio agent that trades inside your on-chain rules. Built on{" "}
+              <span className="inline-flex items-center gap-1.5 font-medium text-white align-middle">
+                <Image src={"https://cryptologos.cc/logos/arbitrum-arb-logo.png"} width={20} height={20} alt=""></Image>
+                Arbitrum
+              </span>
+              .
+            </p>
           </div>
 
           <div className="flex flex-col gap-3 md:items-end">
@@ -67,16 +63,25 @@ export default function Footer() {
               </div>
             </div>
           </div>
-        </div>
+      </div>
 
       <div className="border-t border-[#1a1a1a]">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-[#aaa] tracking-tight font-mono font-semibold uppercase">
-              © 2026 Dolfin Team
-            </span>
-          </div>
+          <span className="text-sm text-[#aaa] tracking-tight font-mono font-semibold uppercase">
+            © 2026 Dolfin Team
+          </span>
 
+          <div className="flex items-center gap-6">
+            {LEGAL_LINKS.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="text-xs font-mono uppercase tracking-wider text-[#888] hover:text-yellow-400 transition-colors duration-300"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>

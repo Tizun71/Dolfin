@@ -23,6 +23,7 @@ export function useAccountTransfer(
   const [ownerBal, setOwnerBal] = useState<bigint | null>(null);
   const [acctBal, setAcctBal] = useState<bigint | null>(null);
   const [loading, setLoading] = useState(false);
+  const [balLoading, setBalLoading] = useState(false);
 
   // Source balance = where funds come FROM (owner for deposit, account for withdraw).
   const sourceBal = mode === "deposit" ? ownerBal : acctBal;
@@ -30,13 +31,15 @@ export function useAccountTransfer(
   useEffect(() => {
     if (!owner || !account) return;
     let cancelled = false;
+    setBalLoading(true);
     Promise.all([balanceOf(token, owner), balanceOf(token, account)])
       .then(([o, a]) => {
         if (cancelled) return;
         setOwnerBal(o);
         setAcctBal(a);
       })
-      .catch((e) => !cancelled && toast.error(errMsg(e, "Failed to read balances.")));
+      .catch((e) => !cancelled && toast.error(errMsg(e, "Failed to read balances.")))
+      .finally(() => !cancelled && setBalLoading(false));
     return () => {
       cancelled = true;
     };
@@ -90,6 +93,7 @@ export function useAccountTransfer(
     acctBal,
     sourceBal,
     loading,
+    balLoading,
     submit,
   };
 }
