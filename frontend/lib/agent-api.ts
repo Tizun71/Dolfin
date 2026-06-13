@@ -12,6 +12,10 @@ function base(): string {
   return BASE.replace(/\/$/, "");
 }
 
+// Skip ngrok's free-tier browser warning interstitial so responses stay JSON.
+// Harmless against non-ngrok backends (just an extra request header).
+const NGROK_HEADERS = { "ngrok-skip-browser-warning": "1" } as const;
+
 function configPath(owner: Address, account: Address): string {
   return `${base()}/agent/${owner.toLowerCase()}/${account.toLowerCase()}`;
 }
@@ -35,7 +39,7 @@ async function putWithRetry(url: string, body: string, attempts = 3): Promise<vo
     try {
       const res = await fetch(url, {
         method: "PUT",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...NGROK_HEADERS },
         body,
       });
       if (res.ok) return;
@@ -81,7 +85,7 @@ export async function getAgentConfig(
   owner: Address,
   account: Address,
 ): Promise<AgentConfigView | null> {
-  const res = await fetch(`${configPath(owner, account)}/config`);
+  const res = await fetch(`${configPath(owner, account)}/config`, { headers: NGROK_HEADERS });
   if (res.status === 404) return null;
   return (await expectOk(res, "get agent config")) as AgentConfigView;
 }
@@ -89,7 +93,10 @@ export async function getAgentConfig(
 // Delete the backend agent config (row + cached instance). 404 counts as success since the
 // goal (no config) is already met. Other failures throw so the caller can surface them.
 export async function deleteAgentConfig(owner: Address, account: Address): Promise<void> {
-  const res = await fetch(`${configPath(owner, account)}/config`, { method: "DELETE" });
+  const res = await fetch(`${configPath(owner, account)}/config`, {
+    method: "DELETE",
+    headers: NGROK_HEADERS,
+  });
   if (res.ok || res.status === 404) return;
   const text = await res.text().catch(() => "");
   throw new Error(`delete agent config failed (${res.status}): ${text}`);
@@ -128,14 +135,16 @@ export interface RunResponse {
 export async function runAgent(owner: Address, account: Address): Promise<RunResponse> {
   const res = await fetch(`${configPath(owner, account)}/run`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...NGROK_HEADERS },
     body: JSON.stringify({}),
   });
   return (await expectOk(res, "run agent")) as RunResponse;
 }
 
 export async function getLatestSession(owner: Address, account: Address): Promise<unknown> {
-  const res = await fetch(`${configPath(owner, account)}/sessions/latest`);
+  const res = await fetch(`${configPath(owner, account)}/sessions/latest`, {
+    headers: NGROK_HEADERS,
+  });
   return expectOk(res, "get latest session");
 }
 
@@ -162,7 +171,9 @@ export async function getSessions(
   account: Address,
   pageSize = 50,
 ): Promise<SessionList> {
-  const res = await fetch(`${configPath(owner, account)}/sessions?pageSize=${pageSize}`);
+  const res = await fetch(`${configPath(owner, account)}/sessions?pageSize=${pageSize}`, {
+    headers: NGROK_HEADERS,
+  });
   return (await expectOk(res, "get sessions")) as SessionList;
 }
 
@@ -173,7 +184,9 @@ export async function getSession(
   account: Address,
   runId: string,
 ): Promise<unknown> {
-  const res = await fetch(`${configPath(owner, account)}/sessions/${runId}`);
+  const res = await fetch(`${configPath(owner, account)}/sessions/${runId}`, {
+    headers: NGROK_HEADERS,
+  });
   return expectOk(res, "get session");
 }
 
@@ -197,6 +210,8 @@ export async function getCrossChainPortfolio(
   owner: Address,
   account: Address,
 ): Promise<CrossChainPortfolio> {
-  const res = await fetch(`${configPath(owner, account)}/portfolio/cross-chain`);
+  const res = await fetch(`${configPath(owner, account)}/portfolio/cross-chain`, {
+    headers: NGROK_HEADERS,
+  });
   return (await expectOk(res, "get cross-chain portfolio")) as CrossChainPortfolio;
 }

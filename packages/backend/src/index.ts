@@ -43,7 +43,7 @@ app.use(
   cors({
     origin: corsOrigins,
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type"],
+    allowHeaders: ["Content-Type", "ngrok-skip-browser-warning"],
   }),
 );
 
